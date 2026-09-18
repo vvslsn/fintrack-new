@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>ChitFund - Scheme Details</title>
+
+    <link
+        rel="stylesheet"
+        href="scheme-details.css">
+    <link rel="stylesheet" href="common.css">
+
+    <link rel="stylesheet" href="profile-menu.css">
+
+</head>
+
+
+<body>
+
+    <aside class="sidebar" id="sidebar">
+
+
+    <!-- LOGO -->
+
+    <div class="logo">
+
+        <div class="logo-icon">
+            ₹
+        </div>
+
+        <div class="logo-text">
+            FinTrack
+        </div>
+
+    </div>
+
+
+
+    <!-- NAVIGATION -->
+
+    <nav class="sidebar-nav">
+
+
+        <!-- DASHBOARD -->
+
+        <a
+            href="dashboard.html"
+            class="nav-item active"
+        >
+
+            <span class="nav-icon">
+                🏠
+            </span>
+
+            <span>
+                Dashboard
+            </span>
+
+        </a>
+
+
+
+        <!-- SCHEMES -->
+
+        <a
+            href="schemes.html"
+            class="nav-item"
+        >
+
+            <span class="nav-icon">
+                📋
+            </span>
+
+            <span>
+                Schemes
+            </span>
+
+        </a>
+
+
+
+        <!-- MEMBERS -->
+
+        <a
+            href="members.html"
+            class="nav-item"
+        >
+
+            <span class="nav-icon">
+                👥
+            </span>
+
+            <span>
+                Members
+            </span>
+
+        </a>
+<!-- PAYMENTS -->
+
+        <a
+            href="payments.html"
+            class="nav-item"
+        >
+
+            <span class="nav-icon">
+                💳
+            </span>
+
+            <span>
+                Payments
+            </span>
+
+        </a>
+</nav>
+
+</aside>
+
+
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
+
+    <main class="main-content">
+
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+            <div></div>
+
+
+            <div class="topbar-right">
+
+
+                <div class="profile">
+
+                    <div class="profile-avatar" id="profileAvatar">
+                        A
+                    </div>
+
+
+                    <div class="profile-details">
+
+                        <strong id="profileName">
+                            admin
+                        </strong>
+
+                        <span>
+                            ADMIN
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+
+        <!-- =================================================
+             PAGE CONTENT
+        ================================================== -->
+
+        <section class="page-content">
+
+
+            <!-- BREADCRUMB -->
+
+            <div class="breadcrumb">
+
+                <a href="schemes.html">
+                    Chit Schemes
+                </a>
+
+                <span>
+                    /
+                </span>
+
+                <span id="breadcrumbName">
+                    Scheme Details
+                </span>
+
+            </div>
+
+
+
+            <!-- PAGE HEADER -->
+
+            <div class="page-header">
+
+
+                <div class="page-title">
+
+                    <div class="title-row">
+
+                        <h1 id="schemeName">
+                            Gold Scheme 
+                        </h1>
+
+
+                        <span
+                            id="schemeStatus"
+                            class="status-badge status-active">
+
+                            Active
+
+                        </span>
+
+                    </div>
+
+
+                    <p id="schemeSubtitle">
+                        Scheme details, members and payment information.
+                    </p>
+
+                </div>
+
+
+                <div class="header-actions">
+
+                    <button
+                        class="secondary-button"
+                        onclick="goBack()">
+
+                        ← Back
+
+                    </button>
+
+
+                    <button
+                        class="primary-button"
+                        onclick="editScheme()">
+
+                        ✎ Edit Scheme
+
+                    </button>
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 SUMMARY CARDS
+            ================================================== -->
+
+            <div class="summary-grid">
+
+
+                <div class="summary-card">
+
+                    <div class="summary-icon blue">
+                        ₹
+                    </div>
+
+                    <div>
+
+                        <span id="totalAmountLabel">
+                            TOTAL VALUE
+                        </span>
+
+                        <strong id="totalAmount">
+                            ₹0.00
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="summary-card">
+
+                    <div class="summary-icon green">
+                        ₹
+                    </div>
+
+                    <div>
+
+                        <span>
+                            MONTHLY INSTALLMENT
+                        </span>
+
+                        <strong id="baseInstallment">
+                            ₹0.00
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="summary-card">
+
+                    <div class="summary-icon purple">
+                        ◷
+                    </div>
+
+                    <div>
+
+                        <span>
+                            DURATION
+                        </span>
+
+                        <strong id="duration">
+                            0 Months
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="summary-card">
+
+                    <div class="summary-icon orange">
+                        ♟
+                    </div>
+
+                    <div>
+
+                        <span>
+                            MEMBERS
+                        </span>
+
+                        <strong id="memberCount">
+                            0 / 0
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 SCHEME INFORMATION + CAPACITY
+            ================================================== -->
+
+            <div class="two-column-grid">
+
+
+                <!-- SCHEME INFORMATION -->
+
+                <div class="dashboard-card">
+
+                    <div class="card-header">
+
+                        <div>
+
+                            <h2>
+                                Scheme Information
+                            </h2>
+
+                            <p>
+                                Basic details of this chit scheme.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="information-grid">
+
+
+                        <div class="information-item">
+
+                            <span>
+                                Scheme Name
+                            </span>
+
+                            <strong id="infoName">
+                                -
+                            </strong>
+
+                        </div>
+
+
+                        <div class="information-item">
+
+                            <span>
+                                Chit Type
+                            </span>
+
+                            <strong id="infoType">
+                                -
+                            </strong>
+
+                        </div>
+
+
+                        <div class="information-item">
+
+                            <span id="infoAmountLabel">
+                                Total Amount
+                            </span>
+
+                            <strong id="infoAmount">
+                                -
+                            </strong>
+
+                        </div>
+
+
+                        <div class="information-item">
+
+                            <span id="infoInstallmentLabel">
+                                Base Installment
+                            </span>
+
+                            <strong id="infoInstallment">
+                                -
+                            </strong>
+
+                        </div>
+
+
+                        <div class="information-item">
+
+                            <span>
+                                Duration
+                            </span>
+
+                            <strong id="infoDuration">
+                                -
+                            </strong>
+
+                        </div>
+
+
+                        <div class="information-item">
+
+                            <span>
+                                Start Date
+                            </span>
+
+                            <strong id="infoStartDate">
+                                -
+                            </strong>
+
+                        </div>
+
+
+                        <div class="information-item">
+
+                            <span>
+                                End Date
+                            </span>
+
+                            <strong id="infoEndDate">
+                                -
+                            </strong>
+
+                        </div>
+
+
+                        <div class="information-item">
+
+                            <span>
+                                Status
+                            </span>
+
+                            <strong id="infoStatus">
+                                -
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- CAPACITY -->
+
+                <div class="dashboard-card">
+
+                    <div class="card-header">
+
+                        <div>
+
+                            <h2>
+                                Members Capacity
+                            </h2>
+
+                            <p>
+                                Current scheme enrollment.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="capacity-section">
+
+
+                        <div class="capacity-number">
+
+                            <strong id="capacityNumber">
+                                0 / 0
+                            </strong>
+
+                            <span>
+                                Chits Joined
+                            </span>
+
+                        </div>
+
+
+                        <div class="large-progress">
+
+                            <div
+                                id="capacityProgress"
+                                class="large-progress-fill">
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="capacity-footer">
+
+                            <span>
+                                Available Slots
+                            </span>
+
+                            <strong id="availableSlots">
+                                0
+                            </strong>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 GOLD CHIT MONTHLY INSTALLMENTS
+            ================================================== -->
+
+            <div
+                id="goldInstallmentsCard"
+                class="dashboard-card"
+                style="display:none; margin-bottom:16px;">
+
+                <div style="padding:20px; border-bottom:1px solid #e5e7eb;">
+                    <h2 style="margin:0 0 5px; font-size:18px;">Gold Chit Monthly Installments</h2>
+                    <p style="margin:0; color:#6b7280; font-size:13px;">
+                        Enter the rupee installment separately for each month. The amount can change every month.
+                    </p>
+                </div>
+
+                <div style="padding:20px;">
+                    <div id="goldInstallmentsGrid" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px;"></div>
+                    <div style="margin-top:16px; display:flex; justify-content:flex-end;">
+                        <button
+                            type="button"
+                            class="small-primary-button"
+                            onclick="saveGoldMonthlyInstallments()">
+                            Save Monthly Amounts
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 TABS
+            ================================================== -->
+
+            <div class="dashboard-card tabs-card">
+
+
+                <div class="tabs">
+
+                    <button
+                        class="tab-button active"
+                        data-tab="members"
+                        onclick="switchTab('members')">
+
+                        Members
+
+                    </button>
+
+
+                    <button
+                        class="tab-button"
+                        data-tab="winners"
+                        onclick="switchTab('winners')">
+
+                        Monthly Winners
+
+                    </button>
+
+
+                    <button
+                        class="tab-button"
+                        data-tab="payments"
+                        onclick="switchTab('payments')">
+
+                        Payments
+
+                    </button>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     MEMBERS TAB
+                ================================================== -->
+
+                <div
+                    id="membersTab"
+                    class="tab-content active">
+
+
+                    <div class="tab-header">
+
+                        <div>
+
+                            <h2>
+                                Scheme Members
+                            </h2>
+
+                            <p>
+                                Members enrolled in this scheme.
+                            </p>
+
+                        </div>
+
+
+                        <div class="member-action-buttons">
+
+                            <button
+                                type="button"
+                                class="small-primary-button"
+                                onclick="addMember()">
+
+                                + Add Member
+
+                            </button>
+
+                            <button
+                                type="button"
+                                class="small-delete-button"
+                                onclick="deleteMemberFromScheme()">
+
+                                Delete Member
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="table-container">
+
+                        <table>
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>
+                                        TICKET
+                                    </th>
+
+                                    <th>
+                                        MEMBER NAME
+                                    </th>
+
+                                    <th>
+                                        EMAIL
+                                    </th>
+
+                                    <th>
+                                        PHONE
+                                    </th>
+
+                                    <th>
+                                        JOINED DATE
+                                    </th>
+
+                                    <th>
+                                        STATUS
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody
+                                id="membersTable">
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     MONTHLY WINNERS TAB
+                ================================================== -->
+
+                <div
+                    id="winnersTab"
+                    class="tab-content">
+
+                    <div class="tab-header">
+
+                        <div>
+
+                            <h2>
+                                Monthly Winners
+                            </h2>
+
+                            <p>
+                                Admin records the winner for each chit month.
+                            </p>
+
+                        </div>
+
+                        <div class="winner-action-buttons">
+
+                            <button
+                                type="button"
+                                class="small-primary-button"
+                                onclick="updateMonthlyWinner()">
+                                + Add Winner
+                            </button>
+
+                            <button
+                                type="button"
+                                class="small-delete-button"
+                                onclick="removeWinnerFromToolbar()">
+                                Remove Winner
+                            </button>
+
+                            <button
+                                type="button"
+                                class="small-warning-button"
+                                onclick="stopWinnerMonth()">
+                                Stop Month
+                            </button>
+
+                            <button
+                                type="button"
+                                class="small-info-button"
+                                onclick="modifyStoppedMonth()">
+                                Modify Month
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <div class="winner-rules-note">
+                        <strong>Payout controls:</strong> Any number of different tickets can receive the chit payout in the same month.
+                        Once a ticket wins, that ticket is not eligible for any later month in this chit. Other tickets of the same member remain eligible.
+                        The admin can remove a wrongly recorded winner, stop/skip a payout month, and modify or resume a stopped month whenever required.
+                    </div>
+
+                    <div class="table-container">
+
+                        <table>
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>MONTH</th>
+                                    <th>TICKET</th>
+                                    <th>WINNER</th>
+                                    <th>WINNING PAYOUT</th>
+                                    <th class="winning-month-payment-col">PAYMENT FROM WINNING MONTH</th>
+                                    <th>STATUS</th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody id="winnersTable">
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+
+
+
+                <!-- =================================================
+                     PAYMENTS TAB
+                ================================================== -->
+
+<!-- =================================================
+                     PAYMENTS TAB
+                ================================================== -->
+
+                <div
+                    id="paymentsTab"
+                    class="tab-content">
+
+
+                    <div class="tab-header">
+
+                        <div>
+
+                            <h2>
+                                Payment History
+                            </h2>
+
+                            <p>
+                                Record installment payments received by the admin from members.
+                            </p>
+
+                        </div>
+
+                        <button
+                            class="small-primary-button"
+                            onclick="addPayment()">
+                            + Record Payment
+                        </button>
+
+                    </div>
+
+
+                    <div class="table-container">
+
+                        <table>
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>
+                                        MEMBER
+                                    </th>
+
+                                    <th>
+                                        TICKET
+                                    </th>
+
+                                    <th>
+                                        MONTH
+                                    </th>
+
+                                    <th>
+                                        DUE DATE
+                                    </th>
+
+                                    <th>
+                                        AMOUNT
+                                    </th>
+
+                                    <th>
+                                        PAID DATE
+                                    </th>
+
+                                    <th>
+                                        STATUS
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody
+                                id="paymentsTable">
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+    </main>
+
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
+
+    <script src="fintrack-core.js"></script>
+
+    <script
+        src="scheme-details.js">
+    </script>
+
+    <script src="profile-menu.js"></script>
+
+    <script src="auth-guard.js"></script>
+
+<script src="frontend-security.js"></script>
+</body>
+
+</html>

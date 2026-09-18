@@ -1,0 +1,240 @@
+
+/* =========================================================
+   FINTRACK - PROFILE THREE-DOT MENU
+========================================================= */
+
+.topbar-right,
+.header-right {
+    position: relative;
+}
+
+.profile-menu-button {
+    width: 34px;
+    height: 42px;
+    margin-left: 2px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #172033;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background .18s ease, color .18s ease;
+}
+
+.profile-menu-button:hover,
+.profile-menu-button:focus-visible {
+    background: #f1f5f9;
+    color: #2563eb;
+    outline: none;
+}
+
+.profile-menu-button span {
+    font-size: 27px;
+    line-height: 1;
+    transform: translateY(-1px);
+}
+
+.profile-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 3000;
+    width: 190px;
+    padding: 7px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, .14);
+    display: none;
+}
+
+.profile-menu.show {
+    display: block;
+}
+
+.profile-menu-item {
+    width: 100%;
+    min-height: 42px;
+    padding: 9px 10px;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    color: #172033;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-align: left;
+    font-size: 13px;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.profile-menu-item:hover,
+.profile-menu-item:focus-visible {
+    background: #f5f7fa;
+    outline: none;
+}
+
+.profile-menu-item.danger {
+    color: #dc2626;
+}
+
+.profile-menu-item.danger:hover,
+.profile-menu-item.danger:focus-visible {
+    background: #fef2f2;
+}
+
+.profile-menu-icon {
+    width: 20px;
+    text-align: center;
+    font-size: 15px;
+}
+
+.profile-menu-divider {
+    height: 1px;
+    margin: 5px 4px;
+    background: #e5e7eb;
+}
+
+.profile-menu-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 5000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(15, 23, 42, .45);
+}
+
+.profile-menu-modal-overlay.show {
+    display: flex;
+}
+
+.profile-menu-modal {
+    width: min(460px, 100%);
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 20px 50px rgba(15, 23, 42, .2);
+    padding: 22px;
+}
+
+.profile-menu-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.profile-menu-modal-header h2 {
+    margin: 0;
+    color: #172033;
+    font-size: 20px;
+}
+
+.profile-menu-close {
+    width: 34px;
+    height: 34px;
+    border: 0;
+    border-radius: 7px;
+    background: #f5f7fa;
+    color: #64748b;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.profile-menu-form {
+    display: grid;
+    gap: 8px;
+}
+
+.profile-menu-form label {
+    color: #334155;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.profile-menu-form input {
+    width: 100%;
+    min-height: 42px;
+    box-sizing: border-box;
+    margin-bottom: 7px;
+    padding: 10px 12px;
+    border: 1px solid #d7dde7;
+    border-radius: 8px;
+    background: #fff;
+    color: #172033;
+    font: inherit;
+    outline: none;
+}
+
+.profile-menu-form input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, .10);
+}
+
+.profile-menu-form input[readonly] {
+    background: #f5f7fa;
+    color: #64748b;
+}
+
+.profile-menu-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.profile-menu-cancel,
+.profile-menu-save {
+    min-height: 40px;
+    padding: 9px 15px;
+    border-radius: 8px;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.profile-menu-cancel {
+    border: 1px solid #d7dde7;
+    background: #fff;
+    color: #475569;
+}
+
+.profile-menu-save {
+    border: 1px solid #2563eb;
+    background: #2563eb;
+    color: #fff;
+}
+
+.profile-menu-save:hover {
+    background: #1d4ed8;
+}
+
+@media (max-width: 600px) {
+    .profile-menu {
+        right: 0;
+        width: 180px;
+    }
+
+    .profile-menu-modal {
+        padding: 18px;
+    }
+
+    .profile-menu-modal-footer {
+        flex-direction: column-reverse;
+    }
+
+    .profile-menu-cancel,
+    .profile-menu-save {
+        width: 100%;
+    }
+}

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>FinTrack - Payment Settings</title>
+<link rel="stylesheet" href="common.css"><link rel="stylesheet" href="payments.css"><link rel="stylesheet" href="profile-menu.css"><link rel="stylesheet" href="payment-settings.css">
+<script src="fintrack-core.js"></script>
+
+    <script src="auth-guard.js"></script>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="logo"><div class="logo-icon">₹</div><div class="logo-text">FinTrack</div></div>
+  <nav class="sidebar-nav">
+    <a href="dashboard.html" class="nav-item"><span class="nav-icon">🏠</span><span>Dashboard</span></a>
+    <a href="schemes.html" class="nav-item"><span class="nav-icon">📋</span><span>Schemes</span></a>
+    <a href="members.html" class="nav-item"><span class="nav-icon">👥</span><span>Members</span></a>
+    <a href="payments.html" class="nav-item"><span class="nav-icon">💳</span><span>Payments</span></a>
+    <a href="payment-settings.html" class="nav-item active"><span class="nav-icon">🏦</span><span>Payment Settings</span></a>
+  </nav>
+</aside>
+<main class="main-content">
+<header class="top-header"><div class="header-left"><div><h1>Payment Settings</h1><p>Manage bank accounts and UPI / PhonePe details shown to members.</p></div></div></header>
+<section class="settings-wrap">
+  <div id="settingsMessage" class="settings-message" hidden></div>
+  <div class="settings-grid">
+    <section class="settings-card"><div class="card-heading"><div><span class="settings-kicker">BANK ACCOUNTS</span><h2>Bank Details</h2><p>Add multiple accounts and choose which one members should use.</p></div><button id="addAccountBtn" class="primary-btn" type="button">+ Add Bank Account</button></div><div id="accountsList"></div></section>
+    <section class="settings-card"><div class="card-heading"><div><span class="settings-kicker">UPI / PHONEPE</span><h2>UPI Payment</h2><p>These details are displayed on the member Pay Now screen.</p></div></div>
+      <div class="form-grid">
+        <label>UPI ID<input id="upiId" type="text" placeholder="example@upi" autocomplete="off"></label>
+        <label>PhonePe Number<input id="phonePeNumber" type="tel" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number"></label>
+        <label>Display Name<input id="upiLabel" type="text" placeholder="FinTrack"></label>
+      </div>
+      <div class="qr-area"><div><h3>QR Code</h3><p>Upload the QR image members should scan for payment.</p></div><div class="qr-box" id="qrPreview"><span>No QR code uploaded</span></div><div class="qr-actions"><label class="secondary-btn upload-btn">Upload QR Code<input id="qrFile" type="file" accept="image/png,image/jpeg,image/webp"></label><button id="removeQrBtn" class="danger-btn" type="button">Remove QR</button></div></div>
+    </section>
+    <section class="settings-card full"><div class="card-heading"><div><span class="settings-kicker">PAYMENT INSTRUCTIONS</span><h2>Instructions for Members</h2></div></div><label>Instructions<textarea id="instructions" rows="4" placeholder="After payment, enter your UTR / transaction ID and submit the payment for verification."></textarea></label></section>
+  </div>
+  <div class="save-bar"><span>Changes apply to the User Portal after saving.</span><button id="saveBtn" class="primary-btn" type="button">Save Payment Settings</button></div>
+</section>
+<script src="payment-settings.js"></script>
+</main>
+<script src="frontend-security.js"></script>
+</body></html>

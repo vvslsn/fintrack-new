@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>FinTrack - Login</title>
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+    <main class="login-page">
+
+
+        <!-- =================================================
+             LEFT SIDE - BRAND
+             ================================================= -->
+
+        <section class="login-brand">
+
+            <div class="brand-content">
+
+                <h1>
+                    Finance
+                </h1>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             RIGHT SIDE - LOGIN
+             ================================================= -->
+
+        <section class="login-section">
+
+            <div class="login-card">
+
+
+                <!-- =================================================
+                     LOGIN HEADER
+                     ================================================= -->
+
+                <div class="login-header">
+
+                    <h2>
+                        Welcome Back
+                    </h2>
+
+                    <p>
+                        Login to your FinTrack account
+                    </p>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     LOGIN FORM
+                     ================================================= -->
+
+                <form id="loginForm">
+
+
+                    <!-- ================= USERNAME ================= -->
+
+                    <div class="form-group">
+
+                        <label for="username">
+                            Username
+                        </label>
+
+                        <input
+                            type="text"
+                            id="username"
+                            name="username"
+                            placeholder="Enter username"
+                            autocomplete="username"
+                            required
+                        >
+
+                    </div>
+
+
+
+                    <!-- ================= PASSWORD ================= -->
+
+                    <div class="form-group">
+
+                        <label for="password">
+                            Password
+                        </label>
+
+
+                        <div class="password-input">
+
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                placeholder="Enter password"
+                                autocomplete="current-password"
+                                required
+                            >
+
+
+                            <!-- Show / Hide Password -->
+
+                            <button
+                                type="button"
+                                id="togglePassword"
+                                class="password-toggle"
+                                aria-label="Show password">
+
+                                👁
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- =================================================
+                         REMEMBER ME
+                         ================================================= -->
+
+                    <div class="remember-row">
+
+                        <label class="remember">
+
+                            <input
+                                type="checkbox"
+                                id="rememberMe"
+                                name="rememberMe"
+                            >
+
+                            <span>
+                                Remember me
+                            </span>
+
+                        </label>
+
+                    </div>
+
+
+
+                    <!-- =================================================
+                         LOGIN BUTTON
+                         ================================================= -->
+
+                    <button
+                        type="submit"
+                        class="login-btn">
+
+                        Login
+
+                    </button>
+
+
+
+                    <!-- =================================================
+                         LOGIN MESSAGE
+                         ================================================= -->
+
+                    <p
+                        id="loginMessage"
+                        class="login-message">
+                    </p>
+
+
+
+                    <!-- =================================================
+                         FORGOT PASSWORD
+                         ================================================= -->
+
+                    <div
+                        id="forgotPassword"
+                        class="forgot-password">
+
+                        <a href="forgot.html">
+                            Forgot password?
+                        </a>
+
+                    </div>
+
+
+                </form>
+
+
+
+                <!-- =================================================
+                     NEW USER
+                     ================================================= -->
+
+                <div class="admin-login-note">
+                    <strong>Admin Login</strong>
+                    <span>Use this login for administrator accounts. Members should use the Member Login.</span>
+                </div>
+
+
+                <div class="new-user">
+
+                    <p>
+
+                        New user?
+
+                        <a href="signup.html">
+                            Create an account
+                        </a>
+
+                    </p>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+
+    <!-- =================================================
+         JAVASCRIPT
+         ================================================= -->
+
+    <script src="script.js"></script>
+
+<script src="frontend-security.js"></script>
+</body>
+
+</html>
+

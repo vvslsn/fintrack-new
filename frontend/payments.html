@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>FinTrack - Payments</title>
+
+    <!-- Payments CSS -->
+    <link
+        rel="stylesheet"
+        href="payments.css">
+
+    <!-- Common FinTrack Layout -->
+    <link
+        rel="stylesheet"
+        href="common.css">
+
+    <link rel="stylesheet" href="profile-menu.css">
+
+</head>
+
+
+<body>
+
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+
+            <div class="logo-icon">
+                ₹
+            </div>
+
+            <div class="logo-text">
+                FinTrack
+            </div>
+
+        </div>
+
+
+        <nav class="sidebar-nav">
+
+
+            <!-- DASHBOARD -->
+
+            <a
+                href="dashboard.html"
+                class="nav-item">
+
+                <span class="nav-icon">
+                    🏠
+                </span>
+
+                <span>
+                    Dashboard
+                </span>
+
+            </a>
+
+
+            <!-- SCHEMES -->
+
+            <a
+                href="schemes.html"
+                class="nav-item">
+
+                <span class="nav-icon">
+                    📋
+                </span>
+
+                <span>
+                    Schemes
+                </span>
+
+            </a>
+
+
+            <!-- MEMBERS -->
+
+            <a
+                href="members.html"
+                class="nav-item">
+
+                <span class="nav-icon">
+                    👥
+                </span>
+
+                <span>
+                    Members
+                </span>
+
+            </a>
+<!-- PAYMENTS -->
+
+            <a
+                href="payments.html"
+                class="nav-item active">
+
+                <span class="nav-icon">
+                    💳
+                </span>
+
+                <span>
+                    Payments
+                </span>
+
+            </a>
+
+
+
+
+            <!-- PAYMENT SETTINGS -->
+            <a href="payment-settings.html" class="nav-item">
+                <span class="nav-icon">🏦</span>
+                <span>Payment Settings</span>
+            </a>
+</nav>
+
+    </aside>
+
+
+
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
+
+    <main class="main-content">
+
+
+        <!-- =================================================
+             TOP HEADER
+        ================================================== -->
+
+        <header class="top-header">
+
+
+            <div class="header-left">
+
+                <div>
+
+                    <h1>
+                        Payments
+                    </h1>
+
+                    <p>
+                        Manage your payment history
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="header-right">
+
+
+                <!-- PROFILE -->
+
+                <div class="profile">
+
+
+                    <div
+                        class="profile-avatar"
+                        id="profileAvatar">
+
+                        A
+
+                    </div>
+
+
+                    <div class="profile-details">
+
+                        <strong
+                            id="profileName">
+
+                            admin
+
+                        </strong>
+
+
+                        <span>
+                            ADMIN
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        </header>
+
+
+
+        <!-- =================================================
+             PAGE CONTENT
+        ================================================== -->
+
+        <section class="page-content">
+
+
+            <!-- =================================================
+                 PAGE HEADER
+            ================================================== -->
+
+            <div class="page-header">
+
+
+                <div class="page-title">
+
+                    <h1>
+                        Payment History
+                    </h1>
+
+                    <p>
+                        Track installments, upcoming dues, payments and transaction records.
+                    </p>
+
+                </div>
+
+
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 SUMMARY CARDS
+            ================================================== -->
+
+            <div class="summary-grid">
+
+
+                <!-- TOTAL PAID -->
+
+                <div class="summary-card">
+
+                    <div class="summary-icon green">
+                        ✓
+                    </div>
+
+
+                    <div class="summary-content">
+
+                        <span>
+                            TOTAL PAID
+                        </span>
+
+                        <strong
+                            id="totalPaid">
+
+                            ₹0
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- PENDING -->
+
+                <div class="summary-card">
+
+                    <div class="summary-icon orange">
+                        ◷
+                    </div>
+
+
+                    <div class="summary-content">
+
+                        <span>
+                            PENDING
+                        </span>
+
+                        <strong
+                            id="totalPending">
+
+                            ₹0
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- OVERDUE -->
+
+                <div class="summary-card">
+
+                    <div class="summary-icon red">
+                        !
+                    </div>
+
+
+                    <div class="summary-content">
+
+                        <span>
+                            OVERDUE
+                        </span>
+
+                        <strong
+                            id="totalOverdue">
+
+                            ₹0
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- TOTAL RECORDS -->
+
+                <div class="summary-card">
+
+                    <div class="summary-icon blue">
+                        ₹
+                    </div>
+
+
+                    <div class="summary-content">
+
+                        <span>
+                            TOTAL RECORDS
+                        </span>
+
+                        <strong
+                            id="totalRecords">
+
+                            0
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 UPCOMING DUE
+            ================================================== -->
+
+            <div
+                class="due-card"
+                id="upcomingDueCard">
+
+
+                <div class="due-left">
+
+
+                    <div class="due-icon">
+                        ₹
+                    </div>
+
+
+                    <div>
+
+                        <span class="due-label">
+                            NEXT PAYMENT DUE
+                        </span>
+
+
+                        <h2
+                            id="nextDueScheme">
+
+                            -
+
+                        </h2>
+
+
+                        <p
+                            id="nextDueDate">
+
+                            -
+
+                        </p>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <div class="due-details">
+
+
+                    <!-- INSTALLMENT -->
+
+                    <div>
+
+                        <span>
+                            INSTALLMENT
+                        </span>
+
+                        <strong
+                            id="nextDueMonth">
+
+                            -
+
+                        </strong>
+
+                    </div>
+
+
+                    <!-- AMOUNT -->
+
+                    <div>
+
+                        <span>
+                            AMOUNT
+                        </span>
+
+                        <strong
+                            id="nextDueAmount">
+
+                            ₹0
+
+                        </strong>
+
+                    </div>
+
+
+                    <!-- ADMIN VIEW ONLY: THE MEMBER PAYS THIS DUE.
+                         The admin only records the payment after receiving it. -->
+
+                    <div
+                        class="due-payment-note"
+                        id="nextDuePaymentNote">
+
+                        <span class="due-payment-note-title">
+                            Payment Due
+                        </span>
+
+                        <span class="due-payment-note-text">
+                            Collect from member and mark paid below
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 ADMIN PAYOUTS
+                 Separate from member installment collection.
+            ================================================== -->
+
+            <div class="admin-payout-card">
+                <div class="admin-payout-header">
+                    <div>
+                        <h2>Admin Payouts</h2>
+                        <p>Pay monthly winners from the chit scheme. Cash payouts are calculated by winning month; Gold Chits pay the configured gold quantity.</p>
+                    </div>
+                    <div class="admin-payout-summary-inline">
+                        <div><span>PAYOUT DUE</span><strong id="adminPayoutPending">₹0.00</strong></div>
+                        <div><span>PAID</span><strong id="adminPayoutPaid">₹0.00</strong></div>
+                        <div><span>RECORDS</span><strong id="adminPayoutCount">0</strong></div>
+                    </div>
+                </div>
+                <div class="admin-payout-note">
+                    <strong>Important:</strong> Member installments are collected by the admin and marked paid in the payment table above. Winner payouts below are the <strong>admin's money/gold paid to the winning member</strong>.
+                </div>
+                <div class="table-container admin-payout-table-container">
+                    <table class="payment-table admin-payout-table">
+                        <thead><tr>
+                            <th>MEMBER</th><th>TICKET</th><th>CHIT SCHEME</th><th>PAYOUT FOR</th><th>PAYOUT</th><th>TYPE</th><th>STATUS</th><th>REFERENCE</th><th>ACTIONS</th>
+                        </tr></thead>
+                        <tbody id="adminPayoutTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- =================================================
+                 ONLINE PAYMENT REQUESTS
+            ================================================== -->
+            <div class="online-request-card">
+                <div class="online-request-header">
+                    <div>
+                        <h2>Online Payment Requests <span class="opr-count" id="onlineRequestPendingCount">0</span></h2>
+                        <p>Review UPI/PhonePe and bank-transfer submissions before they become official paid receipts.</p>
+                    </div>
+                    <div class="online-request-filters">
+                        <input id="onlineRequestSearch" type="search" placeholder="Search member, UTR, ticket...">
+                        <select id="onlineRequestStatusFilter"><option value="all">All statuses</option><option value="pending">Pending</option><option value="approved">Approved</option><option value="rejected">Rejected</option></select>
+                    </div>
+                </div>
+                <div class="table-container online-request-table-container">
+                    <table class="payment-table online-request-table">
+                        <thead><tr><th>MEMBER</th><th>SCHEME</th><th>TICKET</th><th>MONTH</th><th>AMOUNT</th><th>METHOD / UTR</th><th>SUBMITTED</th><th>STATUS</th><th>ACTION</th></tr></thead>
+                        <tbody id="onlinePaymentRequestBody"></tbody>
+                    </table>
+                    <div class="opr-empty" id="onlineRequestEmpty">No online payment requests found.</div>
+                </div>
+            </div>
+            <div class="opr-modal" id="onlinePaymentReviewModal" aria-hidden="true"></div>
+
+            <!-- =================================================
+                 FILTERS
+            ================================================== -->
+
+            <div class="filter-card">
+
+
+                <!-- SEARCH -->
+
+                <div
+                    class="filter-group search-group">
+
+                    <label
+                        for="paymentSearch">
+
+                        Search
+
+                    </label>
+
+
+                    <div class="search-box">
+
+                        <span>
+                            ⌕
+                        </span>
+
+
+                        <input
+                            type="text"
+                            id="paymentSearch"
+                            placeholder="Search member, scheme or transaction..."
+                            oninput="filterPayments()">
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- SCHEME FILTER -->
+
+                <div class="filter-group">
+
+                    <label
+                        for="schemeFilter">
+
+                        Filter by Chit Scheme
+
+                    </label>
+
+
+                    <select
+                        id="schemeFilter"
+                        onchange="filterPayments()">
+
+                        <option value="all">
+                            All Schemes
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+
+                <!-- STATUS FILTER -->
+
+                <div class="filter-group">
+
+                    <label
+                        for="statusFilter">
+
+                        Filter by Status
+
+                    </label>
+
+
+                    <select
+                        id="statusFilter"
+                        onchange="filterPayments()">
+
+                        <option value="all">
+                            All Statuses
+                        </option>
+
+                        <option value="paid">
+                            Paid
+                        </option>
+
+                        <option value="pending">
+                            Pending
+                        </option>
+
+                        <option value="overdue">
+                            Overdue
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 PAYMENT TABLE
+            ================================================== -->
+
+            <div class="payment-card">
+
+
+                <!-- TABLE HEADER -->
+
+                <div class="payment-card-header">
+
+
+                    <div>
+
+                        <strong
+                            id="paymentCount">
+
+                            0
+
+                        </strong>
+
+                        <span>
+                            Payment Records
+                        </span>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        class="refresh-button"
+                        onclick="refreshPayments()">
+
+                        ↻ Refresh
+
+                    </button>
+
+
+                </div>
+
+
+
+                <!-- TABLE -->
+
+                <div class="table-container">
+
+
+                    <table class="payment-table">
+
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    MEMBER
+                                </th>
+
+                                <th>
+                                    TICKET
+                                </th>
+
+                                <th>
+                                    CHIT SCHEME
+                                </th>
+
+                                <th>
+                                    INSTALLMENT
+                                </th>
+
+                                <th>
+                                    DUE DATE
+                                </th>
+
+                                <th>
+                                    PAYMENT DATE
+                                </th>
+
+                                <th>
+                                    AMOUNT
+                                </th>
+
+                                <th>
+                                    METHOD
+                                </th>
+
+                                <th>
+                                    TRANSACTION ID
+                                </th>
+
+                                <th>
+                                    STATUS
+                                </th>
+
+                                <th>
+                                    ACTIONS
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody
+                            id="paymentTableBody">
+
+                        </tbody>
+
+
+                    </table>
+
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+    </main>
+
+
+
+    <!-- =====================================================
+         ADD / EDIT PAYMENT MODAL
+    ====================================================== -->
+
+    <div
+        class="modal-overlay"
+        id="paymentModal">
+
+
+        <div class="modal">
+
+
+            <!-- =================================================
+                 MODAL HEADER
+            ================================================== -->
+
+            <div class="modal-header">
+
+
+                <div>
+
+                    <h2
+                        id="modalTitle">
+
+                        Record Payment
+
+                    </h2>
+
+
+                    <p>
+                        Enter the payment details received by the admin from the member.
+                    </p>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="modal-close"
+                    onclick="closePaymentModal()">
+
+                    ×
+
+                </button>
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 PAYMENT FORM
+            ================================================== -->
+
+            <form
+                id="paymentForm">
+
+
+                <!-- PAYMENT ID -->
+
+                <input
+                    type="hidden"
+                    id="paymentId">
+
+
+
+                <!-- =================================================
+                     MEMBER NAME
+                ================================================== -->
+
+                <div class="form-group">
+
+                    <label
+                        for="paymentMember">
+
+                        Member Name
+
+                    </label>
+
+
+                    <select
+                        id="paymentMember"
+                        required
+                        disabled>
+
+                        <option value="">
+                            Select Chit Scheme First
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     MEMBER EMAIL
+                ================================================== -->
+
+                <div class="form-group">
+
+                    <label
+                        for="paymentEmail">
+
+                        Member Email
+
+                    </label>
+
+
+                    <input
+                        type="email"
+                        id="paymentEmail"
+                        placeholder="member@example.com">
+
+                </div>
+
+
+
+                <!-- =================================================
+                     CHIT SCHEME
+                ================================================== -->
+
+                <div class="form-group">
+
+                    <label
+                        for="paymentScheme">
+
+                        Chit Scheme
+
+                    </label>
+
+
+                    <select
+                        id="paymentScheme"
+                        required>
+
+                        <option value="">
+                            Select Chit Scheme
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     CHIT / TICKET
+                ================================================== -->
+
+                <div class="form-group">
+
+                    <label for="paymentTicket">
+                        Chit Ticket
+                    </label>
+
+                    <select
+                        id="paymentTicket"
+                        required>
+
+                        <option value="">
+                            Select Ticket
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- =================================================
+                     INSTALLMENT MONTH
+                ================================================== -->
+
+
+                <div class="form-group">
+
+                    <label
+                        for="paymentMonth">
+
+                        Installment Month
+
+                    </label>
+
+
+                    <input
+                        type="number"
+                        id="paymentMonth"
+                        min="1"
+                        max="100"
+                        step="1"
+                        placeholder="1"
+                        required>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     DUE DATE
+                ================================================== -->
+
+                <div class="form-group">
+
+                    <label
+                        for="paymentDueDate">
+
+                        Due Date
+
+                    </label>
+
+
+                    <input
+                        type="date"
+                        id="paymentDueDate"
+                        readonly
+                        title="Automatically calculated from the chit start date and installment month."
+                        required>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     PAYMENT DATE
+                ================================================== -->
+
+                <div class="form-group">
+
+                    <label
+                        for="paymentDate">
+
+                        Payment Date
+
+                    </label>
+
+
+                    <input
+                        type="date"
+                        id="paymentDate">
+
+                </div>
+
+
+
+                <!-- =================================================
+                     PAYMENT AMOUNT
+                ================================================== -->
+
+                <div class="form-group">
+
+                    <label
+                        for="paymentAmount">
+
+                        Payable Amount (Auto Calculated)
+
+                    </label>
+
+
+                    <input
+                        type="number"
+                        id="paymentAmount"
+                        min="0"
+                        step="0.01"
+                        placeholder="5000"
+                        readonly
+                        required>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     PAYMENT METHOD
+                ================================================== -->
+
+                <div class="form-group">
+
+                    <label
+                        for="paymentMethod">
+
+                        Payment Method
+
+                    </label>
+
+
+                    <select
+                        id="paymentMethod"
+                        required>
+
+                        <option value="">
+                            Select Method
+                        </option>
+
+                        <option value="UPI">
+                            UPI
+                        </option>
+
+                        <option value="Cash">
+                            Cash
+                        </option>
+
+                        <option value="Bank Transfer">
+                            Bank Transfer
+                        </option>
+
+                        <option value="Card">
+                            Card
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     TRANSACTION ID
+                ================================================== -->
+
+                <div class="form-group">
+
+                    <label
+                        for="transactionId">
+
+                        Transaction ID
+
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="transactionId"
+                        placeholder="TXN123456">
+
+                </div>
+
+
+
+                <!-- =================================================
+                     PAYMENT STATUS
+                ================================================== -->
+
+                <div class="form-group">
+
+                    <label
+                        for="paymentStatus">
+
+                        Status
+
+                    </label>
+
+
+                    <select
+                        id="paymentStatus"
+                        required>
+
+                        <option value="paid">
+                            Paid
+                        </option>
+
+                        <option value="pending">
+                            Pending
+                        </option>
+
+                        <option value="overdue">
+                            Overdue
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     MODAL FOOTER
+                ================================================== -->
+
+                <div class="modal-footer">
+
+
+                    <button
+                        type="button"
+                        class="cancel-button"
+                        onclick="closePaymentModal()">
+
+                        Cancel
+
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="save-button">
+
+                        Save Payment Receipt
+
+                    </button>
+
+
+                </div>
+
+
+            </form>
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
+
+    <script src="fintrack-core.js"></script>
+    <script
+        src="payments.js">
+    </script>
+
+    <script src="online-payment-admin.js"></script>
+    <script src="profile-menu.js"></script>
+
+    <script src="auth-guard.js"></script>
+
+<script src="frontend-security.js"></script>
+</body>
+
+</html>
+

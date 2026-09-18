@@ -1,0 +1,1402 @@
+/* =========================================================
+   CHITFUND - SCHEME DETAILS
+========================================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+}
+
+
+body {
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    background: #f5f7fa;
+
+    color: #202832;
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+
+.sidebar {
+
+    position: fixed;
+
+    top: 0;
+    left: 0;
+    bottom: 0;
+
+    width: 181px;
+
+    background: #20252b;
+
+    color: #fff;
+
+    z-index: 1000;
+}
+
+
+.sidebar-logo {
+
+    height: 59px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    padding-left: 16px;
+
+    border-bottom:
+        1px solid #30353b;
+
+    font-size: 15px;
+
+    font-weight: 700;
+}
+
+
+.logo-icon {
+
+    color: #3479e8;
+
+    font-size: 18px;
+}
+
+
+.sidebar-nav {
+
+    padding: 10px 8px;
+}
+
+
+.nav-item {
+
+    height: 40px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 0 11px;
+
+    margin-bottom: 3px;
+
+    border-radius: 5px;
+
+    text-decoration: none;
+
+    color: #9da6b2;
+
+    font-size: 11px;
+
+    transition:
+        background 0.2s,
+        color 0.2s;
+}
+
+
+.nav-item:hover {
+
+    background: #2c3239;
+
+    color: #fff;
+}
+
+
+.nav-item.active {
+
+    background: #2864e6;
+
+    color: #fff;
+}
+
+
+.nav-icon {
+
+    width: 18px;
+
+    text-align: center;
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   MAIN CONTENT
+========================================================= */
+
+.main-content {
+
+    margin-left: 181px;
+
+    width:
+        calc(100% - 181px);
+
+    min-height: 100vh;
+}
+
+
+/* =========================================================
+   TOPBAR
+========================================================= */
+
+.topbar {
+
+    height: 59px;
+
+    background: #fff;
+
+    border-bottom:
+        1px solid #e1e5e9;
+
+    display: flex;
+
+    justify-content:
+        space-between;
+
+    align-items: center;
+
+    padding: 0 20px;
+}
+
+
+.topbar-right {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 18px;
+}
+
+
+.notification-button {
+
+    position: relative;
+
+    border: none;
+
+    background: transparent;
+
+    color: #505963;
+
+    cursor: pointer;
+
+    font-size: 17px;
+}
+
+
+.notification-count {
+
+    position: absolute;
+
+    top: -8px;
+
+    right: -8px;
+
+    width: 15px;
+
+    height: 15px;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: #df3e4b;
+
+    color: #fff;
+
+    font-size: 8px;
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   PROFILE
+========================================================= */
+
+.profile {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+}
+
+
+.profile-avatar {
+
+    width: 27px;
+
+    height: 27px;
+
+    border-radius: 50%;
+
+    background-color: #1469dc;
+
+    color: #fff;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 11px;
+}
+
+
+.profile-details {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 1px;
+}
+
+
+.profile-details strong {
+
+    color: #323a43;
+
+    font-size: 10px;
+}
+
+
+.profile-details span {
+
+    color: #7d858e;
+
+    font-size: 8px;
+}
+
+
+/* =========================================================
+   PAGE CONTENT
+========================================================= */
+
+.page-content {
+
+    padding:
+        16px 24px 40px;
+}
+
+
+/* =========================================================
+   BREADCRUMB
+========================================================= */
+
+.breadcrumb {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin-bottom: 10px;
+
+    color: #8a929a;
+
+    font-size: 9px;
+}
+
+
+.breadcrumb a {
+
+    color: #3273d1;
+
+    text-decoration: none;
+}
+
+
+.breadcrumb a:hover {
+
+    text-decoration: underline;
+}
+
+
+/* =========================================================
+   PAGE HEADER
+========================================================= */
+
+.page-header {
+
+    display: flex;
+
+    justify-content:
+        space-between;
+
+    align-items: center;
+
+    margin-bottom: 16px;
+}
+
+
+.title-row {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+}
+
+
+.page-title h1 {
+
+    font-size: 20px;
+
+    color: #17212b;
+
+    margin-bottom: 4px;
+}
+
+
+.page-title p {
+
+    color: #7c858e;
+
+    font-size: 10px;
+}
+
+
+.header-actions {
+
+    display: flex;
+
+    gap: 8px;
+}
+
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.primary-button,
+.secondary-button,
+.small-primary-button {
+
+    border-radius: 5px;
+
+    cursor: pointer;
+
+    font-size: 9px;
+
+    height: 32px;
+
+    padding: 0 12px;
+}
+
+
+.primary-button {
+
+    background: #286be2;
+
+    color: #fff;
+
+    border: none;
+}
+
+
+.primary-button:hover {
+
+    background: #1d5bc8;
+}
+
+
+.secondary-button {
+
+    background: #fff;
+
+    color: #4f5962;
+
+    border:
+        1px solid #d7dde2;
+}
+
+
+.secondary-button:hover {
+
+    background: #f5f7f9;
+}
+
+
+.small-primary-button {
+
+    height: 29px;
+
+    background: #286be2;
+
+    color: #fff;
+
+    border: none;
+
+    padding: 0 11px;
+}
+
+
+.small-primary-button:hover {
+
+    background: #1d5bc8;
+}
+
+/* =========================================================
+   MEMBER ACTION BUTTONS
+========================================================= */
+
+.member-action-buttons {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+}
+
+
+/* DELETE MEMBER BUTTON */
+
+.small-delete-button {
+
+    height: 29px;
+
+    background: #dc3545;
+
+    color: #fff;
+
+    border: none;
+
+    border-radius: 5px;
+
+    padding: 0 11px;
+
+    cursor: pointer;
+
+    font-size: 9px;
+
+    font-weight: 500;
+
+    transition: background 0.2s ease;
+}
+
+
+.small-delete-button:hover {
+
+    background: #bb2d3b;
+}
+
+
+.small-delete-button:active {
+
+    transform: scale(0.98);
+}
+
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.status-badge {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 4px 8px;
+
+    border-radius: 12px;
+
+    font-size: 7px;
+
+    font-weight: 600;
+}
+
+
+.status-active {
+
+    background: #dff7eb;
+
+    color: #248d62;
+}
+
+
+.status-upcoming {
+
+    background: #fff3d4;
+
+    color: #c28a19;
+}
+
+
+.status-closed {
+
+    background: #eceef0;
+
+    color: #6c737a;
+}
+
+
+/* =========================================================
+   SUMMARY CARDS
+========================================================= */
+
+.summary-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 14px;
+
+    margin-bottom: 14px;
+}
+
+
+.summary-card {
+
+    min-height: 92px;
+
+    background: #fff;
+
+    border:
+        1px solid #e1e5e9;
+
+    border-radius: 8px;
+
+    padding: 15px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    box-shadow:
+        0 1px 2px
+        rgba(0, 0, 0, 0.02);
+}
+
+
+.summary-icon {
+
+    width: 38px;
+
+    height: 38px;
+
+    border-radius: 7px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 16px;
+
+    font-weight: 700;
+}
+
+
+.summary-icon.blue {
+
+    background: #e9f0ff;
+
+    color: #3575df;
+}
+
+
+.summary-icon.green {
+
+    background: #e6f8f0;
+
+    color: #29956c;
+}
+
+
+.summary-icon.purple {
+
+    background: #f0eaff;
+
+    color: #7a55c8;
+}
+
+
+.summary-icon.orange {
+
+    background: #fff3df;
+
+    color: #d5902c;
+}
+
+
+.summary-card div:last-child {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 5px;
+}
+
+
+.summary-card span {
+
+    color: #7c858e;
+
+    font-size: 8px;
+
+    font-weight: 600;
+}
+
+
+.summary-card strong {
+
+    color: #202a33;
+
+    font-size: 17px;
+}
+
+
+/* =========================================================
+   TWO COLUMN GRID
+========================================================= */
+
+.two-column-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        1.5fr 1fr;
+
+    gap: 14px;
+
+    margin-bottom: 14px;
+}
+
+
+/* =========================================================
+   DASHBOARD CARD
+========================================================= */
+
+.dashboard-card {
+
+    background: #fff;
+
+    border:
+        1px solid #e1e5e9;
+
+    border-radius: 8px;
+
+    box-shadow:
+        0 1px 2px
+        rgba(0, 0, 0, 0.02);
+
+    overflow: hidden;
+}
+
+
+.card-header {
+
+    padding:
+        14px 16px;
+
+    border-bottom:
+        1px solid #edf0f2;
+}
+
+
+.card-header h2 {
+
+    color: #27313b;
+
+    font-size: 12px;
+
+    margin-bottom: 3px;
+}
+
+
+.card-header p {
+
+    color: #8a929a;
+
+    font-size: 8px;
+}
+
+
+/* =========================================================
+   INFORMATION
+========================================================= */
+
+.information-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    padding: 16px;
+
+    gap: 17px 25px;
+}
+
+
+.information-item {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 5px;
+}
+
+
+.information-item span {
+
+    color: #8a929a;
+
+    font-size: 8px;
+}
+
+
+.information-item strong {
+
+    color: #3c454e;
+
+    font-size: 10px;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   CAPACITY
+========================================================= */
+
+.capacity-section {
+
+    padding: 20px;
+}
+
+
+.capacity-number {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 5px;
+
+    margin-bottom: 16px;
+}
+
+
+.capacity-number strong {
+
+    font-size: 25px;
+
+    color: #202a33;
+}
+
+
+.capacity-number span {
+
+    color: #8a929a;
+
+    font-size: 9px;
+}
+
+
+.large-progress {
+
+    width: 100%;
+
+    height: 10px;
+
+    background: #e7eaed;
+
+    border-radius: 20px;
+
+    overflow: hidden;
+
+    margin-bottom: 13px;
+}
+
+
+.large-progress-fill {
+
+    height: 100%;
+
+    width: 0;
+
+    background: #29956c;
+
+    border-radius: 20px;
+
+    transition:
+        width 0.4s ease;
+}
+
+
+.capacity-footer {
+
+    display: flex;
+
+    justify-content:
+        space-between;
+
+    font-size: 9px;
+
+    color: #7d858e;
+}
+
+
+.capacity-footer strong {
+
+    color: #29956c;
+}
+
+
+/* =========================================================
+   TABS
+========================================================= */
+
+.tabs-card {
+
+    min-height: 350px;
+}
+
+
+.tabs {
+
+    display: flex;
+
+    align-items: center;
+
+    border-bottom:
+        1px solid #e4e8eb;
+
+    padding:
+        0 16px;
+}
+
+
+.tab-button {
+
+    position: relative;
+
+    border: none;
+
+    background: transparent;
+
+    color: #7a838c;
+
+    padding:
+        13px 14px;
+
+    font-size: 9px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+.tab-button.active {
+
+    color: #286be2;
+}
+
+
+.tab-button.active::after {
+
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    right: 0;
+    bottom: -1px;
+
+    height: 2px;
+
+    background: #286be2;
+}
+
+
+/* =========================================================
+   TAB CONTENT
+========================================================= */
+
+.tab-content {
+
+    display: none;
+}
+
+
+.tab-content.active {
+
+    display: block;
+}
+
+
+.tab-header {
+
+    display: flex;
+
+    justify-content:
+        space-between;
+
+    align-items: center;
+
+    padding:
+        15px 16px;
+}
+
+
+.tab-header h2 {
+
+    font-size: 12px;
+
+    color: #27313b;
+
+    margin-bottom: 3px;
+}
+
+
+.tab-header p {
+
+    color: #8a929a;
+
+    font-size: 8px;
+}
+
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+.table-container {
+
+    width: 100%;
+
+    overflow-x: auto;
+}
+
+
+table {
+
+    width: 100%;
+
+    border-collapse:
+        collapse;
+
+    min-width: 750px;
+}
+
+
+thead {
+
+    background: #f8f9fb;
+}
+
+
+th {
+
+    height: 34px;
+
+    text-align: left;
+
+    padding:
+        0 12px;
+
+    border-bottom:
+        1px solid #e3e7ea;
+
+    color: #626c76;
+
+    font-size: 8px;
+
+    white-space: nowrap;
+}
+
+
+td {
+
+    padding:
+        11px 12px;
+
+    border-bottom:
+        1px solid #edf0f2;
+
+    color: #3f4851;
+
+    font-size: 9px;
+
+    white-space: nowrap;
+}
+
+
+tbody tr:hover {
+
+    background: #fafbfd;
+}
+
+
+tbody tr:last-child td {
+
+    border-bottom: none;
+}
+
+
+/* =========================================================
+   MEMBER STATUS
+========================================================= */
+
+.member-status {
+
+    display: inline-flex;
+
+    padding:
+        4px 8px;
+
+    border-radius: 12px;
+
+    background: #dff7eb;
+
+    color: #248d62;
+
+    font-size: 7px;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   PAYMENT STATUS
+========================================================= */
+
+.payment-status {
+
+    display: inline-flex;
+
+    padding:
+        4px 8px;
+
+    border-radius: 12px;
+
+    font-size: 7px;
+
+    font-weight: 600;
+}
+
+
+.payment-paid {
+
+    background: #dff7eb;
+
+    color: #248d62;
+}
+
+
+.payment-pending {
+
+    background: #fff3d4;
+
+    color: #bd8516;
+}
+
+
+.payment-overdue {
+
+    background: #fde3e5;
+
+    color: #d53f4b;
+}
+
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.empty-state {
+
+    padding: 45px 20px;
+
+    text-align: center;
+
+    color: #8a929a;
+
+    font-size: 10px;
+}
+
+
+.empty-icon {
+
+    font-size: 25px;
+
+    margin-bottom: 8px;
+
+    color: #c7cdd2;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1100px) {
+
+    .summary-grid {
+
+        grid-template-columns:
+            repeat(2, 1fr);
+
+    }
+
+}
+
+
+@media (max-width: 850px) {
+
+    .sidebar {
+
+        width: 65px;
+
+    }
+
+
+    .sidebar-logo span {
+
+        display: none;
+
+    }
+
+
+    .nav-item {
+
+        justify-content: center;
+
+        padding: 0;
+
+        font-size: 0;
+
+    }
+
+
+    .nav-icon {
+
+        font-size: 16px;
+
+    }
+
+
+    .main-content {
+
+        margin-left: 65px;
+
+        width:
+            calc(100% - 65px);
+
+    }
+
+
+    .two-column-grid {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .page-content {
+
+        padding:
+            14px 10px 30px;
+
+    }
+
+
+    .page-header {
+
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 12px;
+
+    }
+
+
+    .summary-grid {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+
+    .information-grid {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+
+    .header-actions {
+
+        width: 100%;
+    }
+
+
+    .header-actions button {
+
+        flex: 1;
+    }
+
+}
+
+/* =========================================================
+   MONTHLY WINNERS
+========================================================= */
+
+.winner-payout {
+    font-weight: 700;
+}
+
+.winner-payment {
+    font-weight: 600;
+}
+
+.member-action-buttons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.small-delete-button {
+    height: 29px;
+    padding: 0 12px;
+    border: 0;
+    border-radius: 5px;
+    background: #dc3545;
+    color: #fff;
+    cursor: pointer;
+    font-size: 9px;
+    font-weight: 600;
+}
+
+.small-delete-button:hover {
+    background: #bb2d3b;
+}
+
+/* =========================================================
+   WINNER / SETTLEMENT ACTIONS
+========================================================= */
+.winner-action-buttons {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    flex-wrap: wrap;
+}
+
+.small-warning-button,
+.small-secondary-button {
+    height: 29px;
+    border: none;
+    border-radius: 5px;
+    padding: 0 11px;
+    cursor: pointer;
+    font-size: 9px;
+    font-weight: 500;
+}
+
+.small-warning-button {
+    background: #f59e0b;
+    color: #fff;
+}
+
+.small-warning-button:hover {
+    background: #d97706;
+}
+
+.small-info-button {
+    height: 29px;
+    border: none;
+    border-radius: 5px;
+    padding: 0 11px;
+    cursor: pointer;
+    font-size: 9px;
+    font-weight: 500;
+    background: #0ea5e9;
+    color: #fff;
+}
+
+.small-info-button:hover {
+    background: #0284c7;
+}
+
+.small-secondary-button {
+    background: #6b7280;
+    color: #fff;
+}
+
+.small-secondary-button:hover {
+    background: #4b5563;
+}
+
+.winner-rules-note {
+    margin: 0 16px 10px;
+    padding: 9px 11px;
+    border: 1px solid #e4e8ed;
+    border-radius: 5px;
+    background: #f8fafc;
+    color: #68727d;
+    font-size: 9px;
+    line-height: 1.5;
+}
+
+.final-settlement-summary {
+    margin: 0 16px 14px;
+    padding: 11px 13px;
+    border: 1px solid #d9e1ea;
+    border-radius: 6px;
+    background: #f7fafc;
+    color: #39434d;
+    font-size: 9px;
+}

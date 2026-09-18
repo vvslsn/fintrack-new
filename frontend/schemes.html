@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>FinTrack - Chit Schemes</title>
+
+    <link rel="stylesheet" href="schemes.css">
+    <link rel="stylesheet" href="common.css">
+
+    <link rel="stylesheet" href="profile-menu.css">
+
+</head>
+
+
+<body>
+
+
+    <aside class="sidebar">
+
+    <div class="logo">
+        <div class="logo-icon">₹</div>
+        <div class="logo-text">FinTrack</div>
+    </div>
+
+    <nav class="sidebar-nav">
+
+        <a href="dashboard.html" class="nav-item">
+            <span class="nav-icon">🏠</span>
+            <span>Dashboard</span>
+        </a>
+
+        <a href="schemes.html" class="nav-item active">
+            <span class="nav-icon">📋</span>
+            <span>Schemes</span>
+        </a>
+
+        <a href="members.html" class="nav-item">
+            <span class="nav-icon">👥</span>
+            <span>Members</span>
+        </a>
+<a href="payments.html" class="nav-item">
+            <span class="nav-icon">💳</span>
+            <span>Payments</span>
+        </a>
+</nav>
+
+</aside>
+
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
+
+    <main class="main-content">
+
+
+        <!-- =================================================
+             TOP BAR
+        ================================================== -->
+
+        <header class="topbar">
+
+
+            <div class="topbar-left">
+            </div>
+
+
+            <div class="topbar-right">
+
+
+                <!-- PROFILE -->
+
+                <div class="profile">
+
+
+                    <div
+                        class="profile-avatar"
+                        id="profileAvatar">
+
+                        A
+
+                    </div>
+
+
+                    <div class="profile-details">
+
+                        <strong
+                            id="profileName">
+
+                            admin
+
+                        </strong>
+
+                        <span>
+                            ADMIN
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+        </header>
+
+
+
+        <!-- =================================================
+             PAGE CONTENT
+        ================================================== -->
+
+        <section class="page-content">
+
+
+            <!-- =================================================
+                 PAGE HEADER
+            ================================================== -->
+
+            <div class="page-header">
+
+
+                <div class="page-title">
+
+                    <h1>
+                        Chit Schemes
+                    </h1>
+
+                    <p>
+                        Manage all registered chit schemes.
+                    </p>
+
+                </div>
+
+
+                <!-- CREATE BUTTON -->
+
+                <button
+                    type="button"
+                    class="create-scheme-btn"
+                    onclick="openCreateSchemeModal()">
+
+                    <span>
+                        +
+                    </span>
+
+                    Create Scheme
+
+                </button>
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 FILTER BAR
+            ================================================== -->
+
+            <div class="filter-card">
+
+
+                <!-- SEARCH -->
+
+                <div class="filter-group search-group">
+
+                    <label>
+                        Search Scheme
+                    </label>
+
+
+                    <div class="search-box">
+
+                        <span>
+                            ⌕
+                        </span>
+
+
+                        <input
+                            type="text"
+                            id="schemeSearch"
+                            placeholder="Search scheme name..."
+                            oninput="filterSchemes()">
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- STATUS -->
+
+                <div class="filter-group">
+
+                    <label>
+                        Filter by Status
+                    </label>
+
+
+                    <select
+                        id="statusFilter"
+                        onchange="filterSchemes()">
+
+                        <option value="all">
+                            All Statuses
+                        </option>
+
+                        <option value="active">
+                            Active
+                        </option>
+
+                        <option value="upcoming">
+                            Upcoming
+                        </option>
+
+                        <option value="closed">
+                            Closed
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+
+                <!-- TOTAL -->
+
+                <div class="scheme-count-box">
+
+                    <span>
+                        TOTAL SCHEMES
+                    </span>
+
+                    <strong
+                        id="totalSchemeCount">
+
+                        0
+
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 SCHEMES TABLE CARD
+            ================================================== -->
+
+            <div class="scheme-card">
+
+
+                <!-- CARD HEADER -->
+
+                <div class="scheme-card-header">
+
+
+                    <div>
+
+                        <strong>
+                            Registered Schemes
+                        </strong>
+
+                        <span
+                            id="schemeResultCount">
+
+                            0 schemes
+
+                        </span>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        class="refresh-btn"
+                        onclick="refreshSchemes()">
+
+                        ↻ Refresh
+
+                    </button>
+
+
+                </div>
+
+
+
+                <!-- TABLE -->
+
+                <div class="table-container">
+
+
+                    <table class="scheme-table">
+
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    SCHEME NAME
+                                </th>
+
+                                <th>
+                                    CHIT TYPE
+                                </th>
+
+                                <th>
+                                    TOTAL VALUE
+                                </th>
+
+                                <th>
+                                    BASE INSTALLMENT
+                                </th>
+
+                                <th>
+                                    DURATION
+                                </th>
+
+                                <th>
+                                    TIMELINE
+                                </th>
+
+                                <th>
+                                    MEMBERS CAPACITY
+                                </th>
+
+                                <th>
+                                    STATUS
+                                </th>
+
+                                <th>
+                                    ACTIONS
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody
+                            id="schemeTableBody">
+
+                        </tbody>
+
+
+                    </table>
+
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+    </main>
+
+
+
+    <!-- =====================================================
+         CREATE / EDIT SCHEME MODAL
+    ====================================================== -->
+
+    <div
+        class="modal-overlay"
+        id="schemeModal">
+
+
+        <div class="modal">
+
+
+            <!-- MODAL HEADER -->
+
+            <div class="modal-header">
+
+
+                <div>
+
+                    <h2
+                        id="schemeModalTitle">
+
+                        Create Scheme
+
+                    </h2>
+
+
+                    <p>
+                        Create and configure a chit scheme.
+                    </p>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="modal-close"
+                    onclick="closeSchemeModal()">
+
+                    ×
+
+                </button>
+
+
+            </div>
+
+
+
+            <!-- FORM -->
+
+            <form
+                id="schemeForm"
+                onsubmit="saveScheme(event)">
+
+
+                <input
+                    type="hidden"
+                    id="editSchemeId">
+
+
+
+                <!-- SCHEME NAME -->
+
+                <div class="form-group">
+
+                    <label>
+                        Scheme Name
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="schemeName"
+                        placeholder="Example: Gold Chit 10 grams or Gold Chit 20 grams"
+                        required>
+
+                </div>
+
+
+
+                <!-- CHIT TYPE -->
+
+                <div class="form-group">
+
+                    <label>
+                        Chit Type
+                    </label>
+
+
+                    <select
+                        id="schemeType"
+                        required><option value="cash">Cash Chit</option><option value="gold">Gold Chit</option></select>
+
+                </div>
+
+
+
+                <!-- ROW -->
+
+                <div class="form-row">
+
+
+                    <!-- TOTAL AMOUNT -->
+
+                    <div class="form-group" id="totalAmountGroup">
+
+                        <label id="totalAmountLabel">
+                            Total Amount
+                        </label>
+
+                        <input
+                            type="number"
+                            id="schemeAmount"
+                            placeholder="100000"
+                            min="1"
+                            step="0.01">
+
+                    </div>
+
+
+
+                    <!-- BASE AMOUNT -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Monthly Installment
+                        </label>
+
+
+                        <input
+                            type="number"
+                            id="schemeBaseAmount"
+                            placeholder="5000"
+                            min="1"
+                            step="0.01"
+                            required>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- ROW -->
+
+                <div class="form-row">
+
+
+                    <!-- DURATION -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Duration (Months)
+                        </label>
+
+
+                        <input
+                            type="number"
+                            id="schemeDuration"
+                            placeholder="20"
+                            min="1"
+                            max="120"
+                            required>
+
+                    </div>
+
+
+
+                    <!-- CAPACITY -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Members Capacity
+                        </label>
+
+
+                        <input
+                            type="number"
+                            id="schemeCapacity"
+                            placeholder="20"
+                            min="1"
+                            max="1000"
+                            required>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- ROW -->
+
+                <div class="form-row">
+
+
+                    <!-- START DATE -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Start Date
+                        </label>
+
+
+                        <input
+                            type="date"
+                            id="schemeStartDate"
+                            required>
+
+                    </div>
+
+
+
+                    <!-- STATUS -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Status
+                        </label>
+
+
+                        <select
+                            id="schemeStatus"
+                            required>
+
+                            <option value="upcoming">
+                                Upcoming
+                            </option>
+
+                            <option value="active">
+                                Active
+                            </option>
+
+                            <option value="closed">
+                                Closed
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- MODAL FOOTER -->
+
+                <div class="modal-footer">
+
+
+                    <button
+                        type="button"
+                        class="cancel-button"
+                        onclick="closeSchemeModal()">
+
+                        Cancel
+
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="save-button">
+
+                        Save Scheme
+
+                    </button>
+
+
+                </div>
+
+
+            </form>
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
+
+    <script src="fintrack-core.js"></script>
+
+    <script
+        src="schemes.js">
+    </script>
+
+    <script src="profile-menu.js"></script>
+
+    <script src="auth-guard.js"></script>
+
+<script src="frontend-security.js"></script>
+</body>
+
+</html>

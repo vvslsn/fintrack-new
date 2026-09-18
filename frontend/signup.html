@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>FinTrack - Create Account</title>
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+    <main class="login-page">
+
+
+        <!-- =================================================
+             LEFT SIDE - BRAND
+             ================================================= -->
+
+        <section class="login-brand">
+
+            <div class="brand-content">
+
+                <h1>
+                    Finance
+                </h1>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             RIGHT SIDE - SIGNUP
+             ================================================= -->
+
+        <section class="login-section">
+
+            <div class="login-card">
+
+
+                <!-- =================================================
+                     SIGNUP HEADER
+                     ================================================= -->
+
+                <div class="login-header">
+
+                    <h2>
+                        Create Account
+                    </h2>
+
+                    <p>
+                        Create your new FinTrack account
+                    </p>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     SIGNUP FORM
+                     ================================================= -->
+
+                <form id="signupForm">
+
+
+                    <!-- ================= FULL NAME ================= -->
+
+                    <div class="form-group">
+
+                        <label for="fullName">
+                            Full Name
+                        </label>
+
+                        <input
+                            type="text"
+                            id="fullName"
+                            name="fullName"
+                            placeholder="Enter your full name"
+                            autocomplete="name"
+                            required
+                        >
+
+                    </div>
+
+
+
+                    <!-- ================= USERNAME ================= -->
+
+                    <div class="form-group account-type-group">
+
+                        <label>Account Type</label>
+
+                        <input
+                            type="text"
+                            value="Admin"
+                            readonly
+                            aria-label="Account Type: Admin"
+                        >
+
+                        <small class="form-help">
+                            This page creates a FinTrack administrator account. Members get their login from Members → Create Login.
+                        </small>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="newUsername">
+                            Username
+                        </label>
+
+                        <input
+                            type="text"
+                            id="newUsername"
+                            name="username"
+                            placeholder="Create a username"
+                            autocomplete="username"
+                            required
+                        >
+
+                    </div>
+
+
+
+                    <!-- ================= EMAIL ================= -->
+
+                    <div class="form-group">
+
+                        <label for="email">
+                            Email Address
+                        </label>
+
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="Enter your email address"
+                            autocomplete="email"
+                            required
+                        >
+
+                    </div>
+
+
+
+                    <!-- ================= PHONE NUMBER ================= -->
+
+                    <div class="form-group">
+
+                        <label for="phone">
+                            Phone Number
+                        </label>
+
+                        <input
+                            type="tel"
+                            id="phone"
+                            name="phone"
+                            placeholder="Enter 10-digit phone number"
+                            autocomplete="tel"
+                            inputmode="numeric"
+                            pattern="[0-9]{10}"
+                            maxlength="10"
+                            required
+                        >
+
+                    </div>
+
+
+
+                    <!-- ================= PASSWORD ================= -->
+
+                    <div class="form-group">
+
+                        <label for="newPassword">
+                            Password
+                        </label>
+
+
+                        <div class="password-input">
+
+                            <input
+                                type="password"
+                                id="newPassword"
+                                name="password"
+                                placeholder="Create a password"
+                                autocomplete="new-password"
+                                required
+                            >
+
+
+                            <!-- Show / Hide Password -->
+
+                            <button
+                                type="button"
+                                id="toggleNewPassword"
+                                class="password-toggle"
+                                aria-label="Show password">
+
+                                👁
+
+                            </button>
+
+                        </div>
+
+
+
+                        <!-- Password Requirements -->
+
+                        <div class="password-requirements">
+
+                            <p id="lengthRequirement">
+
+                                <span>○</span>
+
+                                At least 8 characters
+
+                            </p>
+
+
+                            <p id="uppercaseRequirement">
+
+                                <span>○</span>
+
+                                At least one uppercase letter
+
+                            </p>
+
+
+                            <p id="lowercaseRequirement">
+
+                                <span>○</span>
+
+                                At least one lowercase letter
+
+                            </p>
+
+
+                            <p id="numberRequirement">
+
+                                <span>○</span>
+
+                                At least one number
+
+                            </p>
+
+
+                            <p id="specialRequirement">
+
+                                <span>○</span>
+
+                                At least one special character
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- ================= CONFIRM PASSWORD ================= -->
+
+                    <div class="form-group">
+
+                        <label for="confirmPassword">
+                            Confirm Password
+                        </label>
+
+
+                        <div class="password-input">
+
+                            <input
+                                type="password"
+                                id="confirmPassword"
+                                name="confirmPassword"
+                                placeholder="Confirm your password"
+                                autocomplete="new-password"
+                                required
+                            >
+
+
+                            <!-- Show / Hide Confirm Password -->
+
+                            <button
+                                type="button"
+                                id="toggleConfirmPassword"
+                                class="password-toggle"
+                                aria-label="Show password">
+
+                                👁
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- =================================================
+                         CREATE ACCOUNT BUTTON
+                         ================================================= -->
+
+                    <button
+                        type="submit"
+                        class="login-btn">
+
+                        Create Account
+
+                    </button>
+
+
+
+                    <!-- =================================================
+                         SIGNUP MESSAGE
+                         ================================================= -->
+
+                    <p
+                        id="signupMessage"
+                        class="login-message">
+                    </p>
+
+
+                </form>
+
+
+
+                <!-- =================================================
+                     EXISTING USER
+                     ================================================= -->
+
+                <div class="new-user">
+
+                    <p>
+
+                        Already have an account?
+
+                        <a href="admin-login.html">
+                            Login
+                        </a>
+
+                    </p>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+
+    <!-- =================================================
+         JAVASCRIPT
+         ================================================= -->
+
+    <script src="script.js"></script>
+
+<script src="frontend-security.js"></script>
+</body>
+
+</html>

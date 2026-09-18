@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>ChitFund - Members</title>
+
+    <link
+        rel="stylesheet"
+        href="members.css">
+    <link rel="stylesheet" href="common.css">
+
+    <link rel="stylesheet" href="profile-menu.css">
+
+</head>
+
+
+<body>
+
+
+    <aside class="sidebar">
+
+    <div class="logo">
+        <div class="logo-icon">₹</div>
+        <div class="logo-text">FinTrack</div>
+    </div>
+
+    <nav class="sidebar-nav">
+
+        <a href="dashboard.html" class="nav-item">
+            <span class="nav-icon">🏠</span>
+            <span>Dashboard</span>
+        </a>
+
+        <a href="schemes.html" class="nav-item">
+            <span class="nav-icon">📋</span>
+            <span>Schemes</span>
+        </a>
+
+        <a href="members.html" class="nav-item active">
+            <span class="nav-icon">👥</span>
+            <span>Members</span>
+        </a>
+<a href="payments.html" class="nav-item">
+            <span class="nav-icon">💳</span>
+            <span>Payments</span>
+        </a>
+</nav>
+
+</aside>
+
+
+
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
+
+    <main class="main-content">
+
+
+        <!-- =================================================
+             TOP BAR
+        ================================================== -->
+
+        <header class="topbar">
+
+
+            <div class="topbar-left">
+
+                <!-- Reserved for future content -->
+
+            </div>
+
+
+            <div class="topbar-right">
+
+                <!-- PROFILE -->
+
+                <div class="profile">
+
+
+                    <div
+                        class="profile-avatar"
+                        id="profileAvatar">
+
+                        A
+
+                    </div>
+
+
+                    <div class="profile-details">
+
+                        <strong
+                            id="profileName">
+
+                            admin
+
+                        </strong>
+
+                        <span>
+                            ADMIN
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        </header>
+
+
+
+        <!-- =================================================
+             PAGE CONTENT
+        ================================================== -->
+
+        <section class="page-content">
+
+
+            <!-- PAGE HEADER -->
+
+            <div class="page-header">
+
+
+                <div class="page-title">
+
+                    <h1>
+                        Members Directory
+                    </h1>
+
+                    <p>
+                        Browse all subscribers, view enrollment
+                        history, and track ticket allocations.
+                    </p>
+
+                </div>
+
+
+                <button
+                    class="new-member-button"
+                    onclick="openAddMemberModal()">
+
+                    <span>
+                        +
+                    </span>
+
+                    Add Member
+
+                </button>
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 FILTER CARD
+            ================================================== -->
+
+            <div class="filter-card">
+
+
+                <!-- SEARCH -->
+
+                <div class="filter-group search-group">
+
+                    <label>
+                        Search Name or Email
+                    </label>
+
+
+                    <div class="search-box">
+
+                        <span>
+                            ⌕
+                        </span>
+
+
+                        <input
+                            type="text"
+                            id="memberSearch"
+                            placeholder="Search..."
+                            oninput="filterMembers()">
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- SCHEME FILTER -->
+
+                <div class="filter-group">
+
+                    <label>
+                        Filter by Chit Scheme
+                    </label>
+
+
+                    <select
+                        id="schemeFilter"
+                        onchange="filterMembers()">
+
+                        <option value="all">
+                            All Schemes
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+
+                <!-- STATUS FILTER -->
+
+                <div class="filter-group">
+
+                    <label>
+                        Filter by Status
+                    </label>
+
+
+                    <select
+                        id="statusFilter"
+                        onchange="filterMembers()">
+
+                        <option value="all">
+                            All Statuses
+                        </option>
+
+                        <option value="active">
+                            Active
+                        </option>
+
+                        <option value="inactive">
+                            Inactive
+                        </option>
+
+                        <option value="completed">
+                            Completed
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 MEMBERS TABLE
+            ================================================== -->
+
+            <div class="members-card">
+
+
+                <!-- TABLE TOP -->
+
+                <div class="members-card-header">
+
+
+                    <div>
+
+                        <strong id="memberCount">
+                            0
+                        </strong>
+
+                        <span>
+                            Members
+                        </span>
+
+                    </div>
+
+
+                    <button
+                        class="refresh-button"
+                        onclick="renderMembers()">
+
+                        ↻ Refresh
+
+                    </button>
+
+
+                </div>
+
+
+
+                <!-- TABLE -->
+
+                <div class="table-container">
+
+
+                    <table class="members-table">
+
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    SUBSCRIBER NAME
+                                </th>
+
+                                <th>
+                                    CONTACT DETAILS
+                                </th>
+
+                                <th>
+                                    ACTIVE ENROLLMENTS
+                                </th>
+
+                                <th>
+                                    TICKET NUMBERS
+                                </th>
+
+                                <th>
+                                    STATUS (ROSTER)
+                                </th>
+
+                                <th>
+                                    JOINED SINCE
+                                </th>
+
+                                <th>
+                                    ACTIONS
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody
+                            id="membersTableBody">
+
+                        </tbody>
+
+
+                    </table>
+
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+    </main>
+
+
+
+    <!-- =====================================================
+         ADD / EDIT MEMBER MODAL
+    ====================================================== -->
+
+    <div
+        class="modal-overlay"
+        id="memberModal">
+
+
+        <div class="modal">
+
+
+            <!-- MODAL HEADER -->
+
+            <div class="modal-header">
+
+
+                <div>
+
+                    <h2 id="modalTitle">
+                        Add Member
+                    </h2>
+
+                    <p>
+                        Enter subscriber details below.
+                    </p>
+
+                </div>
+
+
+                <button
+                    class="modal-close"
+                    onclick="closeMemberModal()">
+
+                    ×
+
+                </button>
+
+
+            </div>
+
+
+
+            <!-- FORM -->
+
+            <form
+                id="memberForm"
+                onsubmit="saveMember(event)">
+
+
+                <input
+                    type="hidden"
+                    id="memberId">
+
+
+                <!-- MEMBER OPTION MODE -->
+
+                <div class="form-group" id="memberOptionGroup">
+
+                    <label>
+                        Member Mode
+                    </label>
+
+                    <select
+                        id="memberOption"
+                        onchange="toggleMemberOption()">
+
+                        <option value="existing">
+                            Add Existing Member
+                        </option>
+
+                        <option value="new">
+                            Create New Member
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- SELECT EXISTING MEMBER -->
+
+                <div class="form-group" id="existingMemberGroup">
+
+                    <label>
+                        Select Existing Member
+                    </label>
+
+                    <select
+                        id="existingMemberSelect"
+                        onchange="onSelectExistingMember()">
+
+                        <option value="">
+                            -- Select Member --
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- NAME -->
+
+                <div class="form-group">
+
+                    <label>
+                        Full Name
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="memberName"
+                        placeholder="Example: Rajesh Kumar"
+                        required>
+
+                </div>
+
+
+
+                <!-- EMAIL -->
+
+                <div class="form-group">
+
+                    <label>
+                        Email Address
+                    </label>
+
+
+                    <input
+                        type="email"
+                        id="memberEmail"
+                        placeholder="example@email.com"
+                        required>
+
+                </div>
+
+
+
+                <!-- PHONE -->
+
+                <div class="form-group">
+
+                    <label>
+                        Phone Number
+                    </label>
+
+
+                    <input
+                        type="tel"
+                        id="memberPhone"
+                        placeholder="9876543210"
+                        maxlength="10"
+                        required>
+
+                </div>
+
+
+
+                <!-- SCHEME -->
+
+                <div class="form-group">
+
+                    <label>
+                        Chit Scheme
+                    </label>
+
+
+                    <select
+                        id="memberScheme"
+                        onchange="toggleSchemeFields()">
+
+                        <option value="">
+                            No Scheme - Add to Directory Only
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+
+                <!-- TICKET -->
+
+                <div class="form-group">
+
+                    <label>
+                        Ticket Number
+                    </label>
+
+
+                    <input
+                        type="number"
+                        id="memberTicket"
+                        min="1"
+                        placeholder="Auto assign">
+
+                    <small class="form-help" id="schemeOptionalHelp">
+                        Select a chit scheme only if this member is joining a scheme now.
+                    </small>
+
+                </div>
+
+
+
+                <!-- JOIN DATE -->
+
+                <div class="form-group">
+
+                    <label>
+                        Joined Date
+                    </label>
+
+
+                    <input
+                        type="date"
+                        id="memberJoinedDate"
+                        required>
+
+                </div>
+
+
+
+                <!-- STATUS -->
+
+                <div class="form-group">
+
+                    <label>
+                        Status
+                    </label>
+
+
+                    <select
+                        id="memberStatus"
+                        required>
+
+                        <option value="active">
+                            Active
+                        </option>
+
+                        <option value="inactive">
+                            Inactive
+                        </option>
+
+                        <option value="completed">
+                            Completed
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+
+                <!-- MODAL FOOTER -->
+
+                <div class="modal-footer">
+
+
+                    <button
+                        type="button"
+                        class="cancel-button"
+                        onclick="closeMemberModal()">
+
+                        Cancel
+
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="save-button">
+
+                        Save Member
+
+                    </button>
+
+
+                </div>
+
+
+            </form>
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- =====================================================
+         MEMBER LEDGER MODAL
+    ====================================================== -->
+    <div class="modal-overlay ledger-modal-overlay" id="memberLedgerModal">
+        <div class="modal member-ledger-modal">
+            <div class="modal-header">
+                <div>
+                    <h2>Member Ledger</h2>
+                    <p>Complete installment, payment and winning history.</p>
+                </div>
+                <button
+                    type="button"
+                    class="modal-close"
+                    onclick="closeMemberLedger()">
+                    ×
+                </button>
+            </div>
+
+            <div id="memberLedgerContent" class="member-ledger-content"></div>
+        </div>
+    </div>
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
+
+    <script src="fintrack-core.js"></script>
+
+    <script
+        src="members.js">
+    </script>
+
+    <script src="profile-menu.js"></script>
+
+    <script src="auth-guard.js"></script>
+
+
+<script src="frontend-security.js"></script>
+</body>
+
+</html>
+

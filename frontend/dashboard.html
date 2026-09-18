@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>FinTrack - Dashboard</title>
+
+    <link
+        rel="stylesheet"
+        href="styledashboard.css"
+    >
+
+    <link rel="stylesheet" href="profile-menu.css">
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     SIDEBAR
+===================================================== -->
+
+<aside class="sidebar" id="sidebar">
+
+
+    <!-- LOGO -->
+
+    <div class="logo">
+
+        <div class="logo-icon">
+            ₹
+        </div>
+
+        <div class="logo-text">
+            FinTrack
+        </div>
+
+    </div>
+
+
+
+    <!-- NAVIGATION -->
+
+    <nav class="sidebar-nav">
+
+
+        <!-- DASHBOARD -->
+
+        <a
+            href="dashboard.html"
+            class="nav-item active"
+        >
+
+            <span class="nav-icon">
+                🏠
+            </span>
+
+            <span>
+                Dashboard
+            </span>
+
+        </a>
+
+
+
+        <!-- SCHEMES -->
+
+        <a
+            href="schemes.html"
+            class="nav-item"
+        >
+
+            <span class="nav-icon">
+                📋
+            </span>
+
+            <span>
+                Schemes
+            </span>
+
+        </a>
+
+
+
+        <!-- MEMBERS -->
+
+        <a
+            href="members.html"
+            class="nav-item"
+        >
+
+            <span class="nav-icon">
+                👥
+            </span>
+
+            <span>
+                Members
+            </span>
+
+        </a>
+<!-- PAYMENTS -->
+
+        <a
+            href="payments.html"
+            class="nav-item"
+        >
+
+            <span class="nav-icon">
+                💳
+            </span>
+
+            <span>
+                Payments
+            </span>
+
+        </a>
+
+
+    </nav>
+
+</aside>
+
+
+
+<!-- =====================================================
+     MOBILE SIDEBAR OVERLAY
+===================================================== -->
+
+<div
+    class="sidebar-overlay"
+    id="sidebarOverlay"
+    onclick="closeSidebar()"
+></div>
+
+
+
+<!-- =====================================================
+     MAIN CONTENT
+===================================================== -->
+
+<main class="main-content">
+
+
+    <!-- =================================================
+         TOP HEADER
+    ================================================== -->
+
+    <header class="top-header">
+
+
+        <div class="header-left">
+
+
+            <!-- MOBILE MENU -->
+
+            <button
+                type="button"
+                class="menu-btn"
+                onclick="toggleSidebar()"
+            >
+
+                ☰
+
+            </button>
+
+
+
+            <div>
+
+                <h1>
+                    Dashboard
+                </h1>
+
+                <p>
+                    Welcome back to FinTrack
+                </p>
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- USER -->
+
+        <div class="header-right">
+
+
+            <button
+                type="button"
+                class="user-header"
+                onclick="openProfileModal()"
+            >
+
+
+                <div
+                    class="user-avatar"
+                    id="headerAvatar"
+                >
+
+                    👤
+
+                </div>
+
+
+                <div class="header-user-info">
+
+                    <strong
+                        id="headerUserName"
+                    >
+
+                        User
+
+                    </strong>
+
+
+                    <span>
+                        ADMIN
+                    </span>
+
+                </div>
+
+
+            </button>
+
+
+        </div>
+
+
+    </header>
+
+
+
+    <!-- =================================================
+         PAGE CONTENT
+    ================================================== -->
+
+    <section class="page-content">
+
+
+        <!-- =================================================
+             WELCOME SECTION
+        ================================================== -->
+
+        <div class="welcome-section">
+
+
+            <div>
+
+                <h2 id="welcomeName">
+                    Welcome back!
+                </h2>
+
+
+                <p>
+                    Here's what's happening with your chit funds.
+                </p>
+
+            </div>
+
+
+
+            <div class="current-date">
+
+                <span>
+                    Today
+                </span>
+
+
+                <strong id="currentDate">
+                    -
+                </strong>
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- =================================================
+             STATISTICS
+        ================================================== -->
+
+        <div class="stats-grid">
+
+
+            <!-- TOTAL INVESTED -->
+
+            <div class="stat-card">
+
+
+                <div class="stat-card-top">
+
+
+                    <div>
+
+                        <p class="stat-label">
+                            Total Invested
+                        </p>
+
+
+                        <h3 id="totalInvested">
+                            ₹0
+                        </h3>
+
+                    </div>
+
+
+                    <div class="stat-icon blue">
+                        💰
+                    </div>
+
+
+                </div>
+
+
+                <div class="stat-footer">
+
+                    <span class="positive">
+                        ↑ 0%
+                    </span>
+
+
+                    <span>
+                        from last month
+                    </span>
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- ONLINE PAYMENT REQUESTS -->
+            <div class="stat-card">
+                <div class="stat-card-top">
+                    <div><p class="stat-label">Online Payment Requests</p><h3 id="onlinePaymentPendingCount">0</h3></div>
+                    <div class="stat-icon red">🔔</div>
+                </div>
+                <div class="stat-footer"><a href="payments.html">Review pending requests →</a></div>
+            </div>
+
+            <!-- PAYOUTS / DISBURSEMENTS -->
+            <div class="stat-card">
+                <div class="stat-card-top">
+                    <div><p class="stat-label">Total Payouts</p><h3 id="totalDividends">₹0</h3></div>
+                    <div class="stat-icon green">🏆</div>
+                </div>
+                <div class="stat-footer"><span>Cash payouts + Gold disbursements</span></div>
+            </div>
+
+            <!-- ACTIVE CHITS -->
+
+            <div class="stat-card">
+
+
+                <div class="stat-card-top">
+
+
+                    <div>
+
+                        <p class="stat-label">
+                            Active Chits
+                        </p>
+
+
+                        <h3 id="activeChits">
+                            0
+                        </h3>
+
+                    </div>
+
+
+                    <div class="stat-icon green">
+                        📊
+                    </div>
+
+
+                </div>
+
+
+                <div class="stat-footer">
+
+                    <span>
+                        Currently active
+                    </span>
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- PENDING PAYMENTS -->
+
+            <div class="stat-card">
+
+
+                <div class="stat-card-top">
+
+
+                    <div>
+
+                        <p class="stat-label">
+                            Pending Payments
+                        </p>
+
+
+                        <h3 id="pendingPayments">
+                            ₹0
+                        </h3>
+
+                    </div>
+
+
+                    <div class="stat-icon orange">
+                        ⏳
+                    </div>
+
+
+                </div>
+
+
+                <div class="stat-footer">
+
+                    <span class="warning">
+                        Due soon
+                    </span>
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- =================================================
+             ACTIVE CHITS + PAYMENT HISTORY
+        ================================================== -->
+
+        <div class="dashboard-grid">
+
+
+            <!-- =================================================
+                 ACTIVE CHIT SCHEMES
+            ================================================== -->
+
+            <section
+                class="dashboard-card active-chits-card"
+            >
+
+
+                <div class="card-header">
+
+
+                    <div>
+
+                        <h2>
+                            Active Chit Schemes
+                        </h2>
+
+
+                        <p>
+                            Your currently enrolled schemes
+                        </p>
+
+                    </div>
+
+
+                    <a
+                        href="schemes.html"
+                        class="view-all"
+                    >
+
+                        View All
+
+                    </a>
+
+
+                </div>
+
+
+
+                <!-- ACTIVE SCHEMES -->
+
+                <div
+                    class="active-chits-list"
+                    id="activeChitsList"
+                >
+
+                    <!-- JavaScript loads schemes -->
+
+                </div>
+
+
+
+                <!-- EMPTY -->
+
+                <div
+                    class="empty-dashboard"
+                    id="noActiveChits"
+                >
+
+
+                    <div class="empty-icon">
+                        📋
+                    </div>
+
+
+                    <h3>
+                        No active schemes
+                    </h3>
+
+
+                    <p>
+                        Create or join a chit scheme to see it here.
+                    </p>
+
+
+                    <a
+                        href="schemes.html"
+                        class="primary-btn"
+                    >
+
+                        Explore Schemes
+
+                    </a>
+
+
+                </div>
+
+
+            </section>
+
+
+
+            <!-- =================================================
+             PAYMENT HISTORY
+        ================================================== -->
+
+        <section
+            class="dashboard-card payment-card"
+        >
+
+
+            <div class="card-header">
+
+
+                <div>
+
+                    <h2>
+                        Payment History & Due Payments
+                    </h2>
+
+
+                    <p>
+                        Recent paid history and unpaid installments that are already due
+                    </p>
+
+                </div>
+
+
+                <a
+                    href="payments.html"
+                    class="view-all"
+                >
+
+                    View All
+
+                </a>
+
+
+            </div>
+
+
+
+            <!-- PAYMENT TABLE -->
+
+            <div class="table-container">
+
+
+                <table class="payment-table">
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Scheme
+                            </th>
+
+                            <th>
+                                Installment
+                            </th>
+
+                            <th>
+                                Due Date
+                            </th>
+
+                            <th>
+                                Amount
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Action
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody
+                        id="paymentTableBody"
+                    >
+
+                        <!-- JavaScript -->
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
+
+
+            <!-- EMPTY -->
+
+            <div
+                class="empty-table"
+                id="noPayments"
+            >
+
+
+                <div class="empty-icon">
+                    💳
+                </div>
+
+
+                <h3>
+                    No payment records
+                </h3>
+
+
+                <p>
+                    Paid history and due unpaid installments will appear here.
+                </p>
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =================================================
+             MONTHLY WINNERS
+        ================================================== -->
+        <section class="dashboard-card" style="margin-top:20px;">
+          <div class="card-header"><div><h2>Recent Monthly Winners</h2><p>Latest winner records and payout status.</p></div><a href="schemes.html" class="view-all">Manage Winners</a></div>
+          <div class="winner-list" id="winnerList"></div>
+          <div class="empty-dashboard" id="noWinners"><div class="empty-icon">🏆</div><h3>No winners recorded</h3><p>Monthly winners will appear here after they are recorded.</p></div>
+        </section>
+
+
+        <!-- =================================================
+             QUICK ACTIONS
+        ================================================== -->
+
+        <section class="quick-actions-section">
+
+
+            <div class="section-title">
+
+
+                <div>
+
+                    <h2>
+                        Quick Actions
+                    </h2>
+
+
+                    <p>
+                        Manage your FinTrack account
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="quick-actions-grid">
+
+
+                <!-- SCHEMES -->
+
+                <a
+                    href="schemes.html"
+                    class="quick-action"
+                >
+
+
+                    <div class="quick-icon blue">
+                        📋
+                    </div>
+
+
+                    <div>
+
+                        <h3>
+                            Explore Schemes
+                        </h3>
+
+
+                        <p>
+                            View available chit schemes
+                        </p>
+
+                    </div>
+
+
+                    <span>
+                        →
+                    </span>
+
+
+                </a>
+
+
+
+                <!-- MEMBERS -->
+
+                <a
+                    href="members.html"
+                    class="quick-action"
+                >
+
+
+                    <div class="quick-icon green">
+                        👥
+                    </div>
+
+
+                    <div>
+
+                        <h3>
+                            Manage Members
+                        </h3>
+
+
+                        <p>
+                            View and manage members
+                        </p>
+
+                    </div>
+
+
+                    <span>
+                        →
+                    </span>
+
+
+                </a>
+
+
+
+                <!-- PAYMENTS -->
+
+                <a
+                    href="payments.html"
+                    class="quick-action"
+                >
+
+
+                    <div class="quick-icon orange">
+                        💳
+                    </div>
+
+
+                    <div>
+
+                        <h3>
+                            Payments
+                        </h3>
+
+
+                        <p>
+                            View payment records
+                        </p>
+
+                    </div>
+
+
+                    <span>
+                        →
+                    </span>
+
+
+                </a>
+
+
+            </div>
+
+
+        </section>
+
+
+    </section>
+
+
+</main>
+
+
+
+<!-- =====================================================
+     PROFILE MODAL
+===================================================== -->
+
+<div
+    class="modal-overlay"
+    id="profileModal"
+>
+
+
+    <div class="modal profile-modal">
+
+
+        <!-- HEADER -->
+
+        <div class="modal-header">
+
+
+            <h2>
+                My Profile
+            </h2>
+
+
+            <button
+                type="button"
+                class="close-btn"
+                onclick="closeModal('profileModal')"
+            >
+
+                ×
+
+            </button>
+
+
+        </div>
+
+
+
+        <!-- PROFILE PHOTO -->
+
+        <div class="profile-photo-section">
+
+
+            <div class="profile-photo-wrapper">
+
+
+                <img
+                    id="profilePhoto"
+                    src=""
+                    alt="Profile Photo"
+                >
+
+
+                <div
+                    id="profilePhotoPlaceholder"
+                    class="profile-photo-placeholder"
+                >
+
+                    👤
+
+                </div>
+
+
+            </div>
+
+
+
+            <label
+                for="profilePhotoInput"
+                class="change-photo-btn"
+            >
+
+                Change Photo
+
+            </label>
+
+
+            <input
+                type="file"
+                id="profilePhotoInput"
+                accept="image/*"
+                hidden
+            >
+
+
+        </div>
+
+
+
+        <!-- NAME -->
+
+        <div class="form-group">
+
+
+            <label for="profileName">
+                Name
+            </label>
+
+
+            <input
+                type="text"
+                id="profileName"
+                placeholder="Your name"
+            >
+
+
+        </div>
+
+
+
+        <!-- USERNAME -->
+
+        <div class="form-group">
+
+
+            <label for="profileUsername">
+                Username
+            </label>
+
+
+            <input
+                type="text"
+                id="profileUsername"
+                readonly
+            >
+
+
+        </div>
+
+
+
+        <!-- EMAIL -->
+
+        <div class="form-group">
+
+
+            <label for="profileEmail">
+                Email
+            </label>
+
+
+            <input
+                type="email"
+                id="profileEmail"
+            >
+
+
+        </div>
+
+
+
+        <!-- PHONE -->
+
+        <div class="form-group">
+
+
+            <label for="profilePhone">
+                Phone
+            </label>
+
+
+            <input
+                type="tel"
+                id="profilePhone"
+            >
+
+
+        </div>
+
+
+
+        <!-- SAVE PROFILE -->
+
+        <button
+            type="button"
+            class="primary-btn full-width"
+            onclick="saveProfile()"
+        >
+
+            Save Profile
+
+        </button>
+
+        <!-- PROFILE ACTIONS ARE AVAILABLE IN THE 3-DOT MENU -->
+
+        <!-- Use the 3-dot profile menu for Change Password and Logout -->
+
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =====================================================
+     CHANGE PASSWORD MODAL
+===================================================== -->
+
+<div
+    class="modal-overlay"
+    id="changePasswordModal"
+>
+
+
+    <div class="modal">
+
+
+        <!-- HEADER -->
+
+        <div class="modal-header">
+
+
+            <h2>
+                Change Password
+            </h2>
+
+
+            <button
+                type="button"
+                class="close-btn"
+                onclick="closeModal('changePasswordModal')"
+            >
+
+                ×
+
+            </button>
+
+
+        </div>
+
+
+
+        <!-- CURRENT PASSWORD -->
+
+        <div class="form-group">
+
+
+            <label for="currentPassword">
+                Current Password
+            </label>
+
+
+            <input
+                type="password"
+                id="currentPassword"
+                placeholder="Enter current password"
+            >
+
+
+        </div>
+
+
+
+        <!-- NEW PASSWORD -->
+
+        <div class="form-group">
+
+
+            <label for="newProfilePassword">
+                New Password
+            </label>
+
+
+            <input
+                type="password"
+                id="newProfilePassword"
+                placeholder="Enter new password"
+            >
+
+
+        </div>
+
+
+
+        <!-- CONFIRM PASSWORD -->
+
+        <div class="form-group">
+
+
+            <label for="confirmProfilePassword">
+                Confirm Password
+            </label>
+
+
+            <input
+                type="password"
+                id="confirmProfilePassword"
+                placeholder="Confirm new password"
+            >
+
+
+        </div>
+
+
+
+        <!-- FOOTER -->
+
+        <div class="modal-footer">
+
+
+            <button
+                type="button"
+                class="secondary-btn"
+                onclick="closeModal('changePasswordModal')"
+            >
+
+                Cancel
+
+            </button>
+
+
+            <button
+                type="button"
+                class="primary-btn"
+                onclick="changePassword()"
+            >
+
+                Update Password
+
+            </button>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =====================================================
+     JAVASCRIPT
+===================================================== -->
+
+<script src="fintrack-core.js"></script>
+<script src="scriptdashboard.js"></script>
+<script src="dashboard-online.js"></script>
+
+<script src="profile-menu.js"></script>
+
+    <script src="auth-guard.js"></script>
+
+<script src="frontend-security.js"></script>
+</body>
+
+</html>

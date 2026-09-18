@@ -1,0 +1,1514 @@
+/* =========================================================
+   CHITFUND - SCHEMES PAGE
+========================================================= */
+
+
+/* =========================================================
+   RESET
+========================================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+}
+
+
+body {
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    background: #f5f7fa;
+
+    color: #202832;
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+
+.sidebar {
+
+    position: fixed;
+
+    left: 0;
+    top: 0;
+    bottom: 0;
+
+    width: 181px;
+
+    background: #20252b;
+
+    color: #fff;
+
+    z-index: 1000;
+}
+
+
+.sidebar-logo {
+
+    height: 59px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    padding-left: 16px;
+
+    border-bottom:
+        1px solid #30353b;
+
+    color: #fff;
+
+    font-size: 15px;
+
+    font-weight: 700;
+}
+
+
+.logo-icon {
+
+    color: #3479e8;
+
+    font-size: 18px;
+}
+
+
+.sidebar-nav {
+
+    padding:
+        10px 8px;
+}
+
+
+.nav-item {
+
+    height: 40px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding:
+        0 11px;
+
+    margin-bottom: 3px;
+
+    border-radius: 6px;
+
+    color: #9da6b2;
+
+    text-decoration: none;
+
+    font-size: 11px;
+
+    transition:
+        background 0.2s,
+        color 0.2s;
+}
+
+
+.nav-item:hover {
+
+    background: #2b3138;
+
+    color: #ffffff;
+}
+
+
+.nav-item.active {
+
+    background: #286be2;
+
+    color: #ffffff;
+}
+
+
+.nav-icon {
+
+    width: 18px;
+
+    text-align: center;
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   MAIN CONTENT
+========================================================= */
+
+.main-content {
+
+    margin-left: 181px;
+
+    width:
+        calc(100% - 181px);
+
+    min-height: 100vh;
+}
+
+
+/* =========================================================
+   TOPBAR
+========================================================= */
+
+.topbar {
+
+    height: 59px;
+
+    background: #ffffff;
+
+    border-bottom:
+        1px solid #e1e5e9;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content:
+        space-between;
+
+    padding:
+        0 20px;
+}
+
+
+.topbar-right {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 18px;
+}
+
+
+/* =========================================================
+   NOTIFICATION
+========================================================= */
+
+.notification-button {
+
+    position: relative;
+
+    background: transparent;
+
+    border: none;
+
+    color: #4d5660;
+
+    cursor: pointer;
+
+    font-size: 17px;
+}
+
+
+.notification-count {
+
+    position: absolute;
+
+    right: -7px;
+
+    top: -8px;
+
+    width: 15px;
+
+    height: 15px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: #df3e4b;
+
+    color: #ffffff;
+
+    border-radius: 50%;
+
+    font-size: 8px;
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   PROFILE
+========================================================= */
+
+.profile {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+}
+
+
+.profile-avatar {
+
+    width: 29px;
+
+    height: 29px;
+
+    border-radius: 50%;
+
+    background-color: #1769d9;
+
+    color: #ffffff;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 10px;
+}
+
+
+.profile-details {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 2px;
+}
+
+
+.profile-details strong {
+
+    color: #303943;
+
+    font-size: 10px;
+}
+
+
+.profile-details span {
+
+    color: #858e97;
+
+    font-size: 8px;
+}
+
+
+/* =========================================================
+   PAGE CONTENT
+========================================================= */
+
+.page-content {
+
+    padding:
+        28px 24px 40px;
+}
+
+
+/* =========================================================
+   PAGE HEADER
+========================================================= */
+
+.page-header {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content:
+        space-between;
+
+    margin-bottom: 18px;
+}
+
+
+.page-title h1 {
+
+    color: #17212b;
+
+    font-size: 20px;
+
+    font-weight: 700;
+
+    margin-bottom: 5px;
+}
+
+
+.page-title p {
+
+    color: #7c858e;
+
+    font-size: 10px;
+}
+
+
+/* =========================================================
+   CREATE SCHEME BUTTON
+========================================================= */
+
+.create-scheme-btn {
+
+    height: 36px;
+
+    padding:
+        0 15px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    background: #286be2;
+
+    color: #ffffff;
+
+    border: none;
+
+    border-radius: 5px;
+
+    cursor: pointer;
+
+    font-size: 10px;
+
+    font-weight: 500;
+
+    transition:
+        background 0.2s;
+}
+
+
+.create-scheme-btn:hover {
+
+    background: #1d5dcc;
+}
+
+
+.create-scheme-btn:active {
+
+    transform: translateY(1px);
+}
+
+
+.create-scheme-btn span {
+
+    font-size: 16px;
+
+    line-height: 1;
+}
+
+
+/* =========================================================
+   FILTER CARD
+========================================================= */
+
+.filter-card {
+
+    min-height: 76px;
+
+    background: #ffffff;
+
+    border:
+        1px solid #e1e5e9;
+
+    border-radius: 8px;
+
+    padding:
+        12px 15px;
+
+    display: grid;
+
+    grid-template-columns:
+        1.5fr 1fr 150px;
+
+    gap: 15px;
+
+    align-items: end;
+
+    margin-bottom: 13px;
+}
+
+
+.filter-group {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 5px;
+}
+
+
+.filter-group label {
+
+    color: #717b84;
+
+    font-size: 8px;
+
+    font-weight: 600;
+}
+
+
+.filter-group input,
+.filter-group select {
+
+    width: 100%;
+
+    height: 32px;
+
+    padding:
+        0 10px;
+
+    background: #ffffff;
+
+    border:
+        1px solid #dce1e5;
+
+    border-radius: 5px;
+
+    outline: none;
+
+    color: #424b54;
+
+    font-size: 9px;
+}
+
+
+.filter-group input:focus,
+.filter-group select:focus {
+
+    border-color: #4285e8;
+
+    box-shadow:
+        0 0 0 2px
+        rgba(66, 133, 232, 0.08);
+}
+
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+.search-box {
+
+    position: relative;
+
+    width: 100%;
+}
+
+
+.search-box span {
+
+    position: absolute;
+
+    left: 10px;
+
+    top: 7px;
+
+    color: #9ca4ac;
+
+    font-size: 13px;
+}
+
+
+.search-box input {
+
+    padding-left: 28px;
+}
+
+
+/* =========================================================
+   COUNT
+========================================================= */
+
+.scheme-count-box {
+
+    height: 32px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content:
+        space-between;
+
+    padding:
+        0 10px;
+
+    border:
+        1px solid #e1e5e9;
+
+    border-radius: 5px;
+
+    background: #fafbfc;
+}
+
+
+.scheme-count-box span {
+
+    color: #7b858e;
+
+    font-size: 7px;
+
+    font-weight: 700;
+}
+
+
+.scheme-count-box strong {
+
+    color: #286be2;
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   SCHEME CARD
+========================================================= */
+
+.scheme-card {
+
+    background: #ffffff;
+
+    border:
+        1px solid #e1e5e9;
+
+    border-radius: 8px;
+
+    overflow: hidden;
+}
+
+
+.scheme-card-header {
+
+    height: 50px;
+
+    padding:
+        0 15px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content:
+        space-between;
+
+    border-bottom:
+        1px solid #edf0f2;
+}
+
+
+.scheme-card-header > div {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+}
+
+
+.scheme-card-header strong {
+
+    color: #303943;
+
+    font-size: 11px;
+}
+
+
+.scheme-card-header span {
+
+    color: #8a929a;
+
+    font-size: 8px;
+}
+
+
+.refresh-btn {
+
+    height: 28px;
+
+    padding:
+        0 9px;
+
+    border:
+        1px solid #d8dee3;
+
+    background: #ffffff;
+
+    color: #5b646d;
+
+    border-radius: 4px;
+
+    cursor: pointer;
+
+    font-size: 8px;
+}
+
+
+.refresh-btn:hover {
+
+    background: #f5f7f9;
+}
+
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+.table-container {
+
+    width: 100%;
+
+    overflow-x: auto;
+}
+
+
+.scheme-table {
+
+    width: 100%;
+
+    min-width: 1050px;
+
+    border-collapse:
+        collapse;
+}
+
+
+.scheme-table thead {
+
+    background: #f8f9fb;
+}
+
+
+.scheme-table th {
+
+    height: 39px;
+
+    padding:
+        0 11px;
+
+    text-align: left;
+
+    color: #626c76;
+
+    font-size: 7px;
+
+    font-weight: 700;
+
+    white-space: nowrap;
+
+    border-bottom:
+        1px solid #e2e6ea;
+}
+
+
+.scheme-table td {
+
+    height: 60px;
+
+    padding:
+        8px 11px;
+
+    color: #424b54;
+
+    font-size: 9px;
+
+    border-bottom:
+        1px solid #edf0f2;
+
+    white-space: nowrap;
+}
+
+
+.scheme-table tbody tr:hover {
+
+    background: #fafbfd;
+}
+
+
+.scheme-table tbody tr:last-child td {
+
+    border-bottom: none;
+}
+
+
+/* =========================================================
+   SCHEME NAME
+========================================================= */
+
+.scheme-name {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 3px;
+}
+
+
+.scheme-name strong {
+
+    color: #303943;
+
+    font-size: 9px;
+}
+
+
+.scheme-name span {
+
+    color: #89919a;
+
+    font-size: 7px;
+}
+
+
+/* =========================================================
+   AMOUNT
+========================================================= */
+
+.total-amount {
+
+    color: #276bdc;
+
+    font-weight: 700;
+
+    font-size: 9px;
+}
+
+
+.base-amount {
+
+    color: #444d56;
+
+    font-size: 9px;
+}
+
+
+/* =========================================================
+   TIMELINE
+========================================================= */
+
+.timeline {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 3px;
+}
+
+
+.timeline span {
+
+    color: #646e77;
+
+    font-size: 7px;
+}
+
+
+.timeline strong {
+
+    color: #343d46;
+
+    font-size: 7px;
+}
+
+
+/* =========================================================
+   CAPACITY
+========================================================= */
+
+.capacity-container {
+
+    width: 125px;
+}
+
+
+.capacity-text {
+
+    display: flex;
+
+    justify-content:
+        space-between;
+
+    margin-bottom: 5px;
+
+    font-size: 7px;
+
+    color: #6d7780;
+}
+
+
+.capacity-bar {
+
+    width: 100%;
+
+    height: 5px;
+
+    background: #e5e9ed;
+
+    border-radius: 5px;
+
+    overflow: hidden;
+}
+
+
+.capacity-progress {
+
+    height: 100%;
+
+    background: #29956c;
+
+    border-radius: 5px;
+
+    transition:
+        width 0.3s;
+}
+
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.status-badge {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding:
+        4px 8px;
+
+    border-radius: 12px;
+
+    font-size: 7px;
+
+    font-weight: 600;
+}
+
+
+.status-active {
+
+    background: #dff7eb;
+
+    color: #248d62;
+}
+
+
+.status-upcoming {
+
+    background: #fff3d4;
+
+    color: #b98217;
+}
+
+
+.status-closed {
+
+    background: #eceff2;
+
+    color: #68727c;
+}
+
+
+/* =========================================================
+   ACTION BUTTON
+========================================================= */
+
+.manage-button {
+
+    height: 27px;
+
+    padding:
+        0 10px;
+
+    background: #ffffff;
+
+    color: #286be2;
+
+    border:
+        1px solid #286be2;
+
+    border-radius: 4px;
+
+    cursor: pointer;
+
+    font-size: 8px;
+}
+
+
+.manage-button:hover {
+
+    background: #286be2;
+
+    color: #ffffff;
+}
+
+
+.edit-button {
+
+    height: 27px;
+
+    padding:
+        0 8px;
+
+    margin-left: 4px;
+
+    background: #ffffff;
+
+    color: #59636d;
+
+    border:
+        1px solid #d7dde2;
+
+    border-radius: 4px;
+
+    cursor: pointer;
+
+    font-size: 8px;
+}
+
+
+.edit-button:hover {
+
+    background: #f2f4f6;
+}
+
+
+.delete-button {
+
+    height: 27px;
+
+    padding:
+        0 8px;
+
+    margin-left: 4px;
+
+    background: #ffffff;
+
+    color: #d14b55;
+
+    border:
+        1px solid #efcdd0;
+
+    border-radius: 4px;
+
+    cursor: pointer;
+
+    font-size: 8px;
+}
+
+
+.delete-button:hover {
+
+    background: #fff0f1;
+}
+
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.empty-state {
+
+    text-align: center;
+
+    padding:
+        60px 20px;
+
+    color: #8b949d;
+}
+
+
+.empty-state-icon {
+
+    font-size: 28px;
+
+    color: #c5ccd2;
+
+    margin-bottom: 8px;
+}
+
+
+.empty-state strong {
+
+    display: block;
+
+    color: #68727c;
+
+    font-size: 11px;
+
+    margin-bottom: 4px;
+}
+
+
+.empty-state p {
+
+    color: #939ba3;
+
+    font-size: 9px;
+}
+
+
+/* =========================================================
+   MODAL OVERLAY
+========================================================= */
+
+.modal-overlay {
+
+    position: fixed;
+
+    inset: 0;
+
+    background:
+        rgba(20, 25, 30, 0.50);
+
+    display: none;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 20px;
+
+    z-index: 9999;
+}
+
+
+.modal-overlay.active {
+
+    display: flex;
+}
+
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+.modal {
+
+    width: 520px;
+
+    max-width: 95%;
+
+    max-height: 90vh;
+
+    overflow-y: auto;
+
+    background: #ffffff;
+
+    border-radius: 9px;
+
+    box-shadow:
+        0 20px 60px
+        rgba(0, 0, 0, 0.25);
+
+    animation:
+        modalOpen 0.2s ease;
+}
+
+
+@keyframes modalOpen {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+            translateY(-10px)
+            scale(0.98);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+
+    }
+
+}
+
+
+/* =========================================================
+   MODAL HEADER
+========================================================= */
+
+.modal-header {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content:
+        space-between;
+
+    padding:
+        19px 20px;
+
+    border-bottom:
+        1px solid #e7eaed;
+}
+
+
+.modal-header h2 {
+
+    color: #202a34;
+
+    font-size: 17px;
+
+    margin-bottom: 4px;
+}
+
+
+.modal-header p {
+
+    color: #87909a;
+
+    font-size: 9px;
+}
+
+
+.modal-close {
+
+    width: 29px;
+
+    height: 29px;
+
+    border: none;
+
+    background: #f1f3f5;
+
+    color: #59636c;
+
+    border-radius: 5px;
+
+    font-size: 19px;
+
+    cursor: pointer;
+}
+
+
+.modal-close:hover {
+
+    background: #e6e9ec;
+}
+
+
+/* =========================================================
+   FORM
+========================================================= */
+
+#schemeForm {
+
+    padding:
+        20px;
+}
+
+
+.form-group {
+
+    margin-bottom: 14px;
+}
+
+
+.form-group label {
+
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #4f5962;
+
+    font-size: 9px;
+
+    font-weight: 600;
+}
+
+
+.form-group input,
+.form-group select {
+
+    width: 100%;
+
+    height: 35px;
+
+    padding:
+        0 10px;
+
+    border:
+        1px solid #d9dfe4;
+
+    border-radius: 5px;
+
+    background: #ffffff;
+
+    color: #3f4851;
+
+    outline: none;
+
+    font-size: 10px;
+}
+
+
+.form-group input::placeholder {
+
+    color: #a5acb3;
+}
+
+
+.form-group input:focus,
+.form-group select:focus {
+
+    border-color: #286be2;
+
+    box-shadow:
+        0 0 0 2px
+        rgba(40, 107, 226, 0.09);
+}
+
+
+.form-row {
+
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 12px;
+}
+
+
+/* =========================================================
+   MODAL FOOTER
+========================================================= */
+
+.modal-footer {
+
+    display: flex;
+
+    justify-content:
+        flex-end;
+
+    gap: 8px;
+
+    padding-top: 5px;
+}
+
+
+.cancel-button,
+.save-button {
+
+    height: 34px;
+
+    padding:
+        0 15px;
+
+    border-radius: 5px;
+
+    cursor: pointer;
+
+    font-size: 10px;
+}
+
+
+.cancel-button {
+
+    background: #ffffff;
+
+    color: #5c6670;
+
+    border:
+        1px solid #d8dee3;
+}
+
+
+.cancel-button:hover {
+
+    background: #f5f6f7;
+}
+
+
+.save-button {
+
+    background: #286be2;
+
+    color: #ffffff;
+
+    border: none;
+}
+
+
+.save-button:hover {
+
+    background: #1e5bc7;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1100px) {
+
+    .filter-card {
+
+        grid-template-columns:
+            1fr 1fr;
+
+    }
+
+
+    .scheme-count-box {
+
+        grid-column:
+            1 / -1;
+
+    }
+
+}
+
+
+@media (max-width: 800px) {
+
+    .sidebar {
+
+        width: 65px;
+
+    }
+
+
+    .sidebar-logo {
+
+        justify-content: center;
+
+        padding: 0;
+
+    }
+
+
+    .sidebar-logo span {
+
+        display: none;
+
+    }
+
+
+    .nav-item {
+
+        justify-content: center;
+
+        padding: 0;
+
+        font-size: 0;
+
+    }
+
+
+    .nav-icon {
+
+        font-size: 16px;
+
+    }
+
+
+    .main-content {
+
+        margin-left: 65px;
+
+        width:
+            calc(100% - 65px);
+
+    }
+
+
+    .page-content {
+
+        padding:
+            20px 15px 30px;
+
+    }
+
+
+    .page-header {
+
+        flex-direction: column;
+
+        gap: 12px;
+
+    }
+
+
+    .filter-card {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    .scheme-count-box {
+
+        grid-column: auto;
+
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .topbar {
+
+        padding:
+            0 10px;
+
+    }
+
+
+    .profile-details {
+
+        display: none;
+
+    }
+
+
+    .form-row {
+
+        grid-template-columns: 1fr;
+
+        gap: 0;
+
+    }
+
+
+    .modal {
+
+        max-height: 95vh;
+
+    }
+
+}
