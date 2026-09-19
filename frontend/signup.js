@@ -34,7 +34,123 @@ signupForm.addEventListener("submit", async (event) => {
     // ==========================================
     // SEND DATA TO BACKEND
     // ==========================================
+    // =================================================
+            // REQUIRED FIELDS
+            // =================================================
 
+            if (
+                !fullName ||
+                !username ||
+                !phone ||
+                !email ||
+                !password ||
+                !confirmPassword
+            ) {
+
+                showMessage(
+                    signupMessage,
+                    "Please fill in all required fields.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            // =================================================
+            // PASSWORD VALIDATION
+            // =================================================
+
+            const passwordValidation =
+                validatePassword(
+                    password
+                );
+
+
+            if (
+                !passwordValidation.valid
+            ) {
+
+                showMessage(
+                    signupMessage,
+                    passwordValidation.message,
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            // =================================================
+            // CONFIRM PASSWORD
+            // =================================================
+
+            if (
+                password !==
+                confirmPassword
+            ) {
+
+                showMessage(
+                    signupMessage,
+                    "Passwords do not match.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            // =================================================
+            // PHONE VALIDATION
+            // =================================================
+
+            const phonePattern =
+                /^[0-9]{10}$/;
+
+
+            if (
+                !phonePattern.test(
+                    phone
+                )
+            ) {
+
+                showMessage(
+                    signupMessage,
+                    "Please enter a valid 10-digit phone number.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            // =================================================
+            // EMAIL VALIDATION
+            // =================================================
+
+            const emailPattern =
+                /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+
+            if (
+                !emailPattern.test(
+                    email
+                )
+            ) {
+
+                showMessage(
+                    signupMessage,
+                    "Please enter a valid email address.",
+                    "error"
+                );
+
+                return;
+
+            }
     try {
 
         signupMessage.textContent =
@@ -107,7 +223,7 @@ signupForm.addEventListener("submit", async (event) => {
         // Redirect after successful signup
         setTimeout(() => {
 
-            window.location.href = "login.html";
+            window.location.href = "admin-login.html";
 
         }, 1500);
 
@@ -262,3 +378,145 @@ if (
 
 }
 
+function validatePassword(
+    password
+) {
+
+    password =
+        String(
+            password || ""
+        );
+
+
+    const hasLength =
+        password.length >= 8;
+
+
+    const hasUppercase =
+        /[A-Z]/.test(
+            password
+        );
+
+
+    const hasLowercase =
+        /[a-z]/.test(
+            password
+        );
+
+
+    const hasNumber =
+        /[0-9]/.test(
+            password
+        );
+
+
+    const hasSpecial =
+        /[^A-Za-z0-9]/.test(
+            password
+        );
+
+
+    // =================================================
+    // LENGTH
+    // =================================================
+
+    if (!hasLength) {
+
+        return {
+
+            valid: false,
+
+            message:
+                "Password must contain at least 8 characters."
+
+        };
+
+    }
+
+
+    // =================================================
+    // UPPERCASE
+    // =================================================
+
+    if (!hasUppercase) {
+
+        return {
+
+            valid: false,
+
+            message:
+                "Password must contain at least one uppercase letter."
+
+        };
+
+    }
+
+
+    // =================================================
+    // LOWERCASE
+    // =================================================
+
+    if (!hasLowercase) {
+
+        return {
+
+            valid: false,
+
+            message:
+                "Password must contain at least one lowercase letter."
+
+        };
+
+    }
+
+
+    // =================================================
+    // NUMBER
+    // =================================================
+
+    if (!hasNumber) {
+
+        return {
+
+            valid: false,
+
+            message:
+                "Password must contain at least one number."
+
+        };
+
+    }
+
+
+    // =================================================
+    // SPECIAL CHARACTER
+    // =================================================
+
+    if (!hasSpecial) {
+
+        return {
+
+            valid: false,
+
+            message:
+                "Password must contain at least one special character."
+
+        };
+
+    }
+
+
+    // =================================================
+    // VALID PASSWORD
+    // =================================================
+
+    return {
+
+        valid: true,
+
+        message:
+            "Password is strong."
+
+    };
+
+}

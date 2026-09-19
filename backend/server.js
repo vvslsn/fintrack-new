@@ -3,6 +3,7 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/auth");
+const SchemaHandler = require("./routes/SchemaHandler.js");
 
 dotenv.config();
 
@@ -20,6 +21,8 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+
+//app.use('/create-scheme/create', SchemaHandler);
 
 
 

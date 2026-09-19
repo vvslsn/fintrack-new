@@ -229,5 +229,154 @@ router.post("/register", async (req, res) => {
 
 });
 
+router.post("/admin/login", async (req, res) => {
+
+    try {
+
+        const {
+            username,
+            password
+        } = req.body;
+
+
+        // ==========================================
+        // 1. VALIDATE INPUT
+        // ==========================================
+
+        if (!username || !password) {
+
+            return res.status(400).json({
+
+                success: false,
+
+                message: "Username and password are required"
+
+            });
+
+        }
+
+
+        // ==========================================
+        // 2. FIND ADMIN BY USERNAME
+        // ==========================================
+
+        const admin = await User.findOne({
+
+            username: username.trim(),
+
+            role: "admin"
+
+        });
+
+
+        // ==========================================
+        // 3. CHECK ADMIN EXISTS
+        // ==========================================
+
+        if (!admin) {
+
+            return res.status(401).json({
+
+                success: false,
+
+                message: "Invalid username or password"
+
+            });
+
+        }
+
+
+        // ==========================================
+        // 4. COMPARE PASSWORD
+        // ==========================================
+
+        const isPasswordValid =
+            await bcrypt.compare(
+                password,
+                admin.passwordHash
+            );
+
+
+        if (!isPasswordValid) {
+
+            return res.status(401).json({
+
+                success: false,
+
+                message: "Invalid username or password"
+
+            });
+
+        }
+
+
+        // ==========================================
+        // 5. UPDATE LAST LOGIN
+        // ==========================================
+
+        admin.lastLogin = new Date();
+
+        await admin.save();
+
+
+        // ==========================================
+        // 6. CREATE JWT TOKEN
+        // ==========================================
+
+
+        // ==========================================
+        // 7. SUCCESS RESPONSE
+        // ==========================================
+
+        res.status(200).json({
+
+            success: true,
+
+            message: "Admin login successful",
+
+            user: {
+
+                id: admin._id,
+
+                fullName: admin.fullName,
+
+                username: admin.username,
+
+                email: admin.email,
+
+                phone: admin.phone,
+
+                role: admin.role
+
+            }
+
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "Admin Login Error:",
+            error
+        );
+
+        res.status(500).json({
+
+            success: false,
+
+            message: "Server error during admin login"
+
+        });
+
+    }
+
+});
+
+
+router.post("/user/login", async (req, res) => {});
+
+router.post("/logout", async (req, res) => {});
+
+//router.post("/forgot-password", async (req, res) => {});
 
 module.exports = router;
