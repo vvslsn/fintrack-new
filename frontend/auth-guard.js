@@ -1,17 +1,6 @@
-(function () {
-    "use strict";
-
-    const loggedIn = sessionStorage.getItem("loggedIn");
-    let currentUser = null;
-    try {
-        currentUser = JSON.parse(sessionStorage.getItem("currentUser") || localStorage.getItem("fintrackUser") || "null");
-    } catch (e) {}
-
-    const role = String(currentUser?.role || "admin").trim().toLowerCase();
-
-    if (loggedIn !== "true" || role !== "admin") {
-        sessionStorage.removeItem("loggedIn");
-        sessionStorage.removeItem("currentUser");
-        window.location.replace("admin-login.html");
-    }
+(async()=>{
+ const token=sessionStorage.getItem("fintrackToken");
+ if(!token){location.replace("admin-login.html");return;}
+ try{const d=await fintrackApi("/auth/me");if(d.user.role!=="admin")throw Error();sessionStorage.setItem("currentUser",JSON.stringify(d.user));}
+ catch{fintrackClearSession();location.replace("admin-login.html");}
 })();

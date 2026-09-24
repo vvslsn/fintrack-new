@@ -1,139 +1,155 @@
-# FinTrack – Chit Management System
+# FinTrack — MongoDB Full Update
 
-## Technologies
+This version makes **MongoDB the persistent source of truth** for FinTrack. The browser no longer stores members, schemes, payments, winners or payment requests in localStorage.
 
-- Frontend: HTML, CSS, JavaScript
-- Backend: Node.js, Express.js
-- Database: MongoDB
+## Architecture
 
----
+Frontend HTML/JS → Express REST API → Mongoose → MongoDB
 
-# Prerequisites
+### Collections
 
-Install:
+- users
+- members
+- schemes
+- memberSchemeTickets
+- payments
+- onlinePaymentRequests
+- winners
+- adminPayouts
+- notifications
+- paymentSettings / bankAccounts
+- auditLogs
 
-- Node.js
-- npm
-- MongoDB
-- Visual Studio Code
-- Live Server Extension (VS Code)
+## Backend setup
 
-Check installations:
-
-node --version
-npm --version
-git --version
-
----
-
-# Frontend Setup
-
-## Navigate to Frontend
-
-cd frontend
-
-## Run Frontend
-
-### Option 1: VS Code Live Server
-
-Open the project in VS Code:
-
-code .
-
-Then open index.html using Live Server.
-
-### Option 2: Python HTTP Server
-
-Run:
-
-python -m http.server 5500
-
-Open:
-
-http://localhost:5500
-
----
-
-# Backend Setup
-
-## Navigate to Backend
-
+```bash
 cd backend
-
-## Install Dependencies
-
 npm install
+```
 
-## Start Development Server
+Copy `.env.example` to `.env` and fill in your own values:
 
+```env
+PORT=5000
+MONGO_URI=mongodb+srv://USERNAME:PASSWORD@CLUSTER/fintrack
+JWT_SECRET=use-a-long-random-secret
+FRONTEND_ORIGIN=http://127.0.0.1:5500,http://localhost:5500
+```
+
+Start:
+
+```bash
 npm run dev
+```
 
-## Start Production Server
+or:
 
+```bash
 npm start
+```
 
----
+The API health endpoint is:
 
-# MongoDB Setup
+`http://localhost:5000/api/health`
 
-## MongoDB Local
+## Frontend
 
-Start MongoDB service.
+Serve the `frontend` directory through a local HTTP server. Do not open the HTML files with `file://`.
 
-Connection:
+For VS Code, Live Server can be used.
 
-mongodb://127.0.0.1:27017/fintrack
+The default API URL is:
 
-## MongoDB Atlas
+`http://localhost:5000/api`
 
-Add the MongoDB Atlas connection string to the backend .env file.
+To use another API URL before loading the page:
 
----
+```html
+<script>
+window.FINTRACK_API_URL = "https://your-api.example.com/api";
+</script>
+```
 
-# Run Frontend and Backend
+## Authentication
 
-## Terminal 1 – Frontend
+- Admin accounts are created from `signup.html`.
+- Admins log in through `admin-login.html`.
+- Members get a linked user account from Admin → Members.
+- User login is `user/user-login.html`.
+- Passwords are stored only as bcrypt hashes.
+- JWTs are kept client-side only as authentication tokens; financial/business records are not kept in localStorage.
 
-cd frontend
+## FinTrack rules implemented
 
-python -m http.server 5500
+### Cash chit
 
----
+- Normal installment = 5% of chit value.
+- From the winning month onward = 6% of chit value.
+- Winning payout starts at 95% in month 1 and increases by 1% of chit value per month.
+- A ticket can win only once in a scheme.
+- Maximum two winners per month.
 
-## Terminal 2 – Backend
+### Gold chit
 
-cd backend
+- Total cash chit value is not required.
+- Gold grams are stored.
+- Monthly rupee installments can be configured per month.
+- Winner payout is represented in grams.
 
-npm run dev
+### Payments
 
----
+Every installment is uniquely identified by:
 
-# URLs
+`member + scheme + ticket + month`
 
-Frontend:
+This prevents duplicate ledger entries.
 
-http://localhost:5500
+Online payment requests:
 
-Backend:
+1. User submits UTR.
+2. Request is stored in `onlinePaymentRequests`.
+3. Admin sees pending requests.
+4. Admin approves/rejects.
+5. Approval automatically creates/updates the paid ledger record.
+6. User receives a notification.
 
-http://localhost:5000
+## Important
 
----
+The original uploaded project contained a MongoDB Atlas credential in `backend/.env`. That credential was **removed from this updated project**. Create a new `.env` using `.env.example` and use a newly rotated database credential.
 
-# Git Commands
+The old localStorage business-data implementation was removed from the active frontend flow. Existing browser localStorage records from an older version are **not automatically imported** into MongoDB. If you need the old browser data preserved, export it before switching versions or provide the old data for a controlled migration.
 
-## Check Status
+## Main frontend structure
 
-git status
+Each functional area has its own JavaScript file:
 
-## Add Files
+```text
+frontend/
+  api.js
+  fintrack-core.js
 
-git add .
+  dashboard.html
+  scriptdashboard.js
 
-## Commit Changes
+  schemes.html
+  schemes.js
 
-git commit -m "Update FinTrack project"
+  members.html
+  members.js
 
-## Push Changes
+  payments.html
+  payments.js
 
-git push origin main
+  scheme-details.html
+  scheme-details.js
+
+  payment-settings.html
+  payment-settings.js
+
+  user/
+    user-common.js
+    user-pages.js
+    user-auth.js
+```
+
+Shared authentication and API communication are kept separate from page-specific business logic.

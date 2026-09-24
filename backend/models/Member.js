@@ -19,7 +19,7 @@ const memberSchema = new Schema(
         },
         status: {
             type: String,
-            enum: ["active", "inactive"],
+            enum: ["active", "inactive", "completed"],
             default: "active"
         },
         joinedDate: { type: Date, required: true },
