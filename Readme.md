@@ -20,14 +20,14 @@ Frontend HTML/JS → Express REST API → Mongoose → MongoDB
 - paymentSettings / bankAccounts
 - auditLogs
 
-## Backend setup
+## Run locally
 
 ```bash
 cd backend
 npm install
 ```
 
-Copy `.env.example` to `.env` and fill in your own values:
+Copy `.env.example` to `.env` and fill in your MongoDB connection string and a private JWT secret of at least 32 characters:
 
 ```env
 PORT=5000
@@ -36,7 +36,7 @@ JWT_SECRET=use-a-long-random-secret
 FRONTEND_ORIGIN=http://127.0.0.1:5500,http://localhost:5500
 ```
 
-Start:
+Start the API and frontend together:
 
 ```bash
 npm run dev
@@ -48,17 +48,11 @@ or:
 npm start
 ```
 
-The API health endpoint is:
+Open the app at `http://localhost:5000`. The API health endpoint is:
 
 `http://localhost:5000/api/health`
 
-## Frontend
-
-Serve the `frontend` directory through a local HTTP server. Do not open the HTML files with `file://`.
-
-For VS Code, Live Server can be used.
-
-The default API URL is:
+The frontend is served by Express from the same origin. Do not open HTML files with `file://`. For separate frontend hosting, the default API URL is:
 
 `http://localhost:5000/api`
 
@@ -112,6 +106,20 @@ Online payment requests:
 4. Admin approves/rejects.
 5. Approval automatically creates/updates the paid ledger record.
 6. User receives a notification.
+
+### Payment gateway
+
+FinTrack uses Razorpay Standard Checkout for UPI, net banking, and credit/debit cards. Checkout orders are created by the backend; a payment is added to the ledger only after the signed checkout response is verified and Razorpay reports the payment as captured. Card data is entered on Razorpay Checkout and is not stored by FinTrack.
+
+To enable gateway payments, add these values to `backend/.env` using Razorpay **Test Mode** credentials first:
+
+```env
+RAZORPAY_KEY_ID=rzp_test_...
+RAZORPAY_KEY_SECRET=your_test_key_secret
+RAZORPAY_WEBHOOK_SECRET=your_webhook_secret
+```
+
+Enable automatic payment capture in the Razorpay Dashboard. Configure a webhook URL of `https://YOUR_PUBLIC_HOST/api/payments/gateway/webhook` and subscribe to the `payment.captured` event. The webhook secret must match `RAZORPAY_WEBHOOK_SECRET`. Localhost cannot receive provider webhooks without a public HTTPS tunnel. After successful test payments, replace the test credentials with live-mode keys before accepting real payments.
 
 ## Important
 

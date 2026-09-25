@@ -1400,3 +1400,265 @@ tbody tr:last-child td {
     color: #39434d;
     font-size: 9px;
 }
+
+/* Add-member dialog opened from the full scheme management page. */
+.detail-member-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(16, 24, 40, .52);
+}
+
+.detail-member-modal-overlay.active {
+    display: flex;
+}
+
+.detail-member-modal {
+    width: min(720px, 100%);
+    max-height: 92vh;
+    overflow: auto;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, .25);
+}
+
+.detail-member-modal-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 20px 22px;
+    border-bottom: 1px solid #e8edf3;
+}
+
+.detail-member-modal-header h2 {
+    margin: 0 0 5px;
+    color: #202b3c;
+    font-size: 18px;
+}
+
+.detail-member-modal-header p,
+.detail-quick-create-header span {
+    margin: 0;
+    color: #768294;
+    font-size: 12px;
+}
+
+.detail-modal-close {
+    width: 32px;
+    height: 32px;
+    border: 0;
+    border-radius: 6px;
+    background: #f1f4f8;
+    color: #526071;
+    font-size: 21px;
+    cursor: pointer;
+}
+
+.detail-member-modal-content {
+    padding: 20px 22px;
+}
+
+.detail-member-capacity {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    padding: 12px 14px;
+    border: 1px solid #e5eaf1;
+    border-radius: 7px;
+    background: #f8fafc;
+    color: #556174;
+    font-size: 12px;
+}
+
+.detail-add-member-form {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 145px auto;
+    align-items: end;
+    gap: 10px;
+}
+
+.detail-member-search,
+.detail-ticket-input {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    color: #526071;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.detail-member-search input,
+.detail-ticket-input input,
+.detail-quick-create input {
+    width: 100%;
+    height: 40px;
+    padding: 0 10px;
+    border: 1px solid #d5dde8;
+    border-radius: 6px;
+    background: white;
+    color: #202b3c;
+    font: inherit;
+    font-weight: 400;
+}
+
+.detail-create-member-link {
+    align-self: flex-start;
+    margin-top: -1px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #286be2;
+    font: inherit;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.detail-create-member-link:hover {
+    text-decoration: underline;
+}
+
+.detail-add-member-form > button,
+.detail-quick-create form > button {
+    height: 40px;
+    padding: 0 13px;
+    border: 0;
+    border-radius: 6px;
+    background: #286be2;
+    color: #fff;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.detail-add-member-form button:disabled,
+.detail-quick-create form button:disabled {
+    background: #9fb2cf;
+    cursor: not-allowed;
+}
+
+.detail-member-suggestions {
+    position: absolute;
+    z-index: 2;
+    top: calc(100% + 3px);
+    right: 0;
+    left: 0;
+    display: none;
+    max-height: 220px;
+    overflow: auto;
+    border: 1px solid #dce3ed;
+    border-radius: 7px;
+    background: #fff;
+    box-shadow: 0 10px 25px rgba(25, 38, 58, .14);
+}
+
+.detail-member-suggestions.visible {
+    display: block;
+}
+
+.detail-member-suggestions button {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px 12px;
+    border: 0;
+    border-bottom: 1px solid #eef1f5;
+    background: #fff;
+    color: #28354a;
+    text-align: left;
+    cursor: pointer;
+}
+
+.detail-member-suggestions button:hover {
+    background: #f2f6ff;
+}
+
+.detail-member-suggestions small,
+.detail-member-suggestions p {
+    margin: 0;
+    color: #768294;
+    font-size: 11px;
+}
+
+.detail-member-suggestions p {
+    padding: 11px 12px;
+}
+
+.detail-member-suggestions .detail-create-option {
+    color: #286be2;
+    font-weight: 600;
+}
+
+.detail-quick-create {
+    margin-top: 16px;
+    padding: 15px;
+    border: 1px solid #dfe7f2;
+    border-radius: 8px;
+    background: #f8faff;
+}
+
+.detail-quick-create[hidden] {
+    display: none !important;
+}
+
+.detail-quick-create-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 12px;
+}
+
+.detail-quick-create-header > div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.detail-quick-create-header strong {
+    color: #263246;
+    font-size: 14px;
+}
+
+.detail-quick-create-header button {
+    border: 0;
+    background: transparent;
+    color: #617087;
+    font: inherit;
+    cursor: pointer;
+}
+
+.detail-quick-create form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.detail-quick-create label {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    color: #526071;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+#detailMemberMessage {
+    min-height: 18px;
+    margin: 11px 0 0;
+    color: #16834b;
+    font-size: 12px;
+}
+
+@media (max-width: 680px) {
+    .detail-add-member-form,
+    .detail-quick-create form {
+        grid-template-columns: 1fr;
+    }
+}

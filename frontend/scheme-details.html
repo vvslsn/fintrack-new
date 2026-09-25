@@ -922,6 +922,40 @@
 
 
 
+    <div class="detail-member-modal-overlay" id="detailAddMemberModal" role="dialog" aria-modal="true" aria-labelledby="detailAddMemberTitle">
+        <section class="detail-member-modal">
+            <header class="detail-member-modal-header">
+                <div><h2 id="detailAddMemberTitle">Add a scheme member</h2><p>Search by name or create a new member.</p></div>
+                <button type="button" class="detail-modal-close" onclick="closeDetailMemberModal()" aria-label="Close">×</button>
+            </header>
+            <div class="detail-member-modal-content">
+                <div class="detail-member-capacity" id="detailMemberCapacity"></div>
+                <form id="detailAddMemberForm" class="detail-add-member-form">
+                    <div class="detail-member-search">
+                        <label for="detailMemberSearch">Member name</label>
+                        <input id="detailMemberSearch" type="search" autocomplete="off" placeholder="Search by name or phone" required>
+                        <input id="detailSelectedMemberId" type="hidden">
+                        <button type="button" class="detail-create-member-link" onclick="openDetailQuickCreate()">Member not listed? Create a new member</button>
+                        <div id="detailMemberSuggestions" class="detail-member-suggestions"></div>
+                    </div>
+                    <label class="detail-ticket-input">Ticket number<input id="detailTicketNumber" required maxlength="40"></label>
+                    <button id="detailAddMemberButton" type="submit">Add member</button>
+                </form>
+                <section id="detailQuickCreatePanel" class="detail-quick-create" hidden>
+                    <div class="detail-quick-create-header"><div><strong>Create a new member</strong><span>They will be added to this scheme after saving.</span></div><button type="button" onclick="closeDetailQuickCreate()">Cancel</button></div>
+                    <form id="detailQuickCreateForm">
+                        <label>Full name<input id="detailNewMemberName" required maxlength="120"></label>
+                        <label>Email<input id="detailNewMemberEmail" type="email" required maxlength="160"></label>
+                        <label>Phone<input id="detailNewMemberPhone" type="tel" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" required></label>
+                        <label>Joined date<input id="detailNewMemberJoinedDate" type="date" required></label>
+                        <button id="detailCreateAndAddButton" type="submit">Create and add to scheme</button>
+                    </form>
+                </section>
+                <p id="detailMemberMessage" role="status"></p>
+            </div>
+        </section>
+    </div>
+
     <!-- =====================================================
          JAVASCRIPT
     ====================================================== -->

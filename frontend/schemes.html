@@ -311,14 +311,6 @@
                                 </th>
 
                                 <th>
-                                    CHIT TYPE
-                                </th>
-
-                                <th>
-                                    TOTAL VALUE
-                                </th>
-
-                                <th>
                                     BASE INSTALLMENT
                                 </th>
 
@@ -654,6 +646,54 @@
         </div>
 
 
+    </div>
+
+    <div class="modal-overlay" id="schemeManageModal" role="dialog" aria-modal="true" aria-labelledby="manageSchemeTitle">
+        <div class="modal scheme-manage-modal">
+            <div class="modal-header">
+                <div>
+                    <h2 id="manageSchemeTitle">Manage scheme members</h2>
+                    <p id="manageSchemeSubtitle">Choose an existing member by name and assign a ticket.</p>
+                </div>
+                <button type="button" class="modal-close" onclick="closeManageSchemeModal()" aria-label="Close">×</button>
+            </div>
+            <div class="manage-scheme-content">
+                <div class="manage-capacity-summary" id="manageCapacitySummary"></div>
+                <form id="schemeMemberForm" class="scheme-member-form">
+                    <div class="member-picker">
+                        <label for="memberNameSearch">Member name</label>
+                        <input id="memberNameSearch" type="search" autocomplete="off" placeholder="Search members by name or phone" required>
+                        <input id="selectedMemberId" type="hidden">
+                        <div id="memberSearchResults" class="member-search-results" role="listbox"></div>
+                    </div>
+                    <div class="ticket-picker">
+                        <label for="newTicketNumber">Ticket number</label>
+                        <input id="newTicketNumber" type="text" required maxlength="40" placeholder="Ticket number">
+                    </div>
+                    <button class="manage-add-button" type="submit">Add member</button>
+                </form>
+                <section id="quickCreateMemberPanel" class="quick-create-member-panel" hidden>
+                    <div class="quick-create-heading">
+                        <div><strong>Create a member</strong><span>They will be added to this scheme after saving.</span></div>
+                        <button type="button" class="quick-create-cancel" onclick="closeQuickCreateMember()">Cancel</button>
+                    </div>
+                    <form id="quickCreateMemberForm" class="quick-create-member-form">
+                        <label>Full name<input id="newMemberName" name="name" required maxlength="120"></label>
+                        <label>Email<input id="newMemberEmail" name="email" type="email" required maxlength="160"></label>
+                        <label>Phone<input id="newMemberPhone" name="phone" type="tel" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" placeholder="10-digit phone" required></label>
+                        <label>Joined date<input id="newMemberJoinedDate" name="joinedDate" type="date" required></label>
+                        <button id="createAndAddMemberButton" class="manage-add-button" type="submit">Create and add to scheme</button>
+                    </form>
+                </section>
+                <p id="manageSchemeMessage" class="manage-scheme-message" role="status"></p>
+                <div class="managed-members-table-wrap">
+                    <table class="managed-members-table">
+                        <thead><tr><th>TICKET</th><th>MEMBER NAME</th><th>PHONE</th></tr></thead>
+                        <tbody id="managedMembersBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 
 

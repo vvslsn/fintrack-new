@@ -1,18 +1,34 @@
 require("dotenv").config();
 const express=require("express");
 const cors=require("cors");
+const path=require("path");
 const connectDB=require("./config/db");
 const errorHandler=require("./middleware/errorHandler");
 
 if(!process.env.MONGO_URI) throw new Error("MONGO_URI is required");
-if(!process.env.JWT_SECRET) console.warn("WARNING: JWT_SECRET is not configured.");
+if(!process.env.JWT_SECRET || process.env.JWT_SECRET.length < 32) {
+  throw new Error("JWT_SECRET must be configured with at least 32 characters");
+}
 
 const app=express();
-app.use(cors({origin:true,credentials:true}));
-app.use(express.json({limit:"5mb"}));
+const allowedOrigins = (process.env.FRONTEND_ORIGIN || "http://127.0.0.1:5500,http://localhost:5500")
+  .split(",").map(origin => origin.trim()).filter(Boolean);
+app.use(cors({
+  origin(origin, callback) {
+    // Requests without an Origin header include local scripts and server-to-server calls.
+    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(null, false);
+  },
+  credentials: true
+}));
+app.use(express.json({
+  limit:"5mb",
+  verify(req,res,buffer){
+    if(req.originalUrl==="/api/payments/gateway/webhook")req.rawBody=Buffer.from(buffer);
+  }
+}));
 app.use(express.urlencoded({extended:true,limit:"5mb"}));
 
-app.get("/",(req,res)=>res.json({success:true,message:"FinTrack Backend API is running"}));
 app.get("/api/health",(req,res)=>res.json({success:true,status:"ok",time:new Date().toISOString()}));
 
 app.use("/api/auth",require("./routes/auth"));
@@ -26,6 +42,8 @@ app.use("/api/payouts",require("./routes/payouts"));
 app.use("/api/reports",require("./routes/reports"));
 app.use("/api/audit",require("./routes/audit"));
 
+// Serve the browser app from the same origin so local setup needs only one server.
+app.use(express.static(path.join(__dirname,"..","frontend")));
 app.use((req,res)=>res.status(404).json({success:false,message:"API route not found"}));
 app.use(errorHandler);
 

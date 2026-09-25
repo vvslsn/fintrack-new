@@ -34,7 +34,9 @@ router.delete("/:id",requireAuth,requireRole("admin"),async(req,res)=>{
   res.json({success:true});
 });
 router.get("/:id/tickets",requireAuth,async(req,res)=>{
-  const rows=await MemberSchemeTicket.find({scheme:req.params.id}).populate("member","name email phone status").sort({ticketNumber:1});
+  const filter={scheme:req.params.id};
+  if(req.user.role==="user")filter.member=req.user.memberId;
+  const rows=await MemberSchemeTicket.find(filter).populate("member","name email phone status joinedDate").sort({ticketNumber:1});
   res.json({success:true,tickets:rows});
 });
 module.exports=router;

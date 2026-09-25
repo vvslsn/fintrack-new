@@ -18,6 +18,7 @@ const paymentSchema = new Schema(
         paymentDate: { type: Date, default: null },
         method: { type: String, default: "" },
         transactionId: { type: String, default: "" },
+        gatewayOrderId: { type: String, default: "" },
 
         status: {
             type: String,
@@ -29,7 +30,7 @@ const paymentSchema = new Schema(
 
         source: {
             type: String,
-            enum: ["manual", "online_payment_request"],
+            enum: ["manual", "online_payment_request", "gateway"],
             default: "manual"
         },
         onlineRequest: {

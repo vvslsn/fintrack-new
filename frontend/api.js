@@ -13,6 +13,6 @@
     return data;
   }
   function setSession(data){sessionStorage.setItem(TOKEN_KEY,data.token);sessionStorage.setItem("currentUser",JSON.stringify(data.user));sessionStorage.setItem("loggedIn","true");}
-  function clearSession(){sessionStorage.removeItem(TOKEN_KEY);sessionStorage.removeItem("currentUser");sessionStorage.removeItem("loggedIn");localStorage.removeItem(TOKEN_KEY);}
+  function clearSession(){sessionStorage.removeItem(TOKEN_KEY);sessionStorage.removeItem("currentUser");sessionStorage.removeItem("loggedIn");sessionStorage.removeItem("fintrackActivePortal");}
   window.fintrackApi=api; window.fintrackSetSession=setSession; window.fintrackClearSession=clearSession; window.FINTRACK_API_BASE=API_BASE;
 })();

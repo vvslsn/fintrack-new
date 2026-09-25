@@ -21,7 +21,11 @@ router.get("/:id",requireAuth,async(req,res)=>{
 });
 router.post("/",requireAuth,requireRole("admin"),async(req,res)=>{
   const b=req.body; if(!b.name||!b.email||!b.phone||!b.joinedDate)return res.status(400).json({success:false,message:"Name, email, phone and joined date are required"});
-  const member=await Member.create({name:b.name,email:b.email,phone:b.phone,joinedDate:b.joinedDate,status:b.status||"active",profilePhoto:b.profilePhoto||""});
+  const email=String(b.email).trim().toLowerCase();
+  const phone=String(b.phone).trim();
+  if(!/^\d{10}$/.test(phone))return res.status(400).json({success:false,message:"Phone number must be exactly 10 digits"});
+  if(await Member.exists({email}))return res.status(409).json({success:false,message:"A member with this email already exists"});
+  const member=await Member.create({name:String(b.name).trim(),email,phone,joinedDate:b.joinedDate,status:b.status||"active",profilePhoto:b.profilePhoto||""});
   let user=null;
   if(b.createLogin!==false && b.username && b.password){
     if(await User.findOne({$or:[{username:b.username},{email:b.email.toLowerCase()},{phone:b.phone}]})){await Member.findByIdAndDelete(member._id);return res.status(409).json({success:false,message:"User credentials already exist"});}

@@ -5,6 +5,7 @@ module.exports = {
     MemberSchemeTicket: require("./MemberSchemeTicket"),
     Winner: require("./Winner"),
     Payment: require("./Payment"),
+    GatewayOrder: require("./GatewayOrder"),
     AdminPayout: require("./AdminPayout"),
     OnlinePaymentRequest: require("./OnlinePaymentRequest"),
     ...require("./PaymentSettings"), // { BankAccount, PaymentSettings }

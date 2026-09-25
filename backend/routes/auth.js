@@ -9,6 +9,9 @@ const safe=u=>({id:u._id.toString(),fullName:u.fullName,username:u.username,emai
 
 router.post("/register",async(req,res)=>{
   try{
+    // Public registration is only for initial setup; subsequent admins must be
+    // provisioned by an existing administrator instead of anonymous visitors.
+    if (await User.exists({role:"admin"})) return res.status(403).json({success:false,message:"Admin registration is closed. Ask an existing administrator to create an account."});
     const {fullName,username,email,phone,password,confirmPassword}=req.body;
     if(!fullName||!username||!email||!phone||!password) return res.status(400).json({success:false,message:"All fields are required"});
     if(confirmPassword!==undefined && password!==confirmPassword) return res.status(400).json({success:false,message:"Passwords do not match"});
@@ -18,7 +21,10 @@ router.post("/register",async(req,res)=>{
     if(await User.findOne({$or:[{username:username.trim()},{email:email.toLowerCase()},{phone}]})) return res.status(409).json({success:false,message:"Username, email or phone already exists"});
     const user=await User.create({fullName:fullName.trim(),username:username.trim(),email:email.toLowerCase(),phone,passwordHash:await bcrypt.hash(password,12),role:"admin",memberId:null});
     res.status(201).json({success:true,message:"Admin account created",token:signUser(user),user:safe(user)});
-  }catch(e){res.status(400).json({success:false,message:e.message});}
+  }catch(e){
+    if (e.code === 11000) return res.status(409).json({success:false,message:"Username, email or phone already exists"});
+    res.status(400).json({success:false,message:e.name === "ValidationError" ? e.message : "Unable to create admin account"});
+  }
 });
 
 router.post("/admin/login",async(req,res)=>{

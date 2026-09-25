@@ -42,3 +42,16 @@
 .pay-pending{margin:20px 26px}.payment-error{max-width:700px;margin:80px auto;padding:30px;text-align:center;background:#fff;border-radius:14px}
 @media(max-width:700px){.payments-page-intro{align-items:flex-start;flex-direction:column}.payments-due-header{align-items:flex-start;flex-direction:column}.payments-due-total{text-align:left}.payments-due-row{grid-template-columns:1fr auto;gap:10px}.due-action{grid-column:1/-1;text-align:left;min-width:0}.pay-head{align-items:flex-start;flex-direction:column;padding:20px}.pay-amount{text-align:left}.pay-summary{grid-template-columns:1fr;padding:15px 20px}.payment-methods{padding:15px 20px 0;flex-direction:column}.pay-method-panel{margin:15px 20px}.online-payment-form{padding:0 20px 20px}.pay-pending{margin:20px}.payments-history-card{padding:18px}}
 @media(max-width:420px){.payments-due-row{grid-template-columns:1fr}.due-amount{font-size:16px}}
+
+/* Hosted Razorpay checkout page */
+.gateway-pay-card{max-width:640px;margin:42px auto;padding:30px}
+.gateway-eyebrow{margin:0 0 8px;color:#2563eb;font-size:11px;font-weight:800;letter-spacing:1px}
+.gateway-pay-card h1{margin:0 0 12px;color:#172033;font-size:30px}
+.gateway-pay-card>p:not(.gateway-eyebrow):not(.gateway-secure-note){margin:7px 0;color:#667085;font-size:14px}
+.gateway-methods{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 14px}
+.gateway-methods span{padding:8px 11px;border:1px solid #dbe3ed;border-radius:99px;background:#f8fafc;color:#344054;font-size:12px;font-weight:700}
+.gateway-secure-note{margin:0 0 17px;color:#778196;font-size:12px;line-height:1.55}
+.gateway-pay-button{width:100%;min-height:46px;font-size:14px;font-weight:700}
+.gateway-pay-button:disabled{opacity:.65;cursor:wait}
+.gateway-payment-message{min-height:18px;margin:12px 0 0;color:#475467;font-size:12px;line-height:1.5}
+@media(max-width:700px){.gateway-pay-card{margin:24px auto;padding:22px}}
