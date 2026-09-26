@@ -14,6 +14,9 @@ async function requireAuth(req,res,next){
     const user = await User.findById(payload.id).select("-passwordHash");
     if(!user) return res.status(401).json({success:false,message:"User not found"});
     req.user = user;
+    if(user.mustChangePassword && !req.originalUrl.endsWith("/auth/password/first-login")) {
+      return res.status(403).json({success:false,code:"PASSWORD_CHANGE_REQUIRED",message:"Change your temporary password before continuing."});
+    }
     next();
   }catch(e){ return res.status(401).json({success:false,message:"Invalid or expired token"}); }
 }

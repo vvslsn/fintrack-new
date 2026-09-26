@@ -1,11 +1,14 @@
 const express=require("express");
 const bcrypt=require("bcryptjs");
+const crypto=require("crypto");
 const User=require("../models/User");
 const Member=require("../models/Member");
+const PasswordReset=require("../models/PasswordReset");
 const {requireAuth,requireRole,signUser}=require("../middleware/auth");
+const {smtpConfigured,sendMemberCredentials,sendPasswordResetOtp}=require("../services/mail");
 const router=express.Router();
 
-const safe=u=>({id:u._id.toString(),fullName:u.fullName,username:u.username,email:u.email,phone:u.phone,role:u.role,memberId:u.memberId?u.memberId.toString():null,profilePhoto:u.profilePhoto||"",lastLogin:u.lastLogin});
+const safe=u=>({id:u._id.toString(),fullName:u.fullName,username:u.username,email:u.email,phone:u.phone,role:u.role,memberId:u.memberId?u.memberId.toString():null,profilePhoto:u.profilePhoto||"",lastLogin:u.lastLogin,mustChangePassword:Boolean(u.mustChangePassword)});
 
 router.post("/register",async(req,res)=>{
   try{
@@ -57,8 +60,9 @@ router.post("/admin/login",managerLogin);
 
 router.post("/user/login",async(req,res)=>{
   try{
-    const {email,username,password}=req.body;
-    const user=await User.findOne({email:String(email||username||"").trim().toLowerCase(),role:"user"});
+    const {identifier,email,username,password}=req.body;
+    const login=String(identifier||email||username||"").trim();
+    const user=await User.findOne({role:"user",$or:[{email:login.toLowerCase()},{username:login}]});
     if(!user||!(await bcrypt.compare(password||"",user.passwordHash))) return res.status(401).json({success:false,message:"Invalid email or password"});
     if(!user.memberId) return res.status(403).json({success:false,message:"User account is not linked to a member"});
     const member=await Member.findById(user.memberId); if(!member) return res.status(403).json({success:false,message:"Linked member not found"});
@@ -89,8 +93,67 @@ router.patch("/profile",requireAuth,async(req,res)=>{
 router.patch("/password",requireAuth,async(req,res)=>{
   const {currentPassword,newPassword}=req.body;
   if(!newPassword||newPassword.length<8)return res.status(400).json({success:false,message:"New password must contain at least 8 characters"});
-  if(!(await bcrypt.compare(currentPassword||"",req.user.passwordHash)))return res.status(400).json({success:false,message:"Current password is incorrect"});
-  req.user.passwordHash=await bcrypt.hash(newPassword,12);await req.user.save();res.json({success:true,message:"Password changed"});
+  const user=await User.findById(req.user._id);
+  if(!(await bcrypt.compare(currentPassword||"",user.passwordHash)))return res.status(400).json({success:false,message:"Current password is incorrect"});
+  user.passwordHash=await bcrypt.hash(newPassword,12);await user.save();res.json({success:true,message:"Password changed"});
+});
+
+router.post("/password/first-login",requireAuth,async(req,res)=>{
+  const {newPassword,confirmPassword}=req.body;
+  if(req.user.role!=="user"||!req.user.mustChangePassword)return res.status(409).json({success:false,message:"No temporary password change is required."});
+  if(!newPassword||newPassword.length<8)return res.status(400).json({success:false,message:"New password must contain at least 8 characters."});
+  if(newPassword!==confirmPassword)return res.status(400).json({success:false,message:"Passwords do not match."});
+  const user=await User.findById(req.user._id);
+  user.passwordHash=await bcrypt.hash(newPassword,12);
+  user.mustChangePassword=false;
+  await user.save();
+  res.json({success:true,message:"Password updated.",user:safe(user)});
+});
+
+const genericResetMessage="If an account matches that email, a password reset code will arrive shortly.";
+function otpDigest(userId,otp){return crypto.createHmac("sha256",process.env.JWT_SECRET).update(`${userId}:${otp}`).digest("hex");}
+function safeDigestEqual(left,right){
+  const a=Buffer.from(String(left||""),"hex"),b=Buffer.from(String(right||""),"hex");
+  return a.length===b.length&&a.length>0&&crypto.timingSafeEqual(a,b);
+}
+
+router.post("/password/forgot",async(req,res)=>{
+  const email=String(req.body.email||"").trim().toLowerCase();
+  if(!/^[\w.+-]+@[\w-]+\.[A-Za-z]{2,}$/.test(email))return res.status(400).json({success:false,message:"Enter a valid email address."});
+  if(!smtpConfigured())return res.status(503).json({success:false,message:"Email service is not configured. Contact the manager."});
+  const user=await User.findOne({email,role:{$in:["manager","admin","user"]}});
+  if(!user)return res.json({success:true,message:genericResetMessage});
+  const now=new Date();
+  const previous=await PasswordReset.findOne({user:user._id});
+  if(previous&&now-previous.createdAt<60_000)return res.json({success:true,message:genericResetMessage});
+  const otp=String(crypto.randomInt(100000,1000000));
+  await PasswordReset.findOneAndUpdate({user:user._id},{user:user._id,otpHash:otpDigest(user._id,otp),attempts:0,createdAt:now,expiresAt:new Date(now.getTime()+10*60_000)},{upsert:true,new:true,setDefaultsOnInsert:true});
+  try{await sendPasswordResetOtp({to:user.email,name:user.fullName,otp});}
+  catch(error){await PasswordReset.deleteOne({user:user._id});return res.status(503).json({success:false,message:"Could not send the reset email. Check SMTP settings and try again."});}
+  res.json({success:true,message:genericResetMessage});
+});
+
+router.post("/password/reset",async(req,res)=>{
+  const email=String(req.body.email||"").trim().toLowerCase();
+  const otp=String(req.body.otp||"").trim();
+  const {newPassword,confirmPassword}=req.body;
+  if(!/^[\w.+-]+@[\w-]+\.[A-Za-z]{2,}$/.test(email)||!/^\d{6}$/.test(otp))return res.status(400).json({success:false,message:"Enter the registered email and six-digit code."});
+  if(!newPassword||newPassword.length<8)return res.status(400).json({success:false,message:"New password must contain at least 8 characters."});
+  if(newPassword!==confirmPassword)return res.status(400).json({success:false,message:"Passwords do not match."});
+  const user=await User.findOne({email,role:{$in:["manager","admin","user"]}});
+  if(!user)return res.status(400).json({success:false,message:"The reset code is invalid or expired."});
+  const reset=await PasswordReset.findOne({user:user._id,expiresAt:{$gt:new Date()},attempts:{$lt:5}});
+  if(!reset)return res.status(400).json({success:false,message:"The reset code is invalid or expired."});
+  if(!safeDigestEqual(reset.otpHash,otpDigest(user._id,otp))){
+    reset.attempts+=1;await reset.save();
+    if(reset.attempts>=5)await PasswordReset.deleteOne({_id:reset._id});
+    return res.status(400).json({success:false,message:"The reset code is invalid or expired."});
+  }
+  user.passwordHash=await bcrypt.hash(newPassword,12);
+  user.mustChangePassword=false;
+  await user.save();
+  await PasswordReset.deleteOne({_id:reset._id});
+  res.json({success:true,message:"Password reset successfully. You can now sign in."});
 });
 
 router.get("/me",requireAuth,async(req,res)=>res.json({success:true,user:safe(req.user)}));

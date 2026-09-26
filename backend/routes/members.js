@@ -1,4 +1,5 @@
 const express=require("express");
+const crypto=require("crypto");
 const bcrypt=require("bcryptjs");
 const Member=require("../models/Member");
 const User=require("../models/User");
@@ -6,6 +7,7 @@ const Scheme=require("../models/Scheme");
 const Ticket=require("../models/MemberSchemeTicket");
 const {requireAuth,requireRole}=require("../middleware/auth");
 const {isManager}=require("../middleware/tenant");
+const {sendMemberCredentials}=require("../services/mail");
 const router=express.Router();
 const clean=m=>{const x=m.toObject();x.id=x._id.toString();delete x._id;delete x.__v;return x;};
 
@@ -13,7 +15,10 @@ router.get("/",requireAuth,async(req,res)=>{
   if(req.user.role==="user"){
     const m=await Member.findById(req.user.memberId); return res.json({success:true,members:m?[clean(m)]:[]});
   }
-  const rows=await Member.find({manager:req.user._id}).sort({createdAt:-1}); res.json({success:true,members:rows.map(clean)});
+  const rows=await Member.find({manager:req.user._id}).sort({createdAt:-1});
+  const linked=await User.find({role:"user",memberId:{$in:rows.map(m=>m._id)}}).select("memberId").lean();
+  const linkedIds=new Set(linked.map(user=>String(user.memberId)));
+  res.json({success:true,members:rows.map(m=>({...clean(m),hasLogin:linkedIds.has(String(m._id))}))});
 });
 router.get("/:id",requireAuth,async(req,res)=>{
   if(!isManager(req.user)&&req.user.memberId.toString()!==req.params.id)return res.status(404).json({success:false,message:"Member not found"});
@@ -29,13 +34,34 @@ router.post("/",requireAuth,requireRole("admin"),async(req,res)=>{
   if(await Member.exists({$or:[{email},{phone}]}))return res.status(409).json({success:false,message:"A member with this email or phone already exists"});
   if(await User.exists({role:{$in:["manager","admin"]},$or:[{email},{phone}]}))return res.status(409).json({success:false,message:"This email or phone is already used by a manager"});
   const member=await Member.create({manager:req.user._id,name:String(b.name).trim(),email,phone,joinedDate:b.joinedDate,status:b.status||"active",profilePhoto:b.profilePhoto||""});
-  let user=null;
-  if(b.createLogin!==false && b.password){
-    const username=String(b.username||member.email).trim();
-    if(await User.findOne({$or:[{username},{email:member.email},{phone:member.phone}]})){await Member.findByIdAndDelete(member._id);return res.status(409).json({success:false,message:"A login already exists for this email or phone"});}
-    user=await User.create({fullName:member.name,username,email:member.email,phone:member.phone,passwordHash:await bcrypt.hash(b.password,12),role:"user",memberId:member._id});
+  res.status(201).json({success:true,member:clean(member),user:null});
+});
+
+router.post("/:id/account",requireAuth,requireRole("admin"),async(req,res)=>{
+  const member=await Member.findOne({_id:req.params.id,manager:req.user._id});
+  if(!member)return res.status(404).json({success:false,message:"Member not found"});
+  if(!process.env.SMTP_HOST||!process.env.SMTP_PORT||!process.env.SMTP_USER||!process.env.SMTP_PASSWORD)return res.status(503).json({success:false,message:"SMTP is not configured. Add the SMTP credentials before creating member logins."});
+  if(await User.exists({memberId:member._id,role:"user"}))return res.status(409).json({success:false,message:"This member already has a login account."});
+  if(await User.exists({$or:[{email:member.email},{phone:member.phone}]}))return res.status(409).json({success:false,message:"This email or phone is already assigned to another login."});
+  const stem=member.name.toLowerCase().replace(/[^a-z0-9]+/g,".").replace(/^\.|\.$/g,"").slice(0,32)||"member";
+  let username;
+  for(let i=0;i<5;i++){
+    username=`${stem}.${crypto.randomBytes(3).toString("hex")}`;
+    if(!await User.exists({username}))break;
+    username=null;
   }
-  res.status(201).json({success:true,member:clean(member),user:user?{id:user._id.toString(),username:user.username,role:user.role,memberId:member._id.toString()}:null});
+  if(!username)return res.status(500).json({success:false,message:"Could not generate a unique username. Try again."});
+  const temporaryPassword=crypto.randomBytes(12).toString("base64url");
+  let user;
+  try{
+    user=await User.create({fullName:member.name,username,email:member.email,phone:member.phone,passwordHash:await bcrypt.hash(temporaryPassword,12),role:"user",memberId:member._id,mustChangePassword:true});
+    await sendMemberCredentials({to:member.email,name:member.name,username,temporaryPassword});
+  }catch(error){
+    if(user)await User.deleteOne({_id:user._id});
+    if(error.code===11000)return res.status(409).json({success:false,message:"This email, phone or username is already assigned to another login."});
+    return res.status(503).json({success:false,message:"Could not send the member login email. Check SMTP settings and try again."});
+  }
+  res.status(201).json({success:true,message:`Login details were emailed to ${member.email}.`,user:{id:user._id.toString(),username:user.username,email:user.email,role:user.role,memberId:member._id.toString()}});
 });
 router.patch("/:id",requireAuth,requireRole("admin"),async(req,res)=>{
   const allowed=["name","email","phone","joinedDate","status","profilePhoto"]; const b={}; allowed.forEach(k=>{if(req.body[k]!==undefined)b[k]=req.body[k]});

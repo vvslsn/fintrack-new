@@ -20,6 +20,7 @@ const userSchema = new Schema(
             match: [/^\d{10}$/, "Phone number must be exactly 10 digits"]
         },
         passwordHash: { type: String, required: true },
+        mustChangePassword: { type: Boolean, default: false },
         role: {
             type: String,
             enum: ["manager", "admin", "user"],

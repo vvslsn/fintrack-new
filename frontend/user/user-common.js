@@ -11,6 +11,10 @@
       location.replace("user-login.html");
       return null;
     }
+    if (user.mustChangePassword) {
+      location.replace("user-change-password.html");
+      return null;
+    }
     return user;
   };
 
