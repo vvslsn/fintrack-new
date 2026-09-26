@@ -62,7 +62,8 @@ router.post("/user/login",async(req,res)=>{
   try{
     const {identifier,email,username,password}=req.body;
     const login=String(identifier||email||username||"").trim();
-    const user=await User.findOne({role:"user",$or:[{email:login.toLowerCase()},{username:login}]});
+    const normalizedLogin=login.toLowerCase();
+    const user=await User.findOne({role:"user",$or:[{email:normalizedLogin},{username:login},{username:normalizedLogin}]});
     if(!user||!(await bcrypt.compare(password||"",user.passwordHash))) return res.status(401).json({success:false,message:"Invalid email or password"});
     if(!user.memberId) return res.status(403).json({success:false,message:"User account is not linked to a member"});
     const member=await Member.findById(user.memberId); if(!member) return res.status(403).json({success:false,message:"Linked member not found"});
