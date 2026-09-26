@@ -669,6 +669,7 @@
                             </button>
 
                             <button
+                                id="deleteMemberButton"
                                 type="button"
                                 class="small-delete-button"
                                 onclick="deleteMemberFromScheme()">
@@ -689,6 +690,7 @@
                             <thead>
 
                                 <tr>
+                                    <th>SELECT</th>
 
                                     <th>
                                         TICKET
@@ -891,7 +893,7 @@
                                     </th>
 
                                     <th>
-                                        PAID DATE
+                                        PAID / SUBMITTED
                                     </th>
 
                                     <th>
@@ -955,6 +957,29 @@
                 </section>
                 <p id="detailMemberMessage" role="status"></p>
             </div>
+        </section>
+    </div>
+
+    <div class="winner-action-modal-overlay" id="recordPaymentModal" aria-hidden="true">
+        <section class="winner-action-modal" role="dialog" aria-modal="true" aria-labelledby="recordPaymentTitle">
+            <header class="winner-action-modal-header">
+                <div><h2 id="recordPaymentTitle">Record Payment</h2><p>Enter the member's installment payment details.</p></div>
+                <button class="winner-action-close" type="button" data-close-winner-modal="recordPaymentModal" aria-label="Close">×</button>
+            </header>
+            <form id="recordPaymentForm" class="winner-action-form payment-record-form">
+                <label for="recordPaymentTicket">Member and ticket<select id="recordPaymentTicket" required></select></label>
+                <div class="payment-record-grid">
+                    <label for="recordPaymentMonth">Installment month<select id="recordPaymentMonth" required></select></label>
+                    <label for="recordPaymentStatus">Payment status<select id="recordPaymentStatus" required><option value="paid">Paid</option><option value="pending">Pending</option></select></label>
+                    <label for="recordPaymentAmount">Installment amount<input id="recordPaymentAmount" type="text" readonly></label>
+                    <label for="recordPaymentDueDate">Due date<input id="recordPaymentDueDate" type="text" readonly></label>
+                    <label for="recordPaymentMethod">Payment method<select id="recordPaymentMethod" required><option value="Cash">Cash</option><option value="UPI">UPI</option><option value="PhonePe">PhonePe</option><option value="Bank transfer">Bank transfer</option><option value="Other">Other</option></select></label>
+                    <label for="recordPaymentDate">Payment date<input id="recordPaymentDate" type="date"></label>
+                </div>
+                <label for="recordPaymentReference">Transaction reference <span>(optional)</span><input id="recordPaymentReference" type="text" maxlength="120" autocomplete="off" placeholder="UTR or transaction ID"></label>
+                <p id="paymentRecordMessage" class="winner-action-message" role="status"></p>
+                <footer class="winner-action-footer"><button type="button" class="winner-action-cancel" data-close-winner-modal="recordPaymentModal">Cancel</button><button id="recordPaymentSubmit" class="winner-action-submit" type="submit">Save Payment</button></footer>
+            </form>
         </section>
     </div>
 

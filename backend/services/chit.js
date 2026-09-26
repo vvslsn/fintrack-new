@@ -26,10 +26,23 @@ function dueDate(s,month){
   const m=Number(month); if(!Number.isInteger(m)||m<1) return null;
   const startDay=d.getUTCDate();
   const base=new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth()+m-1,1));
-  if(startDay===25) return new Date(Date.UTC(base.getUTCFullYear(),base.getUTCMonth()+1,5));
-  const map={1:10,5:15,10:20,15:25};
-  const day=map[startDay]||Math.min(startDay+10,new Date(Date.UTC(base.getUTCFullYear(),base.getUTCMonth()+1,0)).getUTCDate());
+  const monthDays=new Date(Date.UTC(base.getUTCFullYear(),base.getUTCMonth()+1,0)).getUTCDate();
+  const anniversaryDay=Math.min(startDay,monthDays);
+  const day=(startDay===1?10:anniversaryDay+10);
   return new Date(Date.UTC(base.getUTCFullYear(),base.getUTCMonth(),day));
 }
+function overdueDate(s,month){
+  return dueDate(s,month);
+}
+function dateKey(date,timeZone="Asia/Kolkata"){
+  if(!date)return "";
+  const parts=new Intl.DateTimeFormat("en-CA",{timeZone,year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(date);
+  const values=Object.fromEntries(parts.map(part=>[part.type,part.value]));
+  return `${values.year}-${values.month}-${values.day}`;
+}
+function pastGracePeriod(s,month,now=new Date()){
+  const cutoff=overdueDate(s,month);
+  return Boolean(cutoff&&dateKey(now)>dateKey(cutoff,"UTC"));
+}
 function paymentKey(member,scheme,ticket,month){ return `${member}|${scheme}|${String(ticket).trim()}|${Number(month)}`; }
-module.exports={isGold,installment,payout,dueDate,paymentKey};
+module.exports={isGold,installment,payout,dueDate,overdueDate,pastGracePeriod,paymentKey};

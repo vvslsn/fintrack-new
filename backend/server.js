@@ -4,6 +4,7 @@ const cors=require("cors");
 const path=require("path");
 const connectDB=require("./config/db");
 const errorHandler=require("./middleware/errorHandler");
+const {notifyOverdueMembers}=require("./services/payment-reminders");
 
 if(!process.env.MONGO_URI) throw new Error("MONGO_URI is required");
 if(!process.env.JWT_SECRET || process.env.JWT_SECRET.length < 32) {
@@ -50,6 +51,10 @@ app.use(errorHandler);
 const PORT=process.env.PORT||5000;
 connectDB().then(async()=>{
   await require("./services/migrate-tenancy")();
+  const checkPaymentReminders=()=>notifyOverdueMembers().catch(error=>console.error("Payment reminder check failed:",error));
+  checkPaymentReminders();
+  const reminderTimer=setInterval(checkPaymentReminders,6*60*60*1000);
+  reminderTimer.unref();
   app.listen(PORT,()=>console.log(`FinTrack API running on http://localhost:${PORT}`));
 }).catch(error=>{
   console.error("FinTrack tenancy migration failed:",error);

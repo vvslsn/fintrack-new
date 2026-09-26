@@ -2,7 +2,11 @@ const express=require("express");
 const Scheme=require("../models/Scheme");
 const MemberSchemeTicket=require("../models/MemberSchemeTicket");
 const Member=require("../models/Member");
+const Payment=require("../models/Payment");
+const OnlinePaymentRequest=require("../models/OnlinePaymentRequest");
+const GatewayOrder=require("../models/GatewayOrder");
 const Winner=require("../models/Winner");
+const AdminPayout=require("../models/AdminPayout");
 const {requireAuth,requireRole}=require("../middleware/auth");
 const {isManager}=require("../middleware/tenant");
 const router=express.Router();
@@ -77,5 +81,24 @@ router.get("/:id/tickets",requireAuth,async(req,res)=>{
   if(!isManager(req.user))filter.member=req.user.memberId;
   const rows=await MemberSchemeTicket.find(filter).populate("member","name email phone status joinedDate").sort({ticketNumber:1});
   res.json({success:true,tickets:rows});
+});
+router.delete("/:id/tickets/:ticketId",requireAuth,requireRole("admin"),async(req,res)=>{
+  const scheme=await Scheme.findOne({_id:req.params.id,manager:req.user._id});
+  if(!scheme)return res.status(404).json({success:false,message:"Scheme not found"});
+  const ticket=await MemberSchemeTicket.findOne({_id:req.params.ticketId,scheme:scheme._id});
+  if(!ticket)return res.status(404).json({success:false,message:"Member ticket not found"});
+
+  const key={scheme:scheme._id,ticketNumber:ticket.ticketNumber};
+  const hasHistory=await Promise.all([
+    Payment.exists({...key,member:ticket.member}),
+    OnlinePaymentRequest.exists({...key,member:ticket.member}),
+    GatewayOrder.exists({...key,member:ticket.member}),
+    Winner.exists(key),
+    AdminPayout.exists({...key,member:ticket.member})
+  ]);
+  if(hasHistory.some(Boolean))return res.status(409).json({success:false,message:"This ticket has payment or winner history and cannot be removed."});
+
+  await MemberSchemeTicket.deleteOne({_id:ticket._id});
+  res.json({success:true});
 });
 module.exports=router;

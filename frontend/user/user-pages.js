@@ -9,10 +9,17 @@ function dueDate(scheme, month) {
   if (Number.isNaN(start.getTime())) return null;
   const day = start.getUTCDate();
   const base = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth() + Number(month) - 1, 1));
-  if (day === 25) return new Date(Date.UTC(base.getUTCFullYear(), base.getUTCMonth() + 1, 5));
-  const map = { 1: 10, 5: 15, 10: 20, 15: 25 };
-  base.setUTCDate(map[day] || Math.min(day + 10, new Date(Date.UTC(base.getUTCFullYear(), base.getUTCMonth() + 1, 0)).getUTCDate()));
+  const monthDays = new Date(Date.UTC(base.getUTCFullYear(), base.getUTCMonth() + 1, 0)).getUTCDate();
+  base.setUTCDate(day === 1 ? 10 : Math.min(day, monthDays) + 10);
   return base;
+}
+function isPastGrace(row) {
+  if (typeof window.isFintrackOverdue === "function") return window.isFintrackOverdue(row.scheme, row.month);
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  return Boolean(row.due && new Date(row.due) < today);
+}
+function isInGrace(row) {
+  return typeof window.isFintrackInGracePeriod === "function" && window.isFintrackInGracePeriod(row.scheme, row.month);
 }
 function amount(scheme, ticket, month) { return fintrackPaymentAmount(scheme, month, ticket); }
 function sameId(a, b) { return String(a?._id || a?.id || a || "") === String(b?._id || b?.id || b || ""); }
@@ -59,8 +66,8 @@ async function dashboard() {
   await setupPage("dashboard", "My Dashboard", "Your chit schemes, payments and account information in one place.", data => {
     const installments = buildInstallments(data);
     const paid = installments.filter(row => row.paid);
-    const due = installments.filter(row => !row.paid && row.amount > 0 && row.due && new Date(row.due) <= new Date());
-    const upcoming = installments.filter(row => !row.paid && row.amount > 0 && row.due && new Date(row.due) > new Date()).sort((a, b) => new Date(a.due) - new Date(b.due))[0];
+    const due = installments.filter(row => !row.paid && row.amount > 0 && row.due && isPastGrace(row));
+    const upcoming = installments.filter(row => !row.paid && row.amount > 0 && row.due && !isPastGrace(row)).sort((a, b) => new Date(a.due) - new Date(b.due))[0];
     const wins = data.winners.filter(winner => String(winner.status || "winner").toLowerCase() === "winner");
     const paidTotal = paid.reduce((sum, row) => sum + Number(row.payment.amount || 0), 0);
     const dueTotal = due.reduce((sum, row) => sum + row.amount, 0);
@@ -77,15 +84,15 @@ async function dashboard() {
       <div class="grid scheme-dashboard-grid">${active.length ? active.map(ticket => {
         const scheme = schemeOf(ticket);
         const rows = installments.filter(row => sameId(row.scheme, scheme) && ticketNo(row.ticket) === ticketNo(ticket));
-        const next = rows.find(row => !row.paid && row.amount > 0 && row.due && new Date(row.due) <= new Date()) || rows.find(row => !row.paid && row.amount > 0) || rows.find(row => !row.paid);
+        const next = rows.find(row => !row.paid && row.amount > 0 && isPastGrace(row)) || rows.find(row => !row.paid && row.amount > 0) || rows.find(row => !row.paid);
         const type = String(scheme.chitType || scheme.type || "cash").toLowerCase();
         const chitValue = type.includes("gold") ? `${esc(scheme.goldGrams || 0)} grams` : money(scheme.totalAmount || ticket.chitAmount);
         return `<article class="card scheme-dashboard-card"><div class="scheme-dashboard-top"><div><div class="scheme-type">${esc(scheme.chitType || scheme.type || "Chit Scheme")}</div><h3>${esc(scheme.name || "Chit Scheme")}</h3><p class="muted">Ticket #${esc(ticketNo(ticket) || "—")}</p></div>${statusBadge(scheme.status || "Active")}</div>
           <div class="scheme-dashboard-values"><div><span>Chit Value</span><b>${chitValue}</b></div><div><span>Monthly Payable</span><b>${Number(next?.amount) > 0 ? money(next.amount) : String(scheme.chitType || scheme.type).toLowerCase().includes("gold") ? "Waiting for manager" : money(0)}</b></div><div><span>Current Month</span><b>${next ? `Month ${next.month}` : "Completed"}</b></div><div><span>Due Date</span><b>${next?.due ? dateText(next.due) : "—"}</b></div></div>
-          <div class="scheme-dashboard-status">${next ? `<span class="status-line ${Number(next.amount) > 0 && new Date(next.due) <= new Date() ? "warning" : "neutral"}">${Number(next.amount) > 0 ? (new Date(next.due) <= new Date() ? "● Payment is due" : "○ Upcoming installment") : "Waiting for manager to enter this month's installment"}</span>` : `<span class="status-line success">✓ Scheme completed</span>`}<a href="user-payments.html">Payment history →</a>${next && Number(next.amount) > 0 && new Date(next.due) <= new Date() ? `<a class="btn pay-now-btn" href="${payUrl(ticket, next.month)}">💳 Pay Now</a>` : ""}</div></article>`;
+          <div class="scheme-dashboard-status">${next ? `<span class="status-line ${Number(next.amount) > 0 && isPastGrace(next) ? "warning" : "neutral"}">${Number(next.amount) > 0 ? (isPastGrace(next) ? "● Payment is due" : isInGrace(next) ? `Grace period through ${dateText(window.getFintrackGraceEndDate(next.scheme, next.month))}` : "○ Upcoming installment") : "Waiting for manager to enter this month's installment"}</span>` : `<span class="status-line success">✓ Scheme completed</span>`}<a href="user-payments.html">Payment history →</a>${next && Number(next.amount) > 0 && isPastGrace(next) ? `<a class="btn pay-now-btn" href="${payUrl(ticket, next.month)}">💳 Pay Now</a>` : ""}</div></article>`;
       }).join("") : `<div class="card empty-card"><div class="empty">No schemes are linked to your account.</div></div>`}</div>
-      <div class="grid two dashboard-lower-grid"><div class="card next-payment-card"><div class="dashboard-card-header"><div><h2 class="section-title">Upcoming Payment</h2><p class="muted">Your next installment based on the chit schedule.</p></div>${due.length ? statusBadge("Due") : statusBadge("Upcoming")}</div>
-        ${due.length ? `<div class="next-payment-amount">${money(due[0].amount)}</div><div class="next-payment-meta"><b>${esc(due[0].scheme.name)}</b><span>Ticket #${esc(ticketNo(due[0].ticket))} · Month ${due[0].month}</span></div><div class="next-payment-date"><span>Due date</span><b>${dateText(due[0].due)}</b></div><a class="btn" href="${payUrl(due[0].ticket, due[0].month)}">💳 Pay Now</a>` : upcoming ? `<div class="upcoming-empty"><div class="upcoming-icon">📅</div><div><b>Next due: ${dateText(upcoming.due)}</b><p>${esc(upcoming.scheme.name)} · Month ${upcoming.month}</p><strong>${money(upcoming.amount)}</strong></div></div>` : `<div class="empty">No upcoming payment is available right now.</div>`}</div>
+      <div class="grid two dashboard-lower-grid"><div class="card next-payment-card"><div class="dashboard-card-header"><div><h2 class="section-title">Upcoming Payment</h2><p class="muted">Your next installment based on the chit schedule.</p></div>${due.length ? statusBadge("Due") : upcoming && isInGrace(upcoming) ? statusBadge("Grace period") : statusBadge("Upcoming")}</div>
+        ${due.length ? `<div class="next-payment-amount">${money(due[0].amount)}</div><div class="next-payment-meta"><b>${esc(due[0].scheme.name)}</b><span>Ticket #${esc(ticketNo(due[0].ticket))} · Month ${due[0].month}</span></div><div class="next-payment-date"><span>Due date</span><b>${dateText(due[0].due)}</b></div><a class="btn pay-now-btn" href="${payUrl(due[0].ticket, due[0].month)}">💳 Pay Now</a>` : upcoming ? `<div class="upcoming-empty"><div class="upcoming-icon">📅</div><div><b>Next due: ${dateText(upcoming.due)}</b><p>${esc(upcoming.scheme.name)} · Ticket #${esc(ticketNo(upcoming.ticket))} · Month ${upcoming.month}</p><strong>${money(upcoming.amount)}</strong></div></div><a class="btn pay-now-btn" href="${payUrl(upcoming.ticket, upcoming.month)}">💳 Pay Now</a>` : `<div class="empty">No upcoming payment is available right now.</div>`}</div>
         <div class="card account-card"><div class="dashboard-card-header"><div><h2 class="section-title">Account Overview</h2><p class="muted">Your member account at a glance.</p></div></div><div class="account-row"><span>Member Name</span><b>${esc(name)}</b></div><div class="account-row"><span>Member ID</span><b>${esc(data.member?._id || data.user.memberId || "—")}</b></div><div class="account-row"><span>Phone</span><b>${esc(data.member?.phone || data.user.phone || "—")}</b></div><div class="account-row"><span>Email</span><b>${esc(data.member?.email || data.user.email || "—")}</b></div><div class="account-row"><span>Account Status</span>${statusBadge(data.member?.status || "Active")}</div></div></div>
       <div class="card dashboard-recent-card"><div class="dashboard-card-header"><div><h2 class="section-title">Recent Payments</h2><p class="muted">Your latest completed installments.</p></div><div class="recent-total">Total paid <b>${money(paidTotal)}</b></div></div>${paid.length ? `<div class="table-wrap"><table class="table"><thead><tr><th>Scheme</th><th>Month</th><th>Amount</th><th>Payment Date</th><th>Status</th></tr></thead><tbody>${paid.slice().sort((a,b) => new Date(b.payment.paymentDate || 0) - new Date(a.payment.paymentDate || 0)).slice(0,6).map(row => `<tr><td><b>${esc(row.scheme.name || "—")}</b><small>Ticket #${esc(ticketNo(row.ticket))}</small></td><td>Month ${row.month}</td><td>${money(row.payment.amount)}</td><td>${dateText(row.payment.paymentDate)}</td><td>${statusBadge("Paid")}</td></tr>`).join("")}</tbody></table></div>` : `<div class="empty">No payments have been recorded yet.</div>`}</div>`;
   });
@@ -109,7 +116,7 @@ async function schemesPage() {
 async function paymentsPage() {
   await setupPage("payments", "My Payments", "Track due installments and review your month-wise payment history.", data => {
     const installments = buildInstallments(data);
-    const due = installments.filter(row => !row.paid && row.amount > 0 && row.due && new Date(row.due) <= new Date());
+    const due = installments.filter(row => !row.paid && row.amount > 0 && row.due && isPastGrace(row));
     const totalDue = due.reduce((sum, row) => sum + row.amount, 0);
     const history = data.payments.slice().sort((a,b) => Number(b.month || 0) - Number(a.month || 0) || new Date(b.paymentDate || b.createdAt || 0) - new Date(a.paymentDate || a.createdAt || 0));
     return `<div class="payments-page-intro"><div><div class="scheme-type">MY PAYMENTS</div><h2>Payment Center</h2><p class="muted">View your installments and pay the amount currently due.</p></div><a class="btn btn-small" href="user-dashboard.html">Back to Dashboard</a></div>
@@ -119,7 +126,7 @@ async function paymentsPage() {
 }
 
 async function notificationsPage() {
-  await setupPage("notifications", "Notifications", "Updates about your payments and chit schemes.", data => data.notifications.length ? `<div class="grid notice-list">${data.notifications.map(notification => `<article class="card notice-item"><span class="notice-symbol">${String(notification.type).includes("winner") ? "🏆" : "✓"}</span><div><b>${esc(notification.type || "Notification")}</b><p>${esc(notification.message || "")}</p><small class="muted">${dateText(notification.createdAt || notification.date)}</small></div></article>`).join("")}</div>` : `<div class="card"><div class="empty">No notifications right now.</div></div>`);
+  await setupPage("notifications", "Notifications", "Updates about your payments and chit schemes.", data => data.notifications.length ? `<div class="grid notice-list">${data.notifications.map(notification => { const dueAlert = notification.type === "payment_due"; return `<article class="card notice-item ${dueAlert ? "warning" : ""}"><span class="notice-symbol">${dueAlert ? "⚠" : String(notification.type).includes("winner") ? "🏆" : "✓"}</span><div><b>${dueAlert ? "Payment due" : esc(notification.type || "Notification")}</b><p>${esc(notification.message || "")}</p><small class="muted">${dateText(notification.createdAt || notification.date)}</small></div></article>`; }).join("")}</div>` : `<div class="card"><div class="empty">No notifications right now.</div></div>`);
 }
 
 async function initPayNowPage() {

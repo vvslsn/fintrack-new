@@ -5,6 +5,8 @@ let detailScheme = null;
 let detailTickets = [];
 let detailMembers = [];
 let detailWinners = [];
+let detailPayments = [];
+let detailPaymentRequests = [];
 
 const detailById = id => document.getElementById(id);
 const detailEsc = value => escHtml(value);
@@ -13,25 +15,29 @@ async function loadSchemeDetails() {
     detailSchemeId = new URLSearchParams(location.search).get("id") || "";
     if (!detailSchemeId) return;
     try {
-        const [schemeResult, ticketResult, winnerResult, paymentResult] = await Promise.all([
+        const [schemeResult, ticketResult, winnerResult, paymentResult, requestResult] = await Promise.all([
             fintrackApi(`/schemes/${encodeURIComponent(detailSchemeId)}`),
             fintrackApi(`/schemes/${encodeURIComponent(detailSchemeId)}/tickets`),
             fintrackApi("/winners"),
-            fintrackApi("/payments")
+            fintrackApi("/payments"),
+            fintrackApi("/payments/online/pending")
         ]);
         detailScheme = schemeResult.scheme;
         detailTickets = ticketResult.tickets || [];
         const winners = (winnerResult.winners || []).filter(winner => String(winner.scheme?._id || winner.scheme) === String(detailSchemeId));
         detailWinners = winners;
         const payments = (paymentResult.payments || []).filter(payment => String(payment.scheme?._id || payment.scheme) === String(detailSchemeId));
-        renderSchemeDetails(detailScheme, winners, payments);
+        const requests = (requestResult.requests || []).filter(request => String(request.scheme?._id || request.scheme) === String(detailSchemeId));
+        detailPayments = payments;
+        detailPaymentRequests = requests;
+        renderSchemeDetails(detailScheme, winners, payments, requests);
     } catch (error) {
         console.error(error);
         alert(error.message);
     }
 }
 
-function renderSchemeDetails(scheme, winners, payments) {
+function renderSchemeDetails(scheme, winners, payments, requests = []) {
     const capacity = Number(scheme.capacity) || 0;
     const membersCount = detailTickets.length;
     const type = scheme.chitType || scheme.type || "cash";
@@ -65,16 +71,43 @@ function renderSchemeDetails(scheme, winners, payments) {
     }
 
     detailById("membersTable").innerHTML = detailTickets.map(ticket =>
-        `<tr><td>#${detailEsc(ticket.ticketNumber)}</td><td>${detailEsc(ticket.member?.name || "—")}</td><td>${detailEsc(ticket.member?.email || "—")}</td><td>${detailEsc(ticket.member?.phone || "—")}</td><td>${dateText(ticket.member?.joinedDate)}</td><td>${detailEsc(ticket.member?.status || "active")}</td></tr>`
-    ).join("") || `<tr><td colspan="6">No members have joined this scheme yet.</td></tr>`;
+        `<tr><td><input type="radio" name="schemeMemberToRemove" value="${detailEsc(ticket._id || ticket.id)}" aria-label="Select ticket ${detailEsc(ticket.ticketNumber)}"></td><td>#${detailEsc(ticket.ticketNumber)}</td><td>${detailEsc(ticket.member?.name || "—")}</td><td>${detailEsc(ticket.member?.email || "—")}</td><td>${detailEsc(ticket.member?.phone || "—")}</td><td>${dateText(ticket.member?.joinedDate)}</td><td>${detailEsc(ticket.member?.status || "active")}</td></tr>`
+    ).join("") || `<tr><td colspan="7">No members have joined this scheme yet.</td></tr>`;
+    const removeButton = detailById("deleteMemberButton");
+    if (removeButton) removeButton.disabled = detailTickets.length === 0;
 
     detailById("winnersTable").innerHTML = winners.map(winner =>
         `<tr><td>${winner.month}</td><td>#${detailEsc(winner.ticketNumber || "—")}</td><td>${detailEsc(winner.member?.name || "—")}</td><td>${type === "gold" ? `${Number(winner.goldGrams) || 0} grams` : money(winner.payout)}</td><td>${money(winner.winnerPayment)}</td><td>${detailEsc(winner.status)}</td></tr>`
     ).join("") || `<tr><td colspan="6">No winners recorded.</td></tr>`;
 
-    detailById("paymentsTable").innerHTML = payments.map(payment =>
-        `<tr><td>${detailEsc(payment.member?.name || "—")}</td><td>#${detailEsc(payment.ticketNumber)}</td><td>${payment.month}</td><td>${dateText(payment.dueDate)}</td><td>${money(payment.amount)}</td><td>${dateText(payment.paymentDate)}</td><td>${detailEsc(payment.status)}</td></tr>`
-    ).join("") || `<tr><td colspan="7">No payments recorded.</td></tr>`;
+    const currentMonth = currentSchemeMonth(scheme);
+    const installmentRows = detailTickets.flatMap(ticket => Array.from({ length: currentMonth }, (_, index) => {
+        const month = index + 1;
+        const payment = payments.find(row => String(row.ticketNumber) === String(ticket.ticketNumber) && Number(row.month) === month);
+        const request = requests.find(row => String(row.ticketNumber) === String(ticket.ticketNumber) && Number(row.month) === month);
+        const amount = Number(fintrackPaymentAmount(scheme, month, ticket)) || 0;
+        const due = window.getFintrackDueDate?.(scheme, month);
+        const paid = payment?.status === "paid";
+        const overdue = !paid && !request && amount > 0 && window.isFintrackOverdue?.(scheme, month);
+        const status = paid ? "Paid" : request ? "Awaiting review" : payment?.status === "pending" ? "Pending" : amount <= 0 ? "Installment not set" : overdue ? "Due" : "Upcoming";
+        const statusClass = paid ? "payment-paid" : overdue ? "payment-overdue" : "payment-pending";
+        const reference = payment?.transactionId || request?.utr || "";
+        const method = payment?.method || request?.paymentMethod || "";
+        const details = [method, reference ? `Ref: ${reference}` : ""].filter(Boolean).join(" · ");
+        return `<tr><td>${detailEsc(ticket.member?.name || "—")}</td><td>#${detailEsc(ticket.ticketNumber)}</td><td>Month ${month}</td><td>${due ? dateText(due) : "—"}</td><td>${amount > 0 ? money(amount) : "—"}</td><td>${paid ? dateText(payment.paymentDate) : request ? `Submitted ${dateText(request.submittedAt)}` : "—"}</td><td><span class="payment-status ${statusClass}">${detailEsc(status)}</span>${details ? `<small>${detailEsc(details)}</small>` : ""}</td></tr>`;
+    }));
+    detailById("paymentsTable").innerHTML = installmentRows.join("") || `<tr><td colspan="7">${detailTickets.length ? "No installment months have started yet." : "No members have joined this scheme yet."}</td></tr>`;
+}
+
+function currentSchemeMonth(scheme) {
+    const startValue = String(scheme?.startDate || "").slice(0, 10);
+    const match = startValue.match(/^(\d{4})-(\d{2})-/);
+    if (!match) return 0;
+    const startYear = Number(match[1]);
+    const startMonth = Number(match[2]) - 1;
+    const now = new Date();
+    const elapsed = (now.getFullYear() - startYear) * 12 + now.getMonth() - startMonth + 1;
+    return Math.max(0, Math.min(Number(scheme.duration || 0), elapsed));
 }
 
 function monthAnniversary(startValue, month) {
@@ -200,9 +233,7 @@ function openDetailQuickCreate() {
 function closeDetailQuickCreate() { detailById("detailQuickCreatePanel").hidden = true; }
 
 async function refreshMemberViews() {
-    const result = await fintrackApi(`/schemes/${encodeURIComponent(detailSchemeId)}/tickets`);
-    detailTickets = result.tickets || [];
-    renderSchemeDetails(detailScheme, [], []);
+    await loadSchemeDetails();
 }
 
 async function saveExistingMemberToScheme(event) {
@@ -266,7 +297,22 @@ async function createMemberInScheme(event) {
 }
 
 async function deleteMemberFromScheme() {
-    alert("Tickets with payment history are protected. Remove is not available from this screen.");
+    const selected = document.querySelector('input[name="schemeMemberToRemove"]:checked');
+    if (!selected) return alert("Select a member ticket to remove first.");
+    const ticket = detailTickets.find(item => String(item._id || item.id) === selected.value);
+    if (!ticket) return alert("That member ticket is no longer available. Refresh the scheme and try again.");
+    if (!confirm(`Remove ${ticket.member?.name || "this member"} (Ticket #${ticket.ticketNumber}) from this scheme? Tickets with payment or winner history cannot be removed.`)) return;
+
+    const button = detailById("deleteMemberButton");
+    if (button) button.disabled = true;
+    try {
+        await fintrackApi(`/schemes/${encodeURIComponent(detailSchemeId)}/tickets/${encodeURIComponent(selected.value)}`, { method: "DELETE" });
+        await loadSchemeDetails();
+    } catch (error) {
+        alert(error.message);
+    } finally {
+        if (button) button.disabled = detailTickets.length === 0;
+    }
 }
 
 function winnerModal(id) { return detailById(id); }
@@ -367,16 +413,33 @@ async function submitWinnerAction(form, buttonId, messageId, action) {
 }
 
 async function addPayment() {
-    const ticket = prompt("Ticket number:");
-    const month = Number(prompt("Installment month:"));
-    if (!ticket || !month) return;
-    const result = await fintrackApi(`/schemes/${encodeURIComponent(detailSchemeId)}/tickets`);
-    const selected = (result.tickets || []).find(item => String(item.ticketNumber) === String(ticket));
-    if (!selected) return alert("Ticket not found.");
-    try {
-        await fintrackApi("/payments/manual", { method: "POST", body: JSON.stringify({ memberId: selected.member._id, schemeId: detailSchemeId, ticketNumber: ticket, month, method: "Manual", transactionId: "" }) });
-        await loadSchemeDetails();
-    } catch (error) { alert(error.message); }
+    if (!detailTickets.length) return alert("Add a member ticket to this scheme before recording a payment.");
+    detailById("recordPaymentForm").reset();
+    const ticketSelect = detailById("recordPaymentTicket");
+    const monthSelect = detailById("recordPaymentMonth");
+    const today = new Date();
+    detailById("recordPaymentDate").value = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+    ticketSelect.innerHTML = detailTickets.map(ticket => `<option value="${detailEsc(ticket._id || ticket.id)}">${detailEsc(ticket.member?.name || "Member")} · Ticket #${detailEsc(ticket.ticketNumber)}</option>`).join("");
+    monthSelect.innerHTML = Array.from({ length: Number(detailScheme.duration || 0) }, (_, index) => `<option value="${index + 1}">Month ${index + 1}</option>`).join("");
+    const selected = detailTickets[0];
+    const firstUnpaidMonth = Array.from({ length: Number(detailScheme.duration || 0) }, (_, index) => index + 1).find(month =>
+        !detailPayments.some(payment => String(payment.ticketNumber) === String(selected.ticketNumber) && Number(payment.month) === month && payment.status === "paid") &&
+        !detailPaymentRequests.some(request => String(request.ticketNumber) === String(selected.ticketNumber) && Number(request.month) === month)
+    );
+    if (firstUnpaidMonth) monthSelect.value = String(firstUnpaidMonth);
+    updatePaymentRecordPreview();
+    detailById("paymentRecordMessage").textContent = "";
+    detailById("recordPaymentModal").classList.add("active");
+    detailById("recordPaymentModal").setAttribute("aria-hidden", "false");
+}
+
+function updatePaymentRecordPreview() {
+    const ticket = detailTickets.find(item => String(item._id || item.id) === detailById("recordPaymentTicket")?.value);
+    const month = Number(detailById("recordPaymentMonth")?.value);
+    const amount = ticket && month ? Number(fintrackPaymentAmount(detailScheme, month, ticket)) || 0 : 0;
+    const due = ticket && month ? window.getFintrackDueDate?.(detailScheme, month) : null;
+    detailById("recordPaymentAmount").value = amount > 0 ? money(amount) : "Installment not set";
+    detailById("recordPaymentDueDate").value = due ? dateText(due) : "—";
 }
 
 async function saveGoldMonthlyInstallments() {
@@ -433,7 +496,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.addEventListener("keydown", event => {
         if (event.key === "Escape") {
             closeDetailMemberModal();
-            ["addWinnerModal", "removeWinnerModal", "stopMonthModal", "modifyMonthModal"].forEach(closeWinnerModal);
+            ["addWinnerModal", "removeWinnerModal", "stopMonthModal", "modifyMonthModal", "recordPaymentModal"].forEach(closeWinnerModal);
         }
     });
     document.querySelectorAll("[data-close-winner-modal]").forEach(button => button.addEventListener("click", () => closeWinnerModal(button.dataset.closeWinnerModal)));
@@ -455,5 +518,25 @@ document.addEventListener("DOMContentLoaded", () => {
     detailById("modifyMonthForm")?.addEventListener("submit", event => {
         event.preventDefault();
         submitWinnerAction(event.currentTarget, "modifyMonthSubmit", "modifyMonthMessage", () => fintrackApi(`/winners/stopped/${encodeURIComponent(detailById("modifyMonthSelect").value)}`, { method: "PATCH", body: JSON.stringify({ ticketNumber: detailById("modifyMonthTicket").value }) }));
+    });
+    detailById("recordPaymentTicket")?.addEventListener("change", updatePaymentRecordPreview);
+    detailById("recordPaymentMonth")?.addEventListener("change", updatePaymentRecordPreview);
+    detailById("recordPaymentForm")?.addEventListener("submit", event => {
+        event.preventDefault();
+        const ticket = detailTickets.find(item => String(item._id || item.id) === detailById("recordPaymentTicket").value);
+        if (!ticket) return;
+        submitWinnerAction(event.currentTarget, "recordPaymentSubmit", "paymentRecordMessage", () => fintrackApi("/payments/manual", {
+            method: "POST",
+            body: JSON.stringify({
+                memberId: ticket.member?._id || ticket.member?.id,
+                schemeId: detailSchemeId,
+                ticketNumber: ticket.ticketNumber,
+                month: Number(detailById("recordPaymentMonth").value),
+                method: detailById("recordPaymentMethod").value,
+                transactionId: detailById("recordPaymentReference").value.trim(),
+                status: detailById("recordPaymentStatus").value,
+                paymentDate: detailById("recordPaymentDate").value || undefined
+            })
+        }));
     });
 });

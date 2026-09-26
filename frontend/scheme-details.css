@@ -1752,6 +1752,40 @@ tbody tr:last-child td {
     font-weight: 400;
 }
 
+.winner-action-form input {
+    width: 100%;
+    min-height: 44px;
+    padding: 0 12px;
+    border: 1px solid #d5dde8;
+    border-radius: 7px;
+    background: #fff;
+    color: #263246;
+    font: inherit;
+    font-weight: 400;
+}
+
+.winner-action-form input:focus {
+    border-color: #2563eb;
+    outline: 0;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
+}
+
+.winner-action-form input[readonly] {
+    background: #f8fafc;
+    color: #526071;
+}
+
+.payment-record-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px 14px;
+}
+
+.payment-record-form > label > span {
+    color: #768294;
+    font-weight: 400;
+}
+
 .winner-action-form select:focus {
     border-color: #2563eb;
     outline: 0;
@@ -1811,6 +1845,7 @@ tbody tr:last-child td {
     .winner-action-modal-overlay { padding: 12px; }
     .winner-action-modal-header { padding: 18px 18px 15px; }
     .winner-action-form { padding: 18px; }
+    .payment-record-grid { grid-template-columns: 1fr; }
     .winner-action-footer { flex-direction: column-reverse; }
     .winner-action-footer button { width: 100%; }
 }
