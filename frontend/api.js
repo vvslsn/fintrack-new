@@ -1,6 +1,8 @@
 (() => {
   "use strict";
-  const API_BASE = (window.FINTRACK_API_URL || "http://localhost:5000/api").replace(/\/$/,"");
+  const localStaticPreview = ["localhost","127.0.0.1"].includes(location.hostname) && location.port === "5500";
+  const defaultApiBase = localStaticPreview ? "http://localhost:5000/api" : `${location.origin}/api`;
+  const API_BASE = (window.FINTRACK_API_URL || defaultApiBase).replace(/\/$/,"");
   const TOKEN_KEY="fintrackToken";
   function token(){return sessionStorage.getItem(TOKEN_KEY)||"";}
   async function api(path,options={}){
