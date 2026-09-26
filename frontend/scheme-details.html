@@ -149,11 +149,11 @@
                     <div class="profile-details">
 
                         <strong id="profileName">
-                            admin
+                            manager
                         </strong>
 
                         <span>
-                            ADMIN
+                            MANAGER
                         </span>
 
                     </div>
@@ -575,9 +575,11 @@
                 </div>
 
                 <div style="padding:20px;">
-                    <div id="goldInstallmentsGrid" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px;"></div>
-                    <div style="margin-top:16px; display:flex; justify-content:flex-end;">
+                    <div id="goldInstallmentsGrid" class="gold-installments-grid"></div>
+                    <p id="goldInstallmentsMessage" class="gold-installments-message" role="status"></p>
+                    <div class="gold-installments-actions">
                         <button
+                            id="saveGoldInstallmentsButton"
                             type="button"
                             class="small-primary-button"
                             onclick="saveGoldMonthlyInstallments()">
@@ -747,7 +749,7 @@
                             </h2>
 
                             <p>
-                                Admin records the winner for each chit month.
+                                The manager records the winner for each chit month.
                             </p>
 
                         </div>
@@ -789,7 +791,7 @@
                     <div class="winner-rules-note">
                         <strong>Payout controls:</strong> Any number of different tickets can receive the chit payout in the same month.
                         Once a ticket wins, that ticket is not eligible for any later month in this chit. Other tickets of the same member remain eligible.
-                        The admin can remove a wrongly recorded winner, stop/skip a payout month, and modify or resume a stopped month whenever required.
+                        The manager can remove a wrongly recorded winner, stop/skip a payout month, and modify or resume a stopped month whenever required.
                     </div>
 
                     <div class="table-container">
@@ -846,7 +848,7 @@
                             </h2>
 
                             <p>
-                                Record installment payments received by the admin from members.
+                                Record installment payments received by the manager from members.
                             </p>
 
                         </div>
@@ -953,6 +955,54 @@
                 </section>
                 <p id="detailMemberMessage" role="status"></p>
             </div>
+        </section>
+    </div>
+
+    <div class="winner-action-modal-overlay" id="addWinnerModal" aria-hidden="true">
+        <section class="winner-action-modal" role="dialog" aria-modal="true" aria-labelledby="addWinnerTitle">
+            <header class="winner-action-modal-header"><div><h2 id="addWinnerTitle">Add Winner</h2><p>Select the winning month and eligible ticket.</p></div><button class="winner-action-close" type="button" data-close-winner-modal="addWinnerModal" aria-label="Close">×</button></header>
+            <form id="addWinnerForm" class="winner-action-form">
+                <label for="winnerActionMonth">Winner month<select id="winnerActionMonth" required></select></label>
+                <label for="winnerActionTicket">Winning ticket<select id="winnerActionTicket" required></select></label>
+                <p id="addWinnerMessage" class="winner-action-message" role="status"></p>
+                <footer class="winner-action-footer"><button type="button" class="winner-action-cancel" data-close-winner-modal="addWinnerModal">Cancel</button><button id="addWinnerSubmit" class="winner-action-submit" type="submit">Save Winner</button></footer>
+            </form>
+        </section>
+    </div>
+
+    <div class="winner-action-modal-overlay" id="removeWinnerModal" aria-hidden="true">
+        <section class="winner-action-modal" role="dialog" aria-modal="true" aria-labelledby="removeWinnerTitle">
+            <header class="winner-action-modal-header"><div><h2 id="removeWinnerTitle">Remove Winner</h2><p>Choose the winner record to remove from this scheme.</p></div><button class="winner-action-close" type="button" data-close-winner-modal="removeWinnerModal" aria-label="Close">×</button></header>
+            <form id="removeWinnerForm" class="winner-action-form">
+                <label for="removeWinnerSelect">Winner record<select id="removeWinnerSelect" required></select></label>
+                <p class="winner-action-help">Removing a winner restores that ticket's eligibility for a future month.</p>
+                <p id="removeWinnerMessage" class="winner-action-message" role="status"></p>
+                <footer class="winner-action-footer"><button type="button" class="winner-action-cancel" data-close-winner-modal="removeWinnerModal">Cancel</button><button id="removeWinnerSubmit" class="winner-action-submit danger" type="submit">Remove Winner</button></footer>
+            </form>
+        </section>
+    </div>
+
+    <div class="winner-action-modal-overlay" id="stopMonthModal" aria-hidden="true">
+        <section class="winner-action-modal" role="dialog" aria-modal="true" aria-labelledby="stopMonthTitle">
+            <header class="winner-action-modal-header"><div><h2 id="stopMonthTitle">Stop Month</h2><p>Mark a month as stopped or skipped in this chit.</p></div><button class="winner-action-close" type="button" data-close-winner-modal="stopMonthModal" aria-label="Close">×</button></header>
+            <form id="stopMonthForm" class="winner-action-form">
+                <label for="stopMonthSelect">Month<select id="stopMonthSelect" required></select></label>
+                <p class="winner-action-help">Months with an existing winner cannot be stopped.</p>
+                <p id="stopMonthMessage" class="winner-action-message" role="status"></p>
+                <footer class="winner-action-footer"><button type="button" class="winner-action-cancel" data-close-winner-modal="stopMonthModal">Cancel</button><button id="stopMonthSubmit" class="winner-action-submit warning" type="submit">Stop Month</button></footer>
+            </form>
+        </section>
+    </div>
+
+    <div class="winner-action-modal-overlay" id="modifyMonthModal" aria-hidden="true">
+        <section class="winner-action-modal" role="dialog" aria-modal="true" aria-labelledby="modifyMonthTitle">
+            <header class="winner-action-modal-header"><div><h2 id="modifyMonthTitle">Modify Stopped Month</h2><p>Resume a stopped month by assigning an eligible ticket.</p></div><button class="winner-action-close" type="button" data-close-winner-modal="modifyMonthModal" aria-label="Close">×</button></header>
+            <form id="modifyMonthForm" class="winner-action-form">
+                <label for="modifyMonthSelect">Stopped month<select id="modifyMonthSelect" required></select></label>
+                <label for="modifyMonthTicket">Winning ticket<select id="modifyMonthTicket" required></select></label>
+                <p id="modifyMonthMessage" class="winner-action-message" role="status"></p>
+                <footer class="winner-action-footer"><button type="button" class="winner-action-cancel" data-close-winner-modal="modifyMonthModal">Cancel</button><button id="modifyMonthSubmit" class="winner-action-submit info" type="submit">Update Month</button></footer>
+            </form>
         </section>
     </div>
 

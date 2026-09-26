@@ -19,7 +19,10 @@ async function requireAuth(req,res,next){
 }
 function requireRole(...roles){
   return (req,res,next)=>{
-    if(!req.user || !roles.includes(req.user.role)) return res.status(403).json({success:false,message:"Access denied"});
+    // Keep legacy route declarations working while admin accounts are renamed
+    // to manager in the persisted user records.
+    const allowed = roles.includes("admin") ? [...roles, "manager"] : roles;
+    if(!req.user || !allowed.includes(req.user.role)) return res.status(403).json({success:false,message:"Access denied"});
     next();
   };
 }

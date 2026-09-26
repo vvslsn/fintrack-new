@@ -4,6 +4,7 @@ let schemes = [];
 let managedScheme = null;
 let schemeMembers = [];
 let schemeTickets = [];
+let goldInstallmentDraft = {};
 
 const byId = id => document.getElementById(id);
 const esc = value => escHtml(value);
@@ -64,7 +65,7 @@ function renderSchemes() {
         const value = scheme.type === "gold" ? `${Number(scheme.goldGrams) || 0} grams` : money(scheme.totalAmount);
         return `<tr>
             <td><div class="scheme-name"><strong>${esc(scheme.name)}</strong><span>${esc(scheme.type)} · ${esc(value)}</span></div></td>
-            <td>${money(scheme.baseAmount)}<span class="scheme-per-month">/mo</span></td>
+            <td>${scheme.type === "gold" ? '<span class="scheme-monthly-varies">Varies by month</span>' : `${money(scheme.baseAmount)}<span class="scheme-per-month">/mo</span>`}</td>
             <td>${esc(scheme.duration)} Months</td>
             <td><div class="scheme-timeline">${schemeTimeline(scheme)}</div></td>
             <td><div class="scheme-capacity"><div><span>${enrolled}/${capacity}</span><span>${percent}%</span></div><div class="scheme-capacity-track"><span style="width:${percent}%"></span></div></div></td>
@@ -77,6 +78,7 @@ function renderSchemes() {
 function openCreateSchemeModal() {
     byId("schemeForm")?.reset();
     byId("editSchemeId").value = "";
+    goldInstallmentDraft = {};
     byId("schemeModalTitle").textContent = "Create Scheme";
     byId("schemeStatus").value = "upcoming";
     toggleSchemeFields();
@@ -92,8 +94,9 @@ function openEditSchemeModal(id) {
     byId("schemeName").value = scheme.name;
     byId("schemeType").value = scheme.type;
     byId("schemeAmount").value = scheme.totalAmount || "";
-    byId("schemeBaseAmount").value = scheme.baseAmount || "";
     byId("schemeDuration").value = scheme.duration;
+    goldInstallmentDraft = { ...(scheme.goldMonthlyInstallments || {}) };
+    byId("schemeBaseAmount").value = scheme.baseAmount || "";
     byId("schemeCapacity").value = scheme.capacity;
     byId("schemeStartDate").value = String(scheme.startDate).slice(0, 10);
     byId("schemeStatus").value = scheme.status;
@@ -104,13 +107,40 @@ function closeSchemeModal() {
     byId("schemeModal")?.classList.remove("active");
 }
 
+function readGoldInstallmentDraft() {
+    document.querySelectorAll("[data-scheme-gold-month]").forEach(input => {
+        goldInstallmentDraft[input.dataset.schemeGoldMonth] = input.value;
+    });
+}
+
+function renderSchemeGoldInstallments() {
+    const duration = Number(byId("schemeDuration").value);
+    const grid = byId("schemeGoldInstallmentsGrid");
+    if (!grid) return;
+    readGoldInstallmentDraft();
+    if (!Number.isInteger(duration) || duration < 1 || duration > 30) {
+        grid.innerHTML = "";
+        byId("schemeGoldInstallmentsMessage").textContent = duration > 30 ? "A scheme can have a maximum duration of 30 months." : "Enter the duration to create one installment field for each month.";
+        return;
+    }
+    byId("schemeGoldInstallmentsMessage").textContent = "Enter Month 1 now. Each later month's amount becomes available on its monthly anniversary.";
+    const value = goldInstallmentDraft["1"] ?? goldInstallmentDraft[1] ?? "";
+    grid.innerHTML = `<label class="scheme-gold-month-field" for="schemeGoldMonth1"><span>Month 1 Installment</span><div class="scheme-gold-amount-input"><b>₹</b><input id="schemeGoldMonth1" data-scheme-gold-month="1" type="number" min="0.01" step="0.01" value="${esc(value)}" placeholder="Enter amount" required></div></label>`;
+    const submit = byId("schemeSaveButton");
+    if (submit) submit.disabled = Number(value) <= 0;
+}
+
 function toggleSchemeFields() {
     const isGold = byId("schemeType")?.value === "gold";
     byId("totalAmountGroup").style.display = isGold ? "none" : "";
     byId("schemeAmount").disabled = isGold;
     byId("schemeAmount").required = !isGold;
-    byId("schemeBaseAmount").readOnly = !isGold;
-    byId("schemeBaseAmount").required = isGold;
+    byId("baseAmountGroup").style.display = isGold ? "none" : "";
+    byId("schemeBaseAmount").readOnly = true;
+    byId("schemeBaseAmount").required = !isGold;
+    byId("schemeBaseAmount").disabled = isGold;
+    byId("schemeGoldInstallmentsGroup").hidden = !isGold;
+    if (isGold) renderSchemeGoldInstallments();
     if (!isGold && byId("schemeAmount").value) {
         byId("schemeBaseAmount").value = Math.round(Number(byId("schemeAmount").value) * 0.05);
     }
@@ -121,12 +151,25 @@ async function saveScheme(event) {
     const id = byId("editSchemeId").value;
     const type = byId("schemeType").value;
     const totalAmount = type === "gold" ? 0 : Number(byId("schemeAmount").value);
-    const baseAmount = type === "gold" ? Number(byId("schemeBaseAmount").value) : Math.round(totalAmount * 0.05);
-    if (!byId("schemeName").value.trim() || !byId("schemeDuration").value || !byId("schemeCapacity").value) {
-        return alert("Please fill all required fields.");
+    const duration = Number(byId("schemeDuration").value);
+    const capacity = Number(byId("schemeCapacity").value);
+    if (!byId("schemeName").value.trim()) return alert("Enter a scheme name.");
+    if (!Number.isInteger(duration) || duration < 1 || duration > 30) return alert("Scheme duration must be between 1 and 30 months.");
+    if (!Number.isInteger(capacity) || capacity < 1 || capacity > 1000) return alert("Enter a member capacity between 1 and 1000.");
+    if (!byId("schemeStartDate").value) return alert("Choose a scheme start date.");
+    if (type === "cash" && (!Number.isFinite(totalAmount) || totalAmount <= 0)) return alert("Enter total amount.");
+
+    let goldMonthlyInstallments;
+    if (type === "gold") {
+        readGoldInstallmentDraft();
+        readGoldInstallmentDraft();
+        const firstMonth = Number(byId("schemeGoldMonth1")?.value ?? goldInstallmentDraft["1"] ?? 0);
+        if (!Number.isFinite(firstMonth) || firstMonth <= 0) return byId("schemeGoldMonth1")?.focus();
+        goldMonthlyInstallments = Object.fromEntries(Object.entries(goldInstallmentDraft)
+            .filter(([month, amount]) => Number(month) >= 1 && Number(month) <= duration && Number(amount) > 0));
+        goldMonthlyInstallments["1"] = firstMonth;
     }
-    if (type === "cash" && totalAmount <= 0) return alert("Enter total amount.");
-    if (type === "gold" && baseAmount <= 0) return alert("Enter monthly gold-chit installment.");
+    const baseAmount = type === "gold" ? Number(goldMonthlyInstallments?.["1"] || 0) : Math.round(totalAmount * 0.05);
 
     const gramsMatch = byId("schemeName").value.match(/(\d+(?:\.\d+)?)\s*(?:grams?|g)\b/i);
     const payload = {
@@ -134,9 +177,10 @@ async function saveScheme(event) {
         chitType: type,
         totalAmount,
         baseAmount,
+        ...(type === "gold" ? { goldMonthlyInstallments } : {}),
         goldGrams: type === "gold" ? Number(gramsMatch?.[1] || 0) : 0,
-        duration: Number(byId("schemeDuration").value),
-        capacity: Number(byId("schemeCapacity").value),
+        duration,
+        capacity,
         startDate: byId("schemeStartDate").value,
         status: byId("schemeStatus").value
     };
@@ -375,6 +419,12 @@ document.addEventListener("DOMContentLoaded", () => {
     byId("schemeForm")?.addEventListener("submit", saveScheme);
     byId("schemeType")?.addEventListener("change", toggleSchemeFields);
     byId("schemeAmount")?.addEventListener("input", toggleSchemeFields);
+    byId("schemeDuration")?.addEventListener("input", toggleSchemeFields);
+    byId("schemeGoldInstallmentsGrid")?.addEventListener("input", event => {
+        goldInstallmentDraft[event.target.dataset.schemeGoldMonth] = event.target.value;
+        const button = byId("schemeSaveButton");
+        if (button) button.disabled = !(Number(event.target.value) > 0);
+    });
     byId("schemeSearch")?.addEventListener("input", renderSchemes);
     byId("statusFilter")?.addEventListener("change", renderSchemes);
     byId("schemeMemberForm")?.addEventListener("submit", addMemberToScheme);

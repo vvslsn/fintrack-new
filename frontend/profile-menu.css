@@ -8,6 +8,53 @@
     position: relative;
 }
 
+.profile-menu-host {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    margin-left: 4px;
+}
+
+.profile-avatar.has-photo,
+.user-avatar.has-photo {
+    overflow: hidden;
+    background: #eaf1ff !important;
+    color: transparent !important;
+}
+
+.profile-avatar img,
+.user-avatar img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    border-radius: inherit;
+    object-fit: cover;
+}
+
+.sidebar-logout {
+    flex: 0 0 auto;
+    margin: auto 10px 16px !important;
+    width: calc(100% - 20px) !important;
+    color: #aeb6c2 !important;
+    background: transparent !important;
+    cursor: pointer;
+    text-align: left;
+}
+
+.sidebar-logout:hover,
+.sidebar-logout:focus-visible {
+    background: #29313a !important;
+    color: #fff !important;
+    outline: none;
+}
+
+@media (max-width: 900px) {
+    .sidebar-logout {
+        justify-content: center !important;
+        padding: 0 !important;
+    }
+}
+
 .profile-menu-button {
     width: 34px;
     height: 42px;
@@ -217,6 +264,156 @@
 
 .profile-menu-save:hover {
     background: #1d4ed8;
+}
+
+/* Profile forms use the same centered dialog pattern as the admin create/edit forms. */
+.profile-menu-modal-overlay {
+    z-index: 7000;
+    backdrop-filter: blur(2px);
+}
+
+.profile-menu-modal {
+    width: min(650px, 100%);
+    padding: 0;
+    border: 1px solid #e1e5ea;
+    border-radius: 12px;
+}
+
+.profile-menu-modal-header {
+    padding: 22px 24px 18px;
+    margin: 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.profile-menu-modal-header h2 {
+    font-size: 20px;
+}
+
+.profile-modal-subtitle {
+    margin: 5px 0 0;
+    color: #7b8492;
+    font-size: 12px;
+}
+
+.profile-menu-form {
+    padding: 20px 24px 22px;
+    gap: 7px;
+}
+
+.profile-menu-form label {
+    margin-top: 4px;
+}
+
+.profile-menu-form input:not([type="file"]) {
+    min-height: 44px;
+    margin: 0 0 5px;
+}
+
+.admin-profile-photo-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 12px;
+    padding: 14px;
+    border: 1px solid #e1e5ea;
+    border-radius: 10px;
+    background: #f8fafc;
+}
+
+.admin-profile-photo-preview {
+    width: 76px;
+    height: 76px;
+    flex: 0 0 76px;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    border: 2px solid #dbe4f2;
+    border-radius: 50%;
+    background: #eaf1ff;
+    color: #2563eb;
+    font-size: 28px;
+    font-weight: 800;
+}
+
+.admin-profile-photo-preview img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+}
+
+.admin-profile-photo-controls {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.admin-photo-upload,
+.admin-photo-remove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+    padding: 8px 12px;
+    border: 1px solid #2563eb;
+    border-radius: 7px;
+    background: #2563eb;
+    color: #fff !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    cursor: pointer;
+}
+
+.admin-photo-remove {
+    border-color: #fecaca;
+    background: #fff;
+    color: #dc2626 !important;
+}
+
+.admin-profile-photo-controls small {
+    flex-basis: 100%;
+    color: #7b8492;
+    font-size: 11px;
+}
+
+.profile-modal-message {
+    min-height: 18px;
+    margin: 2px 0 0;
+    color: #b42318;
+    font-size: 12px;
+}
+
+.profile-menu-modal-footer {
+    padding-top: 8px;
+}
+
+.profile-menu-cancel,
+.profile-menu-save {
+    min-width: 90px;
+    border-radius: 7px;
+}
+
+.profile-menu-save:disabled {
+    opacity: .65;
+    cursor: wait;
+}
+
+.password-dialog {
+    max-width: 500px;
+}
+
+body.profile-dialog-open {
+    overflow: hidden;
+}
+
+@media (max-width: 560px) {
+    .profile-menu-modal-header { padding: 18px 18px 15px; }
+    .profile-menu-form { padding: 17px 18px 18px; }
+    .admin-profile-photo-row { align-items: flex-start; }
+    .profile-menu-modal-footer { flex-direction: column-reverse; }
+    .profile-menu-cancel,
+    .profile-menu-save { width: 100%; }
 }
 
 @media (max-width: 600px) {

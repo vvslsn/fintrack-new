@@ -5,7 +5,9 @@ function installment(s, month, winningMonth){
   if(!Number.isInteger(m)||m<1) return 0;
   if(isGold(s)){
     const map=s.goldMonthlyInstallments || {};
-    return Number(map[String(m)] ?? map[m] ?? s.baseAmount ?? 0) || 0;
+    const configured=map instanceof Map ? map.get(String(m)) : (map[String(m)] ?? map[m]);
+    const hasSchedule=map instanceof Map ? map.size>0 : Object.keys(map).length>0;
+    return Number(configured ?? (hasSchedule ? 0 : s.baseAmount) ?? 0) || 0;
   }
   const total=Number(s.totalAmount||0);
   if(total<=0) return Number(s.baseAmount||0)||0;

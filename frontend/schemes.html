@@ -93,12 +93,12 @@
                         <strong
                             id="profileName">
 
-                            admin
+                            manager
 
                         </strong>
 
                         <span>
-                            ADMIN
+                            MANAGER
                         </span>
 
                     </div>
@@ -413,6 +413,7 @@
 
             <form
                 id="schemeForm"
+                novalidate
                 onsubmit="saveScheme(event)">
 
 
@@ -484,7 +485,7 @@
 
                     <!-- BASE AMOUNT -->
 
-                    <div class="form-group">
+                    <div class="form-group" id="baseAmountGroup">
 
                         <label>
                             Monthly Installment
@@ -503,6 +504,14 @@
 
 
                 </div>
+
+                <section class="scheme-gold-schedule" id="schemeGoldInstallmentsGroup" hidden>
+                    <div class="scheme-gold-schedule-header">
+                        <div><h3>Gold Chit Monthly Installments</h3><p>Enter the rupee amount for each month. Gold chit installments can vary month to month.</p></div>
+                    </div>
+                    <div id="schemeGoldInstallmentsGrid" class="scheme-gold-schedule-grid"></div>
+                    <p id="schemeGoldInstallmentsMessage" class="scheme-gold-schedule-message" role="status"></p>
+                </section>
 
 
 
@@ -525,7 +534,7 @@
                             id="schemeDuration"
                             placeholder="20"
                             min="1"
-                            max="120"
+                            max="30"
                             required>
 
                     </div>
@@ -629,6 +638,7 @@
 
 
                     <button
+                        id="schemeSaveButton"
                         type="submit"
                         class="save-button">
 

@@ -8,6 +8,7 @@ const Scheme=require("../models/Scheme");
 const Member=require("../models/Member");
 const Notification=require("../models/Notification");
 const {requireAuth,requireRole}=require("../middleware/auth");
+const {isManager,managerSchemeIds}=require("../middleware/tenant");
 const {installment,dueDate,paymentKey}=require("../services/chit");
 const router=express.Router();
 
@@ -62,14 +63,14 @@ async function saveCapturedGatewayPayment(order,paymentInfo){
 const populate=q=>q.populate("member","name email phone").populate("scheme","name chitType totalAmount baseAmount goldGrams duration startDate");
 
 router.get("/",requireAuth,async(req,res)=>{
-  const filter=req.user.role==="user"?{member:req.user.memberId}:{};
+  const filter=isManager(req.user)?{scheme:{$in:await managerSchemeIds(req.user)}}:{member:req.user.memberId};
   const rows=await populate(Payment.find(filter).sort({month:-1,createdAt:-1}));
   res.json({success:true,payments:rows});
 });
 
 router.post("/manual",requireAuth,requireRole("admin"),async(req,res)=>{
   const {memberId,schemeId,ticketNumber,month,method,transactionId,status="paid"}=req.body;
-  const [m,s]=await Promise.all([Member.findById(memberId),Scheme.findById(schemeId)]);
+  const [m,s]=await Promise.all([Member.findOne({_id:memberId,manager:req.user._id}),Scheme.findOne({_id:schemeId,manager:req.user._id})]);
   if(!m||!s)return res.status(404).json({success:false,message:"Member or scheme not found"});
   const paymentMonth=Number(month);
   if(!Number.isInteger(paymentMonth)||paymentMonth<1||paymentMonth>s.duration)return res.status(400).json({success:false,message:"Invalid payment month"});
@@ -78,6 +79,7 @@ router.post("/manual",requireAuth,requireRole("admin"),async(req,res)=>{
   if(!ticket)return res.status(404).json({success:false,message:"Ticket not found"});
   const winningMonth=Number(ticket.winningMonth||0);
   const amount=installment(s,paymentMonth,winningMonth), key=paymentKey(m._id,s._id,ticket.ticketNumber,paymentMonth);
+  if(!Number.isFinite(amount)||amount<=0)return res.status(409).json({success:false,message:"The manager has not entered this month's installment amount yet."});
   const d=dueDate(s,paymentMonth);
   const payment=await Payment.findOneAndUpdate({paymentKey:key},{
     member:m._id,scheme:s._id,ticketNumber:ticket.ticketNumber,month:paymentMonth,paymentKey:key,dueDate:d,amount,
@@ -152,6 +154,7 @@ router.post("/online",requireAuth,requireRole("user"),async(req,res)=>{
   const paymentMonth=Number(month);
   if(!Number.isInteger(paymentMonth)||paymentMonth<1||paymentMonth>scheme.duration)return res.status(400).json({success:false,message:"Invalid payment month"});
   const amount=installment(scheme,paymentMonth,ticket.winningMonth), key=paymentKey(ticket.member,scheme._id,ticket.ticketNumber,paymentMonth);
+  if(!Number.isFinite(amount)||amount<=0)return res.status(409).json({success:false,message:"The manager has not entered this month's installment amount yet."});
   if(!utr?.trim())return res.status(400).json({success:false,message:"UTR is required"});
   if(await Payment.exists({paymentKey:key,status:"paid"}))return res.status(409).json({success:false,message:"This installment is already paid"});
   if(await Request.exists({paymentKey:key,status:{$in:["pending","approved"]}}))return res.status(409).json({success:false,message:"Payment request already submitted"});
@@ -162,26 +165,27 @@ router.post("/online",requireAuth,requireRole("user"),async(req,res)=>{
 });
 
 router.get("/online/pending",requireAuth,requireRole("admin"),async(req,res)=>{
-  const rows=await Request.find().populate("member","name email phone").populate("scheme","name chitType").sort({submittedAt:-1});
+  const rows=await Request.find({scheme:{$in:await managerSchemeIds(req.user)}}).populate("member","name email phone").populate("scheme","name chitType").sort({submittedAt:-1});
   res.json({success:true,requests:rows});
 });
 router.post("/online/:id/approve",requireAuth,requireRole("admin"),async(req,res)=>{
-  const r=await Request.findById(req.params.id); if(!r)return res.status(404).json({success:false,message:"Request not found"});
+  const r=await Request.findOne({_id:req.params.id,scheme:{$in:await managerSchemeIds(req.user)}}); if(!r)return res.status(404).json({success:false,message:"Request not found"});
   if(r.status!=="pending")return res.status(409).json({success:false,message:"Request is already reviewed"});
-  const [s,t]=await Promise.all([Scheme.findById(r.scheme),Ticket.findOne({member:r.member,scheme:r.scheme,ticketNumber:r.ticketNumber})]);
+  const [s,t]=await Promise.all([Scheme.findOne({_id:r.scheme,manager:req.user._id}),Ticket.findOne({member:r.member,scheme:r.scheme,ticketNumber:r.ticketNumber})]);
   if(!s||!t)return res.status(404).json({success:false,message:"Scheme or ticket not found"});
   const amount=installment(s,r.month,t.winningMonth),key=paymentKey(r.member,r.scheme,r.ticketNumber,r.month);
+  if(!Number.isFinite(amount)||amount<=0)return res.status(409).json({success:false,message:"The manager has not entered this month's installment amount yet."});
   if(amount!==r.amount)return res.status(409).json({success:false,message:"Payment amount changed; review the request again"});
   const payment=await Payment.findOneAndUpdate({paymentKey:key},{member:r.member,scheme:r.scheme,ticketNumber:r.ticketNumber,month:r.month,paymentKey:key,dueDate:dueDate(s,r.month),amount,paymentDate:new Date(),method:r.paymentMethod,transactionId:r.utr,status:"paid",receivedByAdmin:true,receivedAt:new Date(),source:"online_payment_request",onlineRequest:r._id},{upsert:true,new:true,setDefaultsOnInsert:true});
   r.status="approved";r.reviewedAt=new Date();r.reviewedBy=req.user.username;r.payment=payment._id;await r.save();
-  await Notification.create({member:r.member,type:"payment_approved",message:`Payment for ${s.name}, Month ${r.month} was approved.`,extra:{paymentId:payment._id,requestId:r._id}});
+  await Notification.create({manager:req.user._id,member:r.member,type:"payment_approved",message:`Payment for ${s.name}, Month ${r.month} was approved.`,extra:{paymentId:payment._id,requestId:r._id}});
   res.json({success:true,request:r,payment});
 });
 router.post("/online/:id/reject",requireAuth,requireRole("admin"),async(req,res)=>{
-  const r=await Request.findById(req.params.id); if(!r)return res.status(404).json({success:false,message:"Request not found"});
+  const r=await Request.findOne({_id:req.params.id,scheme:{$in:await managerSchemeIds(req.user)}}); if(!r)return res.status(404).json({success:false,message:"Request not found"});
   if(r.status!=="pending")return res.status(409).json({success:false,message:"Request is already reviewed"});
   r.status="rejected";r.reviewedAt=new Date();r.reviewedBy=req.user.username;r.rejectionReason=String(req.body.reason||"Payment request rejected");await r.save();
-  await Notification.create({member:r.member,type:"payment_rejected",message:`Payment request for Month ${r.month} was rejected. ${r.rejectionReason}`,extra:{requestId:r._id}});
+  await Notification.create({manager:req.user._id,member:r.member,type:"payment_rejected",message:`Payment request for Month ${r.month} was rejected. ${r.rejectionReason}`,extra:{requestId:r._id}});
   res.json({success:true,request:r});
 });
 module.exports=router;

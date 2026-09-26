@@ -3,6 +3,7 @@ const { Schema } = mongoose;
 
 const notificationSchema = new Schema(
     {
+        manager: { type: Schema.Types.ObjectId, ref: "User", default: null, index: true },
         member: { type: Schema.Types.ObjectId, ref: "Member", default: null },
         type: { type: String, required: true },
         message: { type: String, required: true },

@@ -1662,3 +1662,194 @@ tbody tr:last-child td {
         grid-template-columns: 1fr;
     }
 }
+
+/* Winner controls use the centered form dialog style from the scheme editor. */
+.winner-action-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 5500;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(31, 37, 43, .52);
+    backdrop-filter: blur(2px);
+}
+
+.winner-action-modal-overlay.active {
+    display: flex;
+}
+
+.winner-action-modal {
+    width: min(650px, 100%);
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+    border: 1px solid #e1e5ea;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 24px 70px rgba(15, 23, 42, .24);
+}
+
+.winner-action-modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 22px 24px 18px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.winner-action-modal-header h2 {
+    margin: 0;
+    color: #202b3c;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.winner-action-modal-header p {
+    margin: 5px 0 0;
+    color: #768294;
+    font-size: 12px;
+}
+
+.winner-action-close {
+    width: 36px;
+    height: 36px;
+    flex: 0 0 36px;
+    border: 0;
+    border-radius: 7px;
+    background: #f1f4f8;
+    color: #526071;
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.winner-action-form {
+    display: grid;
+    gap: 8px;
+    padding: 22px 24px 24px;
+}
+
+.winner-action-form label {
+    display: grid;
+    gap: 7px;
+    margin-bottom: 6px;
+    color: #344054;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.winner-action-form select {
+    width: 100%;
+    min-height: 44px;
+    padding: 0 12px;
+    border: 1px solid #d5dde8;
+    border-radius: 7px;
+    background: #fff;
+    color: #263246;
+    font: inherit;
+    font-weight: 400;
+}
+
+.winner-action-form select:focus {
+    border-color: #2563eb;
+    outline: 0;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
+}
+
+.winner-action-help {
+    margin: 0;
+    padding: 11px 12px;
+    border: 1px solid #e1e7f0;
+    border-radius: 7px;
+    background: #f8fafc;
+    color: #657184;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.winner-action-message {
+    min-height: 18px;
+    margin: 0;
+    color: #b42318;
+    font-size: 12px;
+}
+
+.winner-action-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding-top: 7px;
+}
+
+.winner-action-footer button {
+    min-height: 42px;
+    padding: 0 16px;
+    border: 1px solid #d5dde8;
+    border-radius: 7px;
+    background: #fff;
+    color: #526071;
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.winner-action-footer .winner-action-submit {
+    border-color: #2563eb;
+    background: #2563eb;
+    color: #fff;
+}
+
+.winner-action-footer .winner-action-submit:hover { background: #1d4ed8; }
+.winner-action-footer .winner-action-submit.danger { border-color: #dc3545; background: #dc3545; }
+.winner-action-footer .winner-action-submit.warning { border-color: #f59e0b; background: #f59e0b; }
+.winner-action-footer .winner-action-submit.info { border-color: #0ea5e9; background: #0ea5e9; }
+.winner-action-footer button:disabled { opacity: .6; cursor: wait; }
+
+@media (max-width: 560px) {
+    .winner-action-modal-overlay { padding: 12px; }
+    .winner-action-modal-header { padding: 18px 18px 15px; }
+    .winner-action-form { padding: 18px; }
+    .winner-action-footer { flex-direction: column-reverse; }
+    .winner-action-footer button { width: 100%; }
+}
+
+.gold-installments-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 12px;
+}
+
+.gold-installment-field {
+    display: grid;
+    gap: 6px;
+    padding: 10px;
+    border: 1px solid #e5e9ef;
+    border-radius: 7px;
+    background: #fff;
+    color: #4f5962;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.gold-installment-field > div {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 38px;
+    padding: 0 10px;
+    border: 1px solid #d9dfe4;
+    border-radius: 6px;
+    background: #fff;
+}
+
+.gold-installment-field b { color: #687486; font-size: 12px; }
+.gold-installment-field input { width: 100%; min-width: 0; height: 34px; border: 0; outline: 0; color: #263246; font: inherit; font-weight: 400; }
+.gold-installment-field input:focus { box-shadow: none; }
+.gold-installments-actions { margin-top: 16px; display: flex; justify-content: flex-end; }
+.gold-installments-message { min-height: 18px; margin: 8px 0 0; color: #b42318; font-size: 12px; }
+
+@media (max-width: 560px) {
+    .gold-installments-grid { grid-template-columns: 1fr; }
+}

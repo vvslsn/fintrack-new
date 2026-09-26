@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Create Manager - FinTrack</title>
+  <link rel="stylesheet" href="style.css"><link rel="stylesheet" href="profile-menu.css">
+  <style>
+    body{min-height:100vh;background:#f4f6fa;color:#1d2939;font-family:Arial,sans-serif}.admin-create-wrap{max-width:680px;margin:8vh auto;padding:24px}.admin-create-card{background:#fff;border:1px solid #e2e7ef;border-radius:14px;padding:30px;box-shadow:0 12px 35px #17203312}.admin-create-card h1{margin:0 0 8px}.admin-create-card p{color:#667085}.admin-create-form{display:grid;grid-template-columns:1fr 1fr;gap:14px}.admin-create-form label{display:grid;gap:7px;font-size:13px;font-weight:600}.admin-create-form input{height:42px;border:1px solid #d0d5dd;border-radius:7px;padding:0 11px;font:inherit}.admin-create-actions{grid-column:1/-1;display:flex;justify-content:flex-end;gap:10px;margin-top:10px}.admin-create-message{grid-column:1/-1;min-height:20px;color:#b42318}.admin-create-notice{background:#eff6ff;padding:12px;border-radius:8px;font-size:13px}@media(max-width:600px){.admin-create-form{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <main class="admin-create-wrap"><section class="admin-create-card">
+    <a href="dashboard.html">&larr; Back to dashboard</a><h1>Create Manager Account</h1>
+    <p>Only a signed-in manager can create another manager.</p>
+    <div class="admin-create-notice">You can also create manager accounts from the public signup page.</div>
+    <form id="adminCreateForm" class="admin-create-form">
+      <label>Full name<input id="adminFullName" autocomplete="name" required maxlength="100"></label>
+      <label>Username<input id="adminUsername" autocomplete="username" required maxlength="60"></label>
+      <label>Email<input id="adminEmail" type="email" autocomplete="email" required></label>
+      <label>Phone<input id="adminPhone" type="tel" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" required></label>
+      <label>Password<input id="adminPassword" type="password" autocomplete="new-password" minlength="8" required></label>
+      <label>Confirm password<input id="adminPasswordConfirm" type="password" autocomplete="new-password" minlength="8" required></label>
+      <p id="adminCreateMessage" class="admin-create-message" role="status"></p>
+      <div class="admin-create-actions"><button type="submit" class="btn" id="adminCreateSubmit">Create Manager</button></div>
+    </form>
+  </section></main>
+  <script src="api.js"></script><script src="admin-create.js"></script>
+</body>
+</html>

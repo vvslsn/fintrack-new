@@ -3,7 +3,8 @@ const { Schema } = mongoose;
 
 const schemeSchema = new Schema(
     {
-        name: { type: String, required: true, unique: true, trim: true },
+        manager: { type: Schema.Types.ObjectId, ref: "User", required: true, index: true },
+        name: { type: String, required: true, trim: true },
         chitType: {
             type: String,
             enum: ["cash", "gold"],
@@ -35,5 +36,7 @@ const schemeSchema = new Schema(
     },
     { timestamps: true }
 );
+
+schemeSchema.index({ manager: 1, name: 1 }, { unique: true });
 
 module.exports = mongoose.model("Scheme", schemeSchema);

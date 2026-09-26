@@ -1926,6 +1926,75 @@ body {
     color: #7b8593;
 }
 
+.scheme-gold-schedule {
+    margin: 2px 0 15px;
+    padding: 15px;
+    border: 1px solid #e1e6ef;
+    border-radius: 8px;
+    background: #f8fafc;
+}
+
+.scheme-gold-schedule[hidden] { display: none !important; }
+
+.scheme-gold-schedule-header h3 {
+    margin: 0 0 4px;
+    color: #202b3c;
+    font-size: 14px;
+}
+
+.scheme-gold-schedule-header p {
+    margin: 0 0 12px;
+    color: #768294;
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+.scheme-gold-schedule-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px 12px;
+}
+
+.scheme-gold-month-field {
+    display: grid;
+    gap: 5px;
+    padding: 9px;
+    border: 1px solid #e5e9ef;
+    border-radius: 6px;
+    background: #fff;
+    color: #4f5962;
+    font-size: 9px;
+    font-weight: 600;
+}
+
+.scheme-gold-amount-input {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 34px;
+    padding: 0 9px;
+    border: 1px solid #d9dfe4;
+    border-radius: 5px;
+    background: #fff;
+}
+
+.scheme-gold-amount-input b { color: #687486; font-size: 10px; }
+.scheme-gold-amount-input input { width: 100%; height: 30px; padding: 0; border: 0; outline: 0; color: #263246; font: inherit; font-weight: 400; }
+.scheme-gold-amount-input input:focus { box-shadow: none; }
+
+.scheme-gold-schedule-message {
+    min-height: 15px;
+    margin: 8px 0 0;
+    color: #b42318;
+    font-size: 10px;
+}
+
+.scheme-monthly-varies { color: #445066; font-size: 9px; font-weight: 600; white-space: nowrap; }
+
+@media (max-width: 560px) {
+    .scheme-gold-schedule-grid { grid-template-columns: 1fr; }
+}
+
 @media (max-width: 700px) {
     .manage-capacity-summary {
         grid-template-columns: 1fr;

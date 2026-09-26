@@ -59,8 +59,8 @@ async function dashboard() {
   await setupPage("dashboard", "My Dashboard", "Your chit schemes, payments and account information in one place.", data => {
     const installments = buildInstallments(data);
     const paid = installments.filter(row => row.paid);
-    const due = installments.filter(row => !row.paid && row.due && new Date(row.due) <= new Date());
-    const upcoming = installments.filter(row => !row.paid && row.due && new Date(row.due) > new Date()).sort((a, b) => new Date(a.due) - new Date(b.due))[0];
+    const due = installments.filter(row => !row.paid && row.amount > 0 && row.due && new Date(row.due) <= new Date());
+    const upcoming = installments.filter(row => !row.paid && row.amount > 0 && row.due && new Date(row.due) > new Date()).sort((a, b) => new Date(a.due) - new Date(b.due))[0];
     const wins = data.winners.filter(winner => String(winner.status || "winner").toLowerCase() === "winner");
     const paidTotal = paid.reduce((sum, row) => sum + Number(row.payment.amount || 0), 0);
     const dueTotal = due.reduce((sum, row) => sum + row.amount, 0);
@@ -77,12 +77,12 @@ async function dashboard() {
       <div class="grid scheme-dashboard-grid">${active.length ? active.map(ticket => {
         const scheme = schemeOf(ticket);
         const rows = installments.filter(row => sameId(row.scheme, scheme) && ticketNo(row.ticket) === ticketNo(ticket));
-        const next = rows.find(row => !row.paid && row.due && new Date(row.due) <= new Date()) || rows.find(row => !row.paid);
+        const next = rows.find(row => !row.paid && row.amount > 0 && row.due && new Date(row.due) <= new Date()) || rows.find(row => !row.paid && row.amount > 0) || rows.find(row => !row.paid);
         const type = String(scheme.chitType || scheme.type || "cash").toLowerCase();
         const chitValue = type.includes("gold") ? `${esc(scheme.goldGrams || 0)} grams` : money(scheme.totalAmount || ticket.chitAmount);
         return `<article class="card scheme-dashboard-card"><div class="scheme-dashboard-top"><div><div class="scheme-type">${esc(scheme.chitType || scheme.type || "Chit Scheme")}</div><h3>${esc(scheme.name || "Chit Scheme")}</h3><p class="muted">Ticket #${esc(ticketNo(ticket) || "—")}</p></div>${statusBadge(scheme.status || "Active")}</div>
-          <div class="scheme-dashboard-values"><div><span>Chit Value</span><b>${chitValue}</b></div><div><span>Monthly Payable</span><b>${money(next?.amount || scheme.baseAmount || 0)}</b></div><div><span>Current Month</span><b>${next ? `Month ${next.month}` : "Completed"}</b></div><div><span>Due Date</span><b>${next?.due ? dateText(next.due) : "—"}</b></div></div>
-          <div class="scheme-dashboard-status">${next ? `<span class="status-line ${new Date(next.due) <= new Date() ? "warning" : "neutral"}">${new Date(next.due) <= new Date() ? "● Payment is due" : "○ Upcoming installment"}</span>` : `<span class="status-line success">✓ Scheme completed</span>`}<a href="user-payments.html">Payment history →</a>${next && new Date(next.due) <= new Date() ? `<a class="btn pay-now-btn" href="${payUrl(ticket, next.month)}">💳 Pay Now</a>` : ""}</div></article>`;
+          <div class="scheme-dashboard-values"><div><span>Chit Value</span><b>${chitValue}</b></div><div><span>Monthly Payable</span><b>${Number(next?.amount) > 0 ? money(next.amount) : String(scheme.chitType || scheme.type).toLowerCase().includes("gold") ? "Waiting for manager" : money(0)}</b></div><div><span>Current Month</span><b>${next ? `Month ${next.month}` : "Completed"}</b></div><div><span>Due Date</span><b>${next?.due ? dateText(next.due) : "—"}</b></div></div>
+          <div class="scheme-dashboard-status">${next ? `<span class="status-line ${Number(next.amount) > 0 && new Date(next.due) <= new Date() ? "warning" : "neutral"}">${Number(next.amount) > 0 ? (new Date(next.due) <= new Date() ? "● Payment is due" : "○ Upcoming installment") : "Waiting for manager to enter this month's installment"}</span>` : `<span class="status-line success">✓ Scheme completed</span>`}<a href="user-payments.html">Payment history →</a>${next && Number(next.amount) > 0 && new Date(next.due) <= new Date() ? `<a class="btn pay-now-btn" href="${payUrl(ticket, next.month)}">💳 Pay Now</a>` : ""}</div></article>`;
       }).join("") : `<div class="card empty-card"><div class="empty">No schemes are linked to your account.</div></div>`}</div>
       <div class="grid two dashboard-lower-grid"><div class="card next-payment-card"><div class="dashboard-card-header"><div><h2 class="section-title">Upcoming Payment</h2><p class="muted">Your next installment based on the chit schedule.</p></div>${due.length ? statusBadge("Due") : statusBadge("Upcoming")}</div>
         ${due.length ? `<div class="next-payment-amount">${money(due[0].amount)}</div><div class="next-payment-meta"><b>${esc(due[0].scheme.name)}</b><span>Ticket #${esc(ticketNo(due[0].ticket))} · Month ${due[0].month}</span></div><div class="next-payment-date"><span>Due date</span><b>${dateText(due[0].due)}</b></div><a class="btn" href="${payUrl(due[0].ticket, due[0].month)}">💳 Pay Now</a>` : upcoming ? `<div class="upcoming-empty"><div class="upcoming-icon">📅</div><div><b>Next due: ${dateText(upcoming.due)}</b><p>${esc(upcoming.scheme.name)} · Month ${upcoming.month}</p><strong>${money(upcoming.amount)}</strong></div></div>` : `<div class="empty">No upcoming payment is available right now.</div>`}</div>
@@ -109,7 +109,7 @@ async function schemesPage() {
 async function paymentsPage() {
   await setupPage("payments", "My Payments", "Track due installments and review your month-wise payment history.", data => {
     const installments = buildInstallments(data);
-    const due = installments.filter(row => !row.paid && row.due && new Date(row.due) <= new Date());
+    const due = installments.filter(row => !row.paid && row.amount > 0 && row.due && new Date(row.due) <= new Date());
     const totalDue = due.reduce((sum, row) => sum + row.amount, 0);
     const history = data.payments.slice().sort((a,b) => Number(b.month || 0) - Number(a.month || 0) || new Date(b.paymentDate || b.createdAt || 0) - new Date(a.paymentDate || a.createdAt || 0));
     return `<div class="payments-page-intro"><div><div class="scheme-type">MY PAYMENTS</div><h2>Payment Center</h2><p class="muted">View your installments and pay the amount currently due.</p></div><a class="btn btn-small" href="user-dashboard.html">Back to Dashboard</a></div>
@@ -135,6 +135,7 @@ async function initPayNowPage() {
     const installmentAmount = amount(scheme, ticket, month);
     const due = dueDate(scheme, month);
     if (paidFor(data, ticket, month)) return location.replace("user-payments.html");
+    if (!(installmentAmount > 0)) return location.replace("user-payments.html");
     document.body.innerHTML = `<main class="pay-page"><div class="pay-wrap"><a href="user-payments.html">← Back to payments</a><section class="card pay-card gateway-pay-card"><p class="gateway-eyebrow">SECURE PAYMENT</p><h1>Pay ${money(installmentAmount)}</h1><p>${esc(scheme.name)} · Ticket #${esc(ticketNo(ticket))} · Month ${month}</p><p>Due date: ${dateText(due)}</p><div class="gateway-methods" aria-label="Available payment methods"><span>UPI</span><span>Net banking</span><span>Credit card</span><span>Debit card</span></div><p class="gateway-secure-note">Your bank and card details are entered securely through the payment gateway.</p><button class="btn gateway-pay-button" id="gatewayPayButton" type="button" disabled>Loading secure checkout…</button><p id="gatewayPaymentMessage" class="gateway-payment-message" role="status"></p></section></div></main>`;
   } catch (error) { alert(error.message); location.replace("user-payments.html"); }
 }

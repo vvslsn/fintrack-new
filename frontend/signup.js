@@ -1,5 +1,16 @@
 document.addEventListener("DOMContentLoaded",()=>{
  const f=document.getElementById("signupForm"),msg=document.getElementById("signupMessage");
+ const bindPasswordToggle=(buttonId,inputId)=>{
+  const button=document.getElementById(buttonId),input=document.getElementById(inputId);
+  button?.addEventListener("click",()=>{
+   const reveal=input.type==="password";
+   input.type=reveal?"text":"password";
+   button.setAttribute("aria-label",reveal?"Hide password":"Show password");
+   button.setAttribute("aria-pressed",String(reveal));
+  });
+ };
+ bindPasswordToggle("toggleNewPassword","newPassword");
+ bindPasswordToggle("toggleConfirmPassword","confirmPassword");
  f?.addEventListener("submit",async e=>{e.preventDefault();
   const fullName=document.getElementById("fullName").value.trim(),username=document.getElementById("newUsername").value.trim(),email=document.getElementById("email").value.trim(),phone=document.getElementById("phone").value.trim(),password=document.getElementById("newPassword").value,confirmPassword=document.getElementById("confirmPassword").value;
   if(!fullName||!username||!email||!phone||!password||!confirmPassword)return msg.textContent="Please fill in all required fields.";

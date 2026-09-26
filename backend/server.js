@@ -48,4 +48,10 @@ app.use((req,res)=>res.status(404).json({success:false,message:"API route not fo
 app.use(errorHandler);
 
 const PORT=process.env.PORT||5000;
-connectDB().then(()=>app.listen(PORT,()=>console.log(`FinTrack API running on http://localhost:${PORT}`)));
+connectDB().then(async()=>{
+  await require("./services/migrate-tenancy")();
+  app.listen(PORT,()=>console.log(`FinTrack API running on http://localhost:${PORT}`));
+}).catch(error=>{
+  console.error("FinTrack tenancy migration failed:",error);
+  process.exit(1);
+});

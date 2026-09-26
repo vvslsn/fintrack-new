@@ -3,6 +3,7 @@ const { Schema } = mongoose;
 
 const bankAccountSchema = new Schema(
     {
+        manager: { type: Schema.Types.ObjectId, ref: "User", required: true, index: true },
         holderName: { type: String, required: true, trim: true },
         bankName: { type: String, required: true, trim: true },
         accountNumber: {
@@ -25,11 +26,10 @@ const bankAccountSchema = new Schema(
 
 const BankAccount = mongoose.model("BankAccount", bankAccountSchema);
 
-// Single-document config (admin UPI/QR + active bank account). Enforced as
-// a singleton at the application layer, e.g.:
-//   PaymentSettings.findOneAndUpdate({}, update, { upsert: true, new: true })
+// Each manager has an independent payment configuration.
 const paymentSettingsSchema = new Schema(
     {
+        manager: { type: Schema.Types.ObjectId, ref: "User", required: true, unique: true },
         activeAccount: {
             type: Schema.Types.ObjectId,
             ref: "BankAccount",

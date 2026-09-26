@@ -4,6 +4,7 @@ let detailSchemeId = "";
 let detailScheme = null;
 let detailTickets = [];
 let detailMembers = [];
+let detailWinners = [];
 
 const detailById = id => document.getElementById(id);
 const detailEsc = value => escHtml(value);
@@ -21,6 +22,7 @@ async function loadSchemeDetails() {
         detailScheme = schemeResult.scheme;
         detailTickets = ticketResult.tickets || [];
         const winners = (winnerResult.winners || []).filter(winner => String(winner.scheme?._id || winner.scheme) === String(detailSchemeId));
+        detailWinners = winners;
         const payments = (paymentResult.payments || []).filter(payment => String(payment.scheme?._id || payment.scheme) === String(detailSchemeId));
         renderSchemeDetails(detailScheme, winners, payments);
     } catch (error) {
@@ -40,13 +42,13 @@ function renderSchemeDetails(scheme, winners, payments) {
     detailById("schemeStatus").className = `status-badge status-${scheme.status}`;
     detailById("schemeSubtitle").textContent = `${type} chit · ${value}`;
     detailById("totalAmount").textContent = value;
-    detailById("baseInstallment").textContent = money(scheme.baseAmount);
+    detailById("baseInstallment").textContent = type === "gold" ? "Varies by month" : money(scheme.baseAmount);
     detailById("duration").textContent = `${scheme.duration} Months`;
     detailById("memberCount").textContent = `${membersCount} / ${capacity}`;
     detailById("infoName").textContent = scheme.name;
     detailById("infoType").textContent = type;
     detailById("infoAmount").textContent = value;
-    detailById("infoInstallment").textContent = money(scheme.baseAmount);
+    detailById("infoInstallment").textContent = type === "gold" ? "Varies by month" : money(scheme.baseAmount);
     detailById("infoDuration").textContent = `${scheme.duration} Months`;
     detailById("infoStartDate").textContent = dateText(scheme.startDate);
     const start = new Date(`${String(scheme.startDate || "").slice(0, 10)}T00:00:00`);
@@ -58,6 +60,9 @@ function renderSchemeDetails(scheme, winners, payments) {
     detailById("capacityNumber").textContent = `${membersCount} / ${capacity}`;
     detailById("capacityProgress").style.width = `${capacity ? Math.min(100, membersCount / capacity * 100) : 0}%`;
     detailById("goldInstallmentsCard").style.display = type === "gold" ? "block" : "none";
+    if (type === "gold") {
+        renderGoldInstallmentInputs(scheme);
+    }
 
     detailById("membersTable").innerHTML = detailTickets.map(ticket =>
         `<tr><td>#${detailEsc(ticket.ticketNumber)}</td><td>${detailEsc(ticket.member?.name || "—")}</td><td>${detailEsc(ticket.member?.email || "—")}</td><td>${detailEsc(ticket.member?.phone || "—")}</td><td>${dateText(ticket.member?.joinedDate)}</td><td>${detailEsc(ticket.member?.status || "active")}</td></tr>`
@@ -70,6 +75,46 @@ function renderSchemeDetails(scheme, winners, payments) {
     detailById("paymentsTable").innerHTML = payments.map(payment =>
         `<tr><td>${detailEsc(payment.member?.name || "—")}</td><td>#${detailEsc(payment.ticketNumber)}</td><td>${payment.month}</td><td>${dateText(payment.dueDate)}</td><td>${money(payment.amount)}</td><td>${dateText(payment.paymentDate)}</td><td>${detailEsc(payment.status)}</td></tr>`
     ).join("") || `<tr><td colspan="7">No payments recorded.</td></tr>`;
+}
+
+function monthAnniversary(startValue, month) {
+    const parts = String(startValue || "").slice(0, 10).split("-").map(Number);
+    if (parts.length !== 3 || parts.some(value => !value)) return null;
+    const [year, startMonth, startDay] = parts;
+    const index = startMonth - 1 + Number(month) - 1;
+    const targetYear = year + Math.floor(index / 12);
+    const targetMonth = index % 12;
+    return new Date(targetYear, targetMonth, Math.min(startDay, new Date(targetYear, targetMonth + 1, 0).getDate()));
+}
+
+function currentGoldMonth(scheme) {
+    const start = monthAnniversary(scheme.startDate, 1);
+    if (!start) return 0;
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    if (today < start) return 0;
+    let month = (today.getFullYear() - start.getFullYear()) * 12 + today.getMonth() - start.getMonth() + 1;
+    if (today.getDate() < start.getDate()) month -= 1;
+    return Math.max(0, Math.min(Number(scheme.duration || 0), month));
+}
+
+function renderGoldInstallmentInputs(scheme) {
+    const installments = scheme.goldMonthlyInstallments || {};
+    const dueThrough = currentGoldMonth(scheme);
+    let firstMissing = 0;
+    for (let month = 1; month <= Number(scheme.duration || 0); month += 1) {
+        if (!(Number(installments[String(month)] ?? installments[month]) > 0)) { firstMissing = month; break; }
+    }
+    detailById("goldInstallmentsGrid").innerHTML = Array.from({ length: Number(scheme.duration || 0) }, (_, index) => {
+        const month = index + 1;
+        const amount = installments[String(month)] ?? installments[month] ?? "";
+        const editable = month === firstMissing && month <= dueThrough;
+        const available = monthAnniversary(scheme.startDate, month);
+        const hint = Number(amount) > 0 ? "Saved" : editable ? "Enter this month's payable amount" : available ? `Available ${dateText(available)}` : "Not available yet";
+        return `<label class="gold-installment-field" for="goldInstallmentMonth${month}"><span>Month ${month} Installment <small>${detailEsc(hint)}</small></span><div><b>₹</b><input id="goldInstallmentMonth${month}" data-gold-installment-month="${month}" type="number" min="0.01" step="0.01" value="${detailEsc(amount)}" placeholder="${editable ? "Enter amount" : "—"}" ${editable ? "" : "disabled"}></div></label>`;
+    }).join("");
+    const button = detailById("saveGoldInstallmentsButton");
+    if (button) button.disabled = !(firstMissing && firstMissing <= dueThrough);
+    detailById("goldInstallmentsMessage").textContent = firstMissing && firstMissing <= dueThrough ? `Month ${firstMissing} payable amount` : "The next monthly amount becomes available on its chit anniversary.";
 }
 
 function goBack() { location.href = "schemes.html"; }
@@ -224,39 +269,102 @@ async function deleteMemberFromScheme() {
     alert("Tickets with payment history are protected. Remove is not available from this screen.");
 }
 
+function winnerModal(id) { return detailById(id); }
+function openWinnerModal(id) {
+    const modal = winnerModal(id);
+    if (!modal) return;
+    modal.classList.add("active");
+    modal.setAttribute("aria-hidden", "false");
+}
+function closeWinnerModal(id) {
+    const modal = winnerModal(id);
+    if (!modal) return;
+    modal.classList.remove("active");
+    modal.setAttribute("aria-hidden", "true");
+}
+function monthOptionMarkup(selected = null) {
+    const allowed = selected === null ? null : new Set(selected.map(Number));
+    const duration = Number(detailScheme?.duration || 0);
+    return `<option value="">Select month…</option>${Array.from({length: duration}, (_, index) => index + 1).filter(month => !allowed || allowed.has(month)).map(month => `<option value="${month}">Month ${month}</option>`).join("")}`;
+}
+function eligibleTicketOptionMarkup() {
+    const alreadyWon = new Set(detailWinners.filter(row => row.status === "winner").map(row => String(row.ticketNumber)));
+    const eligible = detailTickets.filter(ticket => !ticket.winningMonth && !alreadyWon.has(String(ticket.ticketNumber)));
+    return `<option value="">${eligible.length ? "Select ticket…" : "No eligible tickets"}</option>${eligible.map(ticket => `<option value="${detailEsc(ticket.ticketNumber)}">Ticket #${detailEsc(ticket.ticketNumber)} — ${detailEsc(ticket.member?.name || "Member")}</option>`).join("")}`;
+}
+async function refreshWinnerData() {
+    const [winnerResult, ticketResult] = await Promise.all([
+        fintrackApi("/winners"),
+        fintrackApi(`/schemes/${encodeURIComponent(detailSchemeId)}/tickets`)
+    ]);
+    detailWinners = (winnerResult.winners || []).filter(item => String(item.scheme?._id || item.scheme) === String(detailSchemeId));
+    detailTickets = ticketResult.tickets || [];
+}
 async function updateMonthlyWinner() {
-    const month = Number(prompt("Winner month:"));
-    const ticket = prompt("Winner ticket number:");
-    if (!month || !ticket) return;
     try {
-        await fintrackApi("/winners", { method: "POST", body: JSON.stringify({ schemeId: detailSchemeId, month, ticketNumber: ticket }) });
-        await loadSchemeDetails();
+        await refreshWinnerData();
+        const openMonths = Array.from({ length: Number(detailScheme?.duration || 0) }, (_, index) => index + 1)
+            .filter(month => !detailWinners.some(row => Number(row.month) === month && row.status === "stopped")
+                && detailWinners.filter(row => Number(row.month) === month && row.status === "winner").length < 2);
+        detailById("winnerActionMonth").innerHTML = monthOptionMarkup(openMonths);
+        detailById("winnerActionTicket").innerHTML = eligibleTicketOptionMarkup();
+        const canAdd = openMonths.length > 0 && detailTickets.some(ticket => !ticket.winningMonth && !detailWinners.some(row => row.status === "winner" && String(row.ticketNumber) === String(ticket.ticketNumber)));
+        detailById("addWinnerMessage").textContent = canAdd ? "" : "No open month or eligible ticket is available for a winner.";
+        detailById("addWinnerSubmit").disabled = !canAdd;
+        openWinnerModal("addWinnerModal");
     } catch (error) { alert(error.message); }
 }
 
 async function removeWinnerFromToolbar() {
-    const result = await fintrackApi("/winners");
-    const winners = (result.winners || []).filter(item => String(item.scheme?._id || item.scheme) === String(detailSchemeId));
-    const ticket = prompt("Enter winning ticket number to remove:");
-    const winner = winners.find(item => String(item.ticketNumber) === String(ticket));
-    if (!winner) return alert("Winner not found.");
-    if (!confirm("Remove this winner?")) return;
     try {
-        await fintrackApi(`/winners/${winner._id}`, { method: "DELETE" });
-        await loadSchemeDetails();
+        await refreshWinnerData();
+        const rows = detailWinners.filter(item => item.status === "winner");
+        detailById("removeWinnerSelect").innerHTML = `<option value="">${rows.length ? "Select winner…" : "No winners recorded"}</option>${rows.map(item => `<option value="${detailEsc(item._id)}">Month ${item.month} · Ticket #${detailEsc(item.ticketNumber)} · ${detailEsc(item.member?.name || "Member")}</option>`).join("")}`;
+        detailById("removeWinnerMessage").textContent = "";
+        detailById("removeWinnerSubmit").disabled = rows.length === 0;
+        openWinnerModal("removeWinnerModal");
     } catch (error) { alert(error.message); }
 }
 
 async function stopWinnerMonth() {
-    const month = Number(prompt("Month to mark stopped:"));
-    if (!month) return;
     try {
-        await fintrackApi("/winners/stopped", { method: "POST", body: JSON.stringify({ schemeId: detailSchemeId, month }) });
-        await loadSchemeDetails();
+        await refreshWinnerData();
+        const usedMonths = detailWinners.map(row => Number(row.month));
+        detailById("stopMonthSelect").innerHTML = monthOptionMarkup(Array.from({length: Number(detailScheme?.duration || 0)}, (_, i) => i + 1).filter(month => !usedMonths.includes(month)));
+        const available = detailById("stopMonthSelect").options.length > 1;
+        detailById("stopMonthMessage").textContent = available ? "" : "Every month already has a winner or has been stopped.";
+        detailById("stopMonthSubmit").disabled = !available;
+        openWinnerModal("stopMonthModal");
     } catch (error) { alert(error.message); }
 }
 
-async function modifyStoppedMonth() { alert("Modify a stopped month by adding a winner from the Winners tab."); }
+async function modifyStoppedMonth() {
+    try {
+        await refreshWinnerData();
+        const stopped = detailWinners.filter(item => item.status === "stopped");
+        detailById("modifyMonthSelect").innerHTML = `<option value="">${stopped.length ? "Select stopped month…" : "No stopped months"}</option>${stopped.map(item => `<option value="${detailEsc(item._id)}">Month ${item.month}</option>`).join("")}`;
+        detailById("modifyMonthTicket").innerHTML = eligibleTicketOptionMarkup();
+        detailById("modifyMonthMessage").textContent = stopped.length ? "" : "Stop a month first, then you can assign its winner here.";
+        detailById("modifyMonthSubmit").disabled = stopped.length === 0 || !detailTickets.some(ticket => !ticket.winningMonth);
+        openWinnerModal("modifyMonthModal");
+    } catch (error) { alert(error.message); }
+}
+
+async function submitWinnerAction(form, buttonId, messageId, action) {
+    const button = detailById(buttonId);
+    const message = detailById(messageId);
+    button.disabled = true;
+    message.textContent = "Saving…";
+    try {
+        await action();
+        const overlay = form.closest(".winner-action-modal-overlay");
+        closeWinnerModal(overlay.id);
+        await loadSchemeDetails();
+    } catch (error) {
+        message.textContent = error.message;
+        button.disabled = false;
+    }
+}
 
 async function addPayment() {
     const ticket = prompt("Ticket number:");
@@ -272,19 +380,21 @@ async function addPayment() {
 }
 
 async function saveGoldMonthlyInstallments() {
-    const result = await fintrackApi(`/schemes/${encodeURIComponent(detailSchemeId)}`);
-    const scheme = result.scheme;
-    if (scheme.type !== "gold") return;
-    const installments = { ...(scheme.goldMonthlyInstallments || {}) };
-    for (let month = 1; month <= Number(scheme.duration || 0); month += 1) {
-        const value = prompt(`Gold monthly installment for Month ${month}:`, installments[String(month)] || scheme.baseAmount || "");
-        if (value === null) return;
-        installments[String(month)] = Number(value) || 0;
+    if ((detailScheme?.chitType || detailScheme?.type) !== "gold") return;
+    const installments = { ...(detailScheme.goldMonthlyInstallments || {}) };
+    let month = 0;
+    for (let candidate = 1; candidate <= Number(detailScheme.duration || 0); candidate += 1) {
+        if (!(Number(installments[String(candidate)] ?? installments[candidate]) > 0)) { month = candidate; break; }
     }
+    const input = month ? detailById(`goldInstallmentMonth${month}`) : null;
+    const value = Number(input?.value);
+    if (!month || !input || !Number.isFinite(value) || value <= 0) return;
+    installments[String(month)] = value;
     try {
-        await fintrackApi(`/schemes/${encodeURIComponent(detailSchemeId)}`, { method: "PATCH", body: JSON.stringify({ goldMonthlyInstallments: installments }) });
+        detailById("goldInstallmentsMessage").textContent = "Saving…";
+        await fintrackApi(`/schemes/${encodeURIComponent(detailSchemeId)}`, { method: "PATCH", body: JSON.stringify({ goldMonthlyInstallments: installments, ...(month === 1 ? { baseAmount: value } : {}) }) });
         await loadSchemeDetails();
-    } catch (error) { alert(error.message); }
+    } catch (error) { detailById("goldInstallmentsMessage").textContent = error.message; }
 }
 
 function filterMembers() { location.reload(); }
@@ -297,6 +407,10 @@ document.addEventListener("DOMContentLoaded", () => {
     loadSchemeDetails();
     detailById("detailAddMemberForm")?.addEventListener("submit", saveExistingMemberToScheme);
     detailById("detailQuickCreateForm")?.addEventListener("submit", createMemberInScheme);
+    detailById("goldInstallmentsGrid")?.addEventListener("input", event => {
+        const button = detailById("saveGoldInstallmentsButton");
+        if (button) button.disabled = !(Number(event.target.value) > 0);
+    });
     detailById("detailMemberSearch")?.addEventListener("input", event => {
         detailById("detailSelectedMemberId").value = "";
         renderDetailMemberSuggestions(event.target.value);
@@ -317,6 +431,29 @@ document.addEventListener("DOMContentLoaded", () => {
         if (event.target === detailById("detailAddMemberModal")) closeDetailMemberModal();
     });
     document.addEventListener("keydown", event => {
-        if (event.key === "Escape") closeDetailMemberModal();
+        if (event.key === "Escape") {
+            closeDetailMemberModal();
+            ["addWinnerModal", "removeWinnerModal", "stopMonthModal", "modifyMonthModal"].forEach(closeWinnerModal);
+        }
+    });
+    document.querySelectorAll("[data-close-winner-modal]").forEach(button => button.addEventListener("click", () => closeWinnerModal(button.dataset.closeWinnerModal)));
+    document.querySelectorAll(".winner-action-modal-overlay").forEach(modal => modal.addEventListener("click", event => {
+        if (event.target === modal) closeWinnerModal(modal.id);
+    }));
+    detailById("addWinnerForm")?.addEventListener("submit", event => {
+        event.preventDefault();
+        submitWinnerAction(event.currentTarget, "addWinnerSubmit", "addWinnerMessage", () => fintrackApi("/winners", { method: "POST", body: JSON.stringify({ schemeId: detailSchemeId, month: Number(detailById("winnerActionMonth").value), ticketNumber: detailById("winnerActionTicket").value }) }));
+    });
+    detailById("removeWinnerForm")?.addEventListener("submit", event => {
+        event.preventDefault();
+        submitWinnerAction(event.currentTarget, "removeWinnerSubmit", "removeWinnerMessage", () => fintrackApi(`/winners/${encodeURIComponent(detailById("removeWinnerSelect").value)}`, { method: "DELETE" }));
+    });
+    detailById("stopMonthForm")?.addEventListener("submit", event => {
+        event.preventDefault();
+        submitWinnerAction(event.currentTarget, "stopMonthSubmit", "stopMonthMessage", () => fintrackApi("/winners/stopped", { method: "POST", body: JSON.stringify({ schemeId: detailSchemeId, month: Number(detailById("stopMonthSelect").value) }) }));
+    });
+    detailById("modifyMonthForm")?.addEventListener("submit", event => {
+        event.preventDefault();
+        submitWinnerAction(event.currentTarget, "modifyMonthSubmit", "modifyMonthMessage", () => fintrackApi(`/winners/stopped/${encodeURIComponent(detailById("modifyMonthSelect").value)}`, { method: "PATCH", body: JSON.stringify({ ticketNumber: detailById("modifyMonthTicket").value }) }));
     });
 });

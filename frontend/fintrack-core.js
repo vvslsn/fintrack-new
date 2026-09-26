@@ -5,7 +5,7 @@
  window.dateText=v=>{if(!v)return"—";const d=new Date(v);return Number.isNaN(d.getTime())?String(v):d.toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"});}
  window.normalizeChitType=v=>String(v||"cash").toLowerCase().includes("gold")?"gold":"cash";
  window.fintrackPaymentAmount=(s,month,member,ticket)=>{
-   const m=Number(month); if(window.normalizeChitType(s?.chitType||s?.type)==="gold"){const x=s.goldMonthlyInstallments||{};return Number(x[String(m)]??x[m]??s.baseAmount??0)||0;}
+   const m=Number(month); if(window.normalizeChitType(s?.chitType||s?.type)==="gold"){const x=s.goldMonthlyInstallments||{};const hasSchedule=x instanceof Map?x.size>0:Object.keys(x).length>0;return Number(x[String(m)]??x[m]??(hasSchedule?0:s.baseAmount)??0)||0;}
    const total=Number(s?.totalAmount||0); if(!total)return Number(s?.baseAmount||0)||0;
    const win=Number(ticket?.winningMonth||member?.winningMonth||0); return Math.round(total*((win>0&&m>=win)?.06:.05));
  };

@@ -22,8 +22,8 @@ const userSchema = new Schema(
         passwordHash: { type: String, required: true },
         role: {
             type: String,
-            enum: ["admin", "user"],
-            default: "admin",
+            enum: ["manager", "admin", "user"],
+            default: "manager",
             required: true
         },
         // Required when role = "user"; must stay null for role = "admin".
@@ -38,13 +38,13 @@ const userSchema = new Schema(
     { timestamps: { createdAt: "accountCreated", updatedAt: "updatedAt" } }
 );
 
-// Enforce: role="user" <-> memberId set, role="admin" <-> memberId null.
-userSchema.pre("validate", function (next) {
+// Enforce: role="user" <-> memberId set, role="manager" <-> memberId null.
+userSchema.pre("validate", function () {
     if (this.role === "user" && !this.memberId) {
-        return next(new Error("A user-role account must have a memberId."));
+        throw new Error("A user-role account must have a memberId.");
     }
-    if (this.role === "admin" && this.memberId) {
-        return next(new Error("An admin-role account cannot have a memberId."));
+    if (["manager", "admin"].includes(this.role) && this.memberId) {
+        throw new Error("A manager account cannot have a memberId.");
     }
 });
 
