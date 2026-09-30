@@ -40,7 +40,6 @@ function installAdminProfileMenu() {
             <div class="profile-menu" role="menu">
                 <button class="profile-menu-item" type="button" role="menuitem" data-profile-action="edit"><span class="profile-menu-icon">👤</span>Edit Profile</button>
                 <button class="profile-menu-item" type="button" role="menuitem" data-profile-action="password"><span class="profile-menu-icon">🔒</span>Change Password</button>
-                <a class="profile-menu-item" role="menuitem" href="admin-create.html"><span class="profile-menu-icon">＋</span>Create Manager</a>
             </div>`;
         header.append(host);
         const button = host.querySelector(".profile-menu-button");

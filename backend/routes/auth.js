@@ -6,9 +6,10 @@ const Member=require("../models/Member");
 const PasswordReset=require("../models/PasswordReset");
 const {requireAuth,requireRole,signUser}=require("../middleware/auth");
 const {smtpConfigured,sendMemberCredentials,sendPasswordResetOtp}=require("../services/mail");
+const {userMemberIds}=require("../middleware/tenant");
 const router=express.Router();
 
-const safe=u=>({id:u._id.toString(),fullName:u.fullName,username:u.username,email:u.email,phone:u.phone,role:u.role,memberId:u.memberId?u.memberId.toString():null,profilePhoto:u.profilePhoto||"",lastLogin:u.lastLogin,mustChangePassword:Boolean(u.mustChangePassword)});
+const safe=u=>({id:u._id.toString(),fullName:u.fullName,username:u.username,email:u.email,phone:u.phone,role:u.role,memberId:u.memberId?u.memberId.toString():null,memberIds:userMemberIds(u).map(String),profilePhoto:u.profilePhoto||"",lastLogin:u.lastLogin,mustChangePassword:Boolean(u.mustChangePassword)});
 
 router.post("/register",async(req,res)=>{
   try{
@@ -65,10 +66,15 @@ router.post("/user/login",async(req,res)=>{
     const normalizedLogin=login.toLowerCase();
     const user=await User.findOne({role:"user",$or:[{email:normalizedLogin},{username:login},{username:normalizedLogin}]});
     if(!user||!(await bcrypt.compare(password||"",user.passwordHash))) return res.status(401).json({success:false,message:"Invalid email or password"});
-    if(!user.memberId) return res.status(403).json({success:false,message:"User account is not linked to a member"});
-    const member=await Member.findById(user.memberId); if(!member) return res.status(403).json({success:false,message:"Linked member not found"});
+    const linkedIds=userMemberIds(user);
+    if(!linkedIds.length) return res.status(403).json({success:false,message:"User account is not linked to a member"});
+    const members=await Member.find({_id:{$in:linkedIds}}).sort({createdAt:1});
+    if(!members.length) return res.status(403).json({success:false,message:"Linked member not found"});
+    if(!members.some(member=>String(member._id)===String(user.memberId)))user.memberId=members[0]._id;
+    user.memberIds=members.map(member=>member._id);
+    const primaryMember=members.find(member=>String(member._id)===String(user.memberId))||members[0];
     user.lastLogin=new Date(); await user.save();
-    res.json({success:true,token:signUser(user),user:safe(user),member:{id:member._id.toString(),name:member.name,email:member.email,phone:member.phone,status:member.status,profilePhoto:member.profilePhoto}});
+    res.json({success:true,token:signUser(user),user:safe(user),members:members.map(member=>({id:member._id.toString(),manager:member.manager.toString(),name:member.name,email:member.email,phone:member.phone,status:member.status,profilePhoto:member.profilePhoto})),member:{id:primaryMember._id.toString(),name:primaryMember.name,email:primaryMember.email,phone:primaryMember.phone,status:primaryMember.status,profilePhoto:primaryMember.profilePhoto}});
   }catch(e){res.status(500).json({success:false,message:e.message});}
 });
 
@@ -81,13 +87,20 @@ router.patch("/profile",requireAuth,async(req,res)=>{
     if(fields.email!==undefined||fields.phone!==undefined){
       const identity={}; if(fields.email!==undefined)identity.email=String(fields.email).trim().toLowerCase(); if(fields.phone!==undefined)identity.phone=String(fields.phone).trim();
       const duplicate=req.user.role==="user"
-        ? await User.exists({role:{$in:["manager","admin"]},$or:Object.entries(identity).map(([key,value])=>({[key]:value}))})
+        ? await User.exists({_id:{$ne:req.user._id},$or:Object.entries(identity).map(([key,value])=>({[key]:value}))})
         : await Member.exists({$or:Object.entries(identity).map(([key,value])=>({[key]:value}))});
-      if(duplicate)return res.status(409).json({success:false,message:`This email or phone is already used by a ${req.user.role==="user"?"manager":"member"}`});
+      if(duplicate)return res.status(409).json({success:false,message:`This email or phone is already used by another account`});
       if(fields.email!==undefined)fields.email=identity.email; if(fields.phone!==undefined)fields.phone=identity.phone;
+      if(req.user.role==="user"){
+        const memberIds=userMemberIds(req.user);
+        const linkedMembers=await Member.find({_id:{$in:memberIds}}).select("_id manager").lean();
+        const managerIds=[...new Set(linkedMembers.map(member=>String(member.manager)))];
+        const conflicts=await Member.exists({manager:{$in:managerIds},_id:{$nin:memberIds},$or:Object.entries(identity).map(([key,value])=>({[key]:value}))});
+        if(conflicts)return res.status(409).json({success:false,message:"Another member in one of your manager accounts already uses this email or phone"});
+      }
     }
     const u=await User.findByIdAndUpdate(req.user._id,fields,{new:true,runValidators:true});
-    if(u?.role==="user"&&u.memberId) await Member.findByIdAndUpdate(u.memberId,{name:u.fullName,email:u.email,phone:u.phone,profilePhoto:u.profilePhoto||""},{runValidators:true});
+    if(u?.role==="user") await Member.updateMany({_id:{$in:userMemberIds(u)}},{name:u.fullName,email:u.email,phone:u.phone,profilePhoto:u.profilePhoto||""},{runValidators:true});
     res.json({success:true,user:safe(u)});
   }catch(e){res.status(400).json({success:false,message:e.message});}
 });

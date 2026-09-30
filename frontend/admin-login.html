@@ -1,251 +1,57 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
 <head>
-
-    <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
-    <title>FinTrack - Manager Login</title>
-
-    <link rel="stylesheet" href="style.css">
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FinTrack Manager Portal - Login</title>
+  <link rel="stylesheet" href="user/user.css">
+  <style>
+    .manager-login-page .login-card { max-width: 500px; }
+    .manager-login-page .manager-login-links { margin-top: 12px; font-size: 13px; }
+    .manager-login-page .manager-login-links a { color: #3157d5; font-weight: 700; }
+    .manager-login-page .manager-login-footer { margin-top: 22px; padding-top: 17px; border-top: 1px solid #e8ebf0; color: #7b8492; font-size: 12px; }
+    .manager-login-page .manager-login-member-link { margin-top: 10px; font-size: 13px; }
+    .manager-login-page .manager-login-footer a { color: #3157d5; font-weight: 700; }
+    @media (max-width: 900px) { .manager-login-page .login-brand { min-height: 330px; } }
+  </style>
 </head>
-
-
 <body>
-
-    <main class="login-page">
-
-
-        <!-- =================================================
-             LEFT SIDE - BRAND
-             ================================================= -->
-
-        <section class="login-brand">
-
-            <div class="brand-content">
-
-                <h1>
-                    Finance
-                </h1>
-
+  <main class="login-page manager-login-page">
+    <section class="login-brand">
+      <div class="login-brand-inner">
+        <div class="brand"><span class="brand-mark">₹</span><span>FinTrack</span></div>
+        <h1>Manager Portal</h1>
+        <p>Manage your chit schemes, members, payments and account in one place.</p>
+      </div>
+    </section>
+    <section class="login-card-wrap">
+      <div class="login-card">
+        <div class="eyebrow">FinTrack Manager Login</div>
+        <h2>Welcome back</h2>
+        <p class="sub">Sign in with your manager username and password.</p>
+        <form id="loginForm">
+          <div class="field">
+            <label for="username">Username</label>
+            <input id="username" name="username" type="text" autocomplete="username" required placeholder="Enter your username">
+          </div>
+          <div class="field">
+            <label for="password">Password</label>
+            <div class="password-row">
+              <input id="password" name="password" type="password" autocomplete="current-password" required placeholder="Enter your password">
+              <button id="togglePassword" type="button" aria-label="Show password" aria-pressed="false">👁</button>
             </div>
-
-        </section>
-
-
-
-        <!-- =================================================
-             RIGHT SIDE - LOGIN
-             ================================================= -->
-
-        <section class="login-section">
-
-            <div class="login-card">
-
-
-                <!-- =================================================
-                     LOGIN HEADER
-                     ================================================= -->
-
-                <div class="login-header">
-
-                    <h2>
-                        Welcome Back
-                    </h2>
-
-                    <p>
-                        Login to your FinTrack account
-                    </p>
-
-                </div>
-
-
-
-                <!-- =================================================
-                     LOGIN FORM
-                     ================================================= -->
-
-                <form id="loginForm">
-
-
-                    <!-- ================= USERNAME ================= -->
-
-                    <div class="form-group">
-
-                        <label for="username">
-                            Username
-                        </label>
-
-                        <input
-                            type="text"
-                            id="username"
-                            name="username"
-                            placeholder="Enter username"
-                            autocomplete="username"
-                            required
-                        >
-
-                    </div>
-
-
-
-                    <!-- ================= PASSWORD ================= -->
-
-                    <div class="form-group">
-
-                        <label for="password">
-                            Password
-                        </label>
-
-
-                        <div class="password-input">
-
-                            <input
-                                type="password"
-                                id="password"
-                                name="password"
-                                placeholder="Enter password"
-                                autocomplete="current-password"
-                                required
-                            >
-
-
-                            <!-- Show / Hide Password -->
-
-                            <button
-                                type="button"
-                                id="togglePassword"
-                                class="password-toggle"
-                                aria-label="Show password">
-
-                                👁
-
-                            </button>
-
-                        </div>
-
-                    </div>
-
-
-
-                    <!-- =================================================
-                         REMEMBER ME
-                         ================================================= -->
-
-                    <div class="remember-row">
-
-                        <label class="remember">
-
-                            <input
-                                type="checkbox"
-                                id="rememberMe"
-                                name="rememberMe"
-                            >
-
-                            <span>
-                                Remember me
-                            </span>
-
-                        </label>
-
-                    </div>
-
-
-
-                    <!-- =================================================
-                         LOGIN BUTTON
-                         ================================================= -->
-
-                    <button
-                        type="submit"
-                        class="login-btn">
-
-                        Login
-
-                    </button>
-
-
-
-                    <!-- =================================================
-                         LOGIN MESSAGE
-                         ================================================= -->
-
-                    <p
-                        id="loginMessage"
-                        class="login-message">
-                    </p>
-
-
-
-                    <!-- =================================================
-                         FORGOT PASSWORD
-                         ================================================= -->
-
-                    <div
-                        id="forgotPassword"
-                        class="forgot-password">
-
-                        <a href="forgot.html">
-                            Forgot password?
-                        </a>
-
-                    </div>
-
-
-                </form>
-
-
-
-                <!-- =================================================
-                     NEW USER
-                     ================================================= -->
-
-                <div class="admin-login-note">
-                    <strong>Manager Login</strong>
-                    <span>Use this login for manager accounts. Members should use the Member Login.</span>
-                </div>
-
-
-                <div class="new-user">
-
-                    <p>
-
-                        New user?
-
-                        <a href="signup.html">
-                            Create an account
-                        </a>
-
-                    </p>
-
-                </div>
-
-
-            </div>
-
-        </section>
-
-
-    </main>
-
-
-
-    <!-- =================================================
-         JAVASCRIPT
-         ================================================= -->
-
-    <!-- <script src="api.js"></script>
-<script src="script.js"></script> -->
-    <!-- <script src="admin-login.js"></script> -->
-
-<!-- <script src="frontend-security.js"></script> -->
- <script src="api.js"></script>
-<script src="admin-login.js"></script>
-<script src="frontend-security.js"></script>
+          </div>
+          <p id="loginMessage" class="message" role="status"></p>
+          <button class="btn" type="submit">Login to Manager Portal</button>
+        </form>
+        <p class="manager-login-links"><a href="forgot.html">Forgot password?</a></p>
+        <p class="manager-login-footer">New manager? <a href="signup.html">Create an account</a></p>
+        <p class="manager-login-member-link"><a href="user/user-login.html">← Member Login</a></p>
+      </div>
+    </section>
+  </main>
+  <script src="api.js"></script>
+  <script src="admin-login.js"></script>
+  <script src="frontend-security.js"></script>
 </body>
-
 </html>

@@ -8,7 +8,7 @@ const GatewayOrder=require("../models/GatewayOrder");
 const Winner=require("../models/Winner");
 const AdminPayout=require("../models/AdminPayout");
 const {requireAuth,requireRole}=require("../middleware/auth");
-const {isManager}=require("../middleware/tenant");
+const {isManager,userMemberIds}=require("../middleware/tenant");
 const router=express.Router();
 
 function out(s){const x=s.toObject();x.id=x._id.toString();x.type=x.chitType;delete x._id;delete x.__v; if(x.goldMonthlyInstallments instanceof Map)x.goldMonthlyInstallments=Object.fromEntries(x.goldMonthlyInstallments); return x;}
@@ -25,13 +25,13 @@ function cleanGoldInstallments(value,duration){
 }
 
 router.get("/",requireAuth,async(req,res)=>{
-  const filter=isManager(req.user)?{manager:req.user._id}:{_id:{$in:await MemberSchemeTicket.distinct("scheme",{member:req.user.memberId})}};
-  const schemes=await Scheme.find(filter).sort({createdAt:-1}); res.json({success:true,schemes:schemes.map(out)});
+  const filter=isManager(req.user)?{manager:req.user._id}:{_id:{$in:await MemberSchemeTicket.distinct("scheme",{member:{$in:userMemberIds(req.user)}})}};
+  const schemes=await Scheme.find(filter).populate("manager","fullName username").sort({createdAt:-1}); res.json({success:true,schemes:schemes.map(out)});
 });
 router.get("/:id",requireAuth,async(req,res)=>{
   const filter=isManager(req.user)?{_id:req.params.id,manager:req.user._id}:{_id:req.params.id};
-  if(!isManager(req.user)&&!await MemberSchemeTicket.exists({member:req.user.memberId,scheme:req.params.id}))return res.status(404).json({success:false,message:"Scheme not found"});
-  const s=await Scheme.findOne(filter); if(!s)return res.status(404).json({success:false,message:"Scheme not found"});
+  if(!isManager(req.user)&&!await MemberSchemeTicket.exists({member:{$in:userMemberIds(req.user)},scheme:req.params.id}))return res.status(404).json({success:false,message:"Scheme not found"});
+  const s=await Scheme.findOne(filter).populate("manager","fullName username"); if(!s)return res.status(404).json({success:false,message:"Scheme not found"});
   res.json({success:true,scheme:out(s)});
 });
 router.post("/",requireAuth,requireRole("admin"),async(req,res)=>{
@@ -92,11 +92,11 @@ router.delete("/:id",requireAuth,requireRole("admin"),async(req,res)=>{
 });
 router.get("/:id/tickets",requireAuth,async(req,res)=>{
   const schemeFilter=isManager(req.user)?{_id:req.params.id,manager:req.user._id}:{_id:req.params.id};
-  if(!isManager(req.user)&&!await MemberSchemeTicket.exists({member:req.user.memberId,scheme:req.params.id}))return res.status(404).json({success:false,message:"Scheme not found"});
+  if(!isManager(req.user)&&!await MemberSchemeTicket.exists({member:{$in:userMemberIds(req.user)},scheme:req.params.id}))return res.status(404).json({success:false,message:"Scheme not found"});
   const scheme=await Scheme.findOne(schemeFilter); if(!scheme)return res.status(404).json({success:false,message:"Scheme not found"});
   const filter={scheme:scheme._id};
-  if(!isManager(req.user))filter.member=req.user.memberId;
-  const rows=await MemberSchemeTicket.find(filter).populate("member","name email phone status joinedDate").sort({ticketNumber:1});
+  if(!isManager(req.user))filter.member={$in:userMemberIds(req.user)};
+  const rows=await MemberSchemeTicket.find(filter).populate("member","name email phone status joinedDate").populate({path:"scheme",populate:{path:"manager",select:"fullName username"}}).sort({ticketNumber:1});
   res.json({success:true,tickets:rows});
 });
 router.delete("/:id/tickets/:ticketId",requireAuth,requireRole("admin"),async(req,res)=>{

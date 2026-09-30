@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
         e.preventDefault();
 
         msg.textContent = "Signing in...";
-        msg.className = "login-message";
+        msg.className = "message";
 
         try {
 
@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error("Manager login error:", err);
 
             msg.textContent = err.message;
-            msg.className = "login-message error";
+            msg.className = "message error";
 
         }
 
@@ -52,10 +52,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     togglePassword?.addEventListener("click", () => {
 
-        passwordInput.type =
-            passwordInput.type === "password"
-                ? "text"
-                : "password";
+        const visible = passwordInput.type === "password";
+        passwordInput.type = visible ? "text" : "password";
+        togglePassword.setAttribute("aria-pressed", String(visible));
+        togglePassword.setAttribute("aria-label", visible ? "Hide password" : "Show password");
 
     });
 

@@ -8,7 +8,6 @@ const memberSchema = new Schema(
         email: {
             type: String,
             required: true,
-            unique: true,
             trim: true,
             lowercase: true,
             match: [/^[\w.+-]+@[\w-]+\.[A-Za-z]{2,}$/, "Invalid email address"]
@@ -16,7 +15,6 @@ const memberSchema = new Schema(
         phone: {
             type: String,
             required: true,
-            unique: true,
             trim: true,
             match: [/^\d{10}$/, "Phone number must be exactly 10 digits"]
         },
@@ -31,8 +29,9 @@ const memberSchema = new Schema(
     { timestamps: true }
 );
 
-// The tenancy migration checks existing global contact duplicates before
-// creating the unique indexes, so Mongoose must not build them prematurely.
+// The tenancy migration assigns managers before building these scoped indexes.
 memberSchema.set("autoIndex", false);
+memberSchema.index({ manager: 1, email: 1 }, { unique: true });
+memberSchema.index({ manager: 1, phone: 1 }, { unique: true });
 
 module.exports = mongoose.model("Member", memberSchema);

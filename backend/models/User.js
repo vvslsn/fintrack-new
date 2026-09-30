@@ -33,22 +33,25 @@ const userSchema = new Schema(
             ref: "Member",
             default: null
         },
+        memberIds: [{ type: Schema.Types.ObjectId, ref: "Member" }],
         profilePhoto: { type: String, default: "" },
         lastLogin: { type: Date, default: null }
     },
     { timestamps: { createdAt: "accountCreated", updatedAt: "updatedAt" } }
 );
 
-// Enforce: role="user" <-> memberId set, role="manager" <-> memberId null.
+// memberId remains the primary/legacy link; memberIds allows one login to
+// access manager-specific member records for the same person.
 userSchema.pre("validate", function () {
-    if (this.role === "user" && !this.memberId) {
+    if (this.role === "user" && !this.memberId && !this.memberIds?.length) {
         throw new Error("A user-role account must have a memberId.");
     }
-    if (["manager", "admin"].includes(this.role) && this.memberId) {
+    if (["manager", "admin"].includes(this.role) && (this.memberId || this.memberIds?.length)) {
         throw new Error("A manager account cannot have a memberId.");
     }
 });
 
 userSchema.index({ memberId: 1 });
+userSchema.index({ memberIds: 1 });
 
 module.exports = mongoose.model("User", userSchema);

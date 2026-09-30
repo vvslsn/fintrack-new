@@ -6,13 +6,13 @@ const Member=require("../models/Member");
 const AdminPayout=require("../models/AdminPayout");
 const Notification=require("../models/Notification");
 const {requireAuth,requireRole}=require("../middleware/auth");
-const {isManager,managerSchemeIds}=require("../middleware/tenant");
+const {isManager,managerSchemeIds,userMemberIds}=require("../middleware/tenant");
 const {payout,installment}=require("../services/chit");
 const router=express.Router();
 
 router.get("/",requireAuth,async(req,res)=>{
-  const filter=isManager(req.user)?{scheme:{$in:await managerSchemeIds(req.user)}}:{member:req.user.memberId};
-  const rows=await Winner.find(filter).populate("scheme","name chitType totalAmount goldGrams").populate("member","name email phone").sort({updatedAt:-1,month:-1});
+  const filter=isManager(req.user)?{scheme:{$in:await managerSchemeIds(req.user)}}:{member:{$in:userMemberIds(req.user)}};
+  const rows=await Winner.find(filter).populate({path:"scheme",select:"name chitType totalAmount goldGrams",populate:{path:"manager",select:"fullName username"}}).populate("member","name email phone").sort({updatedAt:-1,month:-1});
   res.json({success:true,winners:rows});
 });
 router.post("/",requireAuth,requireRole("admin"),async(req,res)=>{

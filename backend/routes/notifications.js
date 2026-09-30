@@ -2,14 +2,14 @@ const express=require("express");
 const Notification=require("../models/Notification");
 const {requireAuth,requireRole}=require("../middleware/auth");
 const Member=require("../models/Member");
-const {isManager}=require("../middleware/tenant");
+const {isManager,userMemberIds}=require("../middleware/tenant");
 const router=express.Router();
 router.get("/",requireAuth,async(req,res)=>{
-  const filter=isManager(req.user)?{$or:[{manager:req.user._id},{member:{$in:await Member.distinct("_id",{manager:req.user._id})}}]}:{member:req.user.memberId};
+  const filter=isManager(req.user)?{$or:[{manager:req.user._id},{member:{$in:await Member.distinct("_id",{manager:req.user._id})}}]}:{member:{$in:userMemberIds(req.user)}};
   res.json({success:true,notifications:await Notification.find(filter).sort({date:-1}).limit(200)});
 });
 router.patch("/:id/read",requireAuth,async(req,res)=>{
-  const filter=isManager(req.user)?{_id:req.params.id,$or:[{manager:req.user._id},{member:{$in:await Member.distinct("_id",{manager:req.user._id})}}]}:{_id:req.params.id,member:req.user.memberId};
+  const filter=isManager(req.user)?{_id:req.params.id,$or:[{manager:req.user._id},{member:{$in:await Member.distinct("_id",{manager:req.user._id})}}]}:{_id:req.params.id,member:{$in:userMemberIds(req.user)}};
   const n=await Notification.findOneAndUpdate(filter,{read:true},{new:true}); if(!n)return res.status(404).json({success:false,message:"Notification not found"});
   res.json({success:true,notification:n});
 });

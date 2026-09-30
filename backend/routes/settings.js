@@ -1,14 +1,22 @@
 const express=require("express");
 const {BankAccount,PaymentSettings}=require("../models/PaymentSettings");
 const {requireAuth,requireRole}=require("../middleware/auth");
-const Member=require("../models/Member");
-const {isManager}=require("../middleware/tenant");
+const Scheme=require("../models/Scheme");
+const Ticket=require("../models/MemberSchemeTicket");
+const User=require("../models/User");
+const {isManager,userMemberIds}=require("../middleware/tenant");
 const router=express.Router();
 router.get("/payment",requireAuth,async(req,res)=>{
-  const managerId=isManager(req.user)?req.user._id:(await Member.findById(req.user.memberId))?.manager;
+  let managerId=req.user._id;
+  if(!isManager(req.user)){
+    const schemeId=req.query.schemeId;
+    const scheme=schemeId?await Scheme.findById(schemeId):null;
+    if(!scheme||!await Ticket.exists({member:{$in:userMemberIds(req.user)},scheme:scheme._id}))return res.status(404).json({success:false,message:"Scheme not found for this member account"});
+    managerId=scheme.manager;
+  }
   if(!managerId)return res.status(404).json({success:false,message:"Manager payment details not found"});
   const s=await PaymentSettings.findOne({manager:managerId}).populate({path:"activeAccount",match:{manager:managerId}}); const accounts=await BankAccount.find({manager:managerId}).sort({createdAt:-1});
-  res.json({success:true,settings:s||{upi:{enabled:true,upiId:"",phonePeNumber:"",label:"PhonePe / UPI",qrCode:""},instructions:"",activeAccount:null},accounts});
+  res.json({success:true,manager:await User.findById(managerId).select("fullName username"),settings:s||{upi:{enabled:true,upiId:"",phonePeNumber:"",label:"PhonePe / UPI",qrCode:""},instructions:"",activeAccount:null},accounts});
 });
 router.post("/accounts",requireAuth,requireRole("admin"),async(req,res)=>{
   const a=await BankAccount.create({...req.body,manager:req.user._id}); res.status(201).json({success:true,account:a});

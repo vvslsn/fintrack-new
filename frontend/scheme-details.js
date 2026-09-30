@@ -81,22 +81,31 @@ function renderSchemeDetails(scheme, winners, payments, requests = []) {
     ).join("") || `<tr><td colspan="6">No winners recorded.</td></tr>`;
 
     const currentMonth = currentSchemeMonth(scheme);
-    const installmentRows = detailTickets.flatMap(ticket => Array.from({ length: currentMonth }, (_, index) => {
-        const month = index + 1;
-        const payment = payments.find(row => String(row.ticketNumber) === String(ticket.ticketNumber) && Number(row.month) === month);
-        const request = requests.find(row => String(row.ticketNumber) === String(ticket.ticketNumber) && Number(row.month) === month);
-        const amount = Number(fintrackPaymentAmount(scheme, month, ticket)) || 0;
-        const due = window.getFintrackDueDate?.(scheme, month);
-        const paid = payment?.status === "paid";
-        const overdue = !paid && !request && amount > 0 && window.isFintrackOverdue?.(scheme, month);
-        const excludedWinnerMonth = Number(ticket.winningMonth) > 0 && Number(ticket.winningMonth) === month;
-        const status = paid ? "Paid" : request ? "Awaiting review" : payment?.status === "pending" || overdue ? "Pending" : excludedWinnerMonth ? "Excluded for winner" : amount <= 0 ? "Installment not set" : "Upcoming";
-        const statusClass = paid ? "payment-paid" : overdue ? "payment-overdue" : "payment-pending";
-        const reference = payment?.transactionId || request?.utr || "";
-        const method = payment?.method || request?.paymentMethod || "";
-        const details = [method, reference ? `Ref: ${reference}` : ""].filter(Boolean).join(" · ");
-        return `<tr><td>${detailEsc(ticket.member?.name || "—")}</td><td>#${detailEsc(ticket.ticketNumber)}</td><td>Month ${month}</td><td>${due ? dateText(due) : "—"}</td><td>${amount > 0 ? money(amount) : "—"}</td><td>${paid ? dateText(payment.paymentDate) : request ? `Submitted ${dateText(request.submittedAt)}` : "—"}</td><td><span class="payment-status ${statusClass}">${detailEsc(status)}</span>${details ? `<small>${detailEsc(details)}</small>` : ""}</td></tr>`;
-    }));
+    const installmentRows = detailTickets.flatMap(ticket => {
+        const ticketNumber = String(ticket.ticketNumber);
+        const recordedMonths = [
+            ...payments.filter(row => String(row.ticketNumber) === ticketNumber).map(row => Number(row.month)),
+            ...requests.filter(row => String(row.ticketNumber) === ticketNumber).map(row => Number(row.month))
+        ];
+        const duration = Number(scheme.duration) || 0;
+        const monthsToShow = new Set(Array.from({ length: Math.min(currentMonth, duration) }, (_, index) => index + 1));
+        recordedMonths.filter(month => Number.isInteger(month) && month >= 1 && month <= duration).forEach(month => monthsToShow.add(month));
+        return [...monthsToShow].sort((a, b) => a - b).map(month => {
+            const payment = payments.find(row => String(row.ticketNumber) === ticketNumber && Number(row.month) === month);
+            const request = requests.find(row => String(row.ticketNumber) === ticketNumber && Number(row.month) === month);
+            const amount = Number(fintrackPaymentAmount(scheme, month, ticket)) || 0;
+            const due = window.getFintrackDueDate?.(scheme, month);
+            const paid = payment?.status === "paid";
+            const overdue = !paid && !request && amount > 0 && window.isFintrackOverdue?.(scheme, month);
+            const excludedWinnerMonth = Number(ticket.winningMonth) > 0 && Number(ticket.winningMonth) === month;
+            const status = paid ? "Paid" : request ? "Awaiting review" : payment?.status === "pending" || overdue ? "Pending" : excludedWinnerMonth ? "Excluded for winner" : amount <= 0 ? "Installment not set" : "Upcoming";
+            const statusClass = paid ? "payment-paid" : overdue ? "payment-overdue" : "payment-pending";
+            const reference = payment?.transactionId || request?.utr || "";
+            const method = payment?.method || request?.paymentMethod || "";
+            const details = [method, reference ? `Ref: ${reference}` : ""].filter(Boolean).join(" · ");
+            return `<tr><td>${detailEsc(ticket.member?.name || "—")}</td><td>#${detailEsc(ticket.ticketNumber)}</td><td>Month ${month}</td><td>${due ? dateText(due) : "—"}</td><td>${amount > 0 ? money(amount) : "—"}</td><td>${paid ? dateText(payment.paymentDate) : request ? `Submitted ${dateText(request.submittedAt)}` : "—"}</td><td><span class="payment-status ${statusClass}">${detailEsc(status)}</span>${details ? `<small>${detailEsc(details)}</small>` : ""}</td></tr>`;
+        });
+    });
     detailById("paymentsTable").innerHTML = installmentRows.join("") || `<tr><td colspan="7">${detailTickets.length ? "No installment months have started yet." : "No members have joined this scheme yet."}</td></tr>`;
 }
 

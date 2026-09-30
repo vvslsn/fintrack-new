@@ -8,7 +8,7 @@ const Scheme=require("../models/Scheme");
 const Member=require("../models/Member");
 const Notification=require("../models/Notification");
 const {requireAuth,requireRole}=require("../middleware/auth");
-const {isManager,managerSchemeIds}=require("../middleware/tenant");
+const {isManager,managerSchemeIds,userMemberIds}=require("../middleware/tenant");
 const {installment,dueDate,pastGracePeriod,paymentKey}=require("../services/chit");
 const router=express.Router();
 
@@ -60,15 +60,16 @@ async function saveCapturedGatewayPayment(order,paymentInfo){
   return payment;
 }
 
-const populate=q=>q.populate("member","name email phone").populate("scheme","name chitType totalAmount baseAmount goldGrams duration startDate dueDate");
+const populate=q=>q.populate("member","name email phone").populate({path:"scheme",select:"name chitType totalAmount baseAmount goldGrams duration startDate dueDate",populate:{path:"manager",select:"fullName username"}});
 
 router.get("/",requireAuth,async(req,res)=>{
   const schemeIds=isManager(req.user)?await managerSchemeIds(req.user):[];
-  const filter=isManager(req.user)?{scheme:{$in:schemeIds}}:{member:req.user.memberId};
+  const memberIds=userMemberIds(req.user);
+  const filter=isManager(req.user)?{scheme:{$in:schemeIds}}:{member:{$in:memberIds}};
   const rows=await populate(Payment.find(filter).sort({month:-1,createdAt:-1}));
   for(const row of rows) row.dueDate=dueDate(row.scheme,row.month);
   if(isManager(req.user)){
-    const tickets=await Ticket.find({scheme:{$in:schemeIds}}).populate("member","name email phone").populate("scheme","name chitType totalAmount baseAmount goldGrams duration startDate dueDate");
+      const tickets=await Ticket.find({scheme:{$in:schemeIds}}).populate("member","name email phone").populate({path:"scheme",select:"name chitType totalAmount baseAmount goldGrams duration startDate dueDate",populate:{path:"manager",select:"fullName username"}});
     const known=new Set(rows.map(row=>row.paymentKey));
     const scheduled=[];
     for(const ticket of tickets){
@@ -113,7 +114,7 @@ router.post("/gateway/order",requireAuth,requireRole("user"),async(req,res)=>{
   const {schemeId,ticketNumber,month}=req.body;
   const paymentMonth=Number(month);
   if(!Number.isInteger(paymentMonth)||paymentMonth<1)return res.status(400).json({success:false,message:"Invalid payment month"});
-  const ticket=await Ticket.findOne({member:req.user.memberId,scheme:schemeId,ticketNumber:String(ticketNumber)});
+  const ticket=await Ticket.findOne({member:{$in:userMemberIds(req.user)},scheme:schemeId,ticketNumber:String(ticketNumber)});
   if(!ticket)return res.status(404).json({success:false,message:"Ticket not found"});
   const scheme=await Scheme.findById(schemeId);
   if(!scheme)return res.status(404).json({success:false,message:"Scheme not found"});
@@ -138,7 +139,7 @@ router.post("/gateway/verify",requireAuth,requireRole("user"),async(req,res)=>{
   if(!credentials)return res.status(503).json({success:false,message:"Payment gateway is not configured"});
   const {razorpay_order_id:orderId,razorpay_payment_id:paymentId,razorpay_signature:signature}=req.body;
   if(!orderId||!paymentId||!signature)return res.status(400).json({success:false,message:"Incomplete payment verification details"});
-  const order=await GatewayOrder.findOne({orderId,member:req.user.memberId}).populate("scheme","name startDate dueDate");
+  const order=await GatewayOrder.findOne({orderId,member:{$in:userMemberIds(req.user)}}).populate("scheme","name startDate dueDate");
   if(!order)return res.status(404).json({success:false,message:"Payment order not found"});
   const expected=crypto.createHmac("sha256",credentials.keySecret).update(`${order.orderId}|${paymentId}`).digest("hex");
   if(!secureHexEqual(expected,signature))return res.status(400).json({success:false,message:"Payment signature could not be verified"});
@@ -166,7 +167,7 @@ router.post("/gateway/webhook",async(req,res)=>{
 
 router.post("/online",requireAuth,requireRole("user"),async(req,res)=>{
   const {schemeId,ticketNumber,month,utr,paymentMethod,proofUrl}=req.body;
-  const ticket=await Ticket.findOne({member:req.user.memberId,scheme:schemeId,ticketNumber:String(ticketNumber)});
+  const ticket=await Ticket.findOne({member:{$in:userMemberIds(req.user)},scheme:schemeId,ticketNumber:String(ticketNumber)});
   if(!ticket)return res.status(404).json({success:false,message:"Ticket not found"});
   const scheme=await Scheme.findById(schemeId); if(!scheme)return res.status(404).json({success:false,message:"Scheme not found"});
   const paymentMonth=Number(month);

@@ -43,6 +43,71 @@
 @media(max-width:700px){.payments-page-intro{align-items:flex-start;flex-direction:column}.payments-due-header{align-items:flex-start;flex-direction:column}.payments-due-total{text-align:left}.payments-due-row{grid-template-columns:1fr auto;gap:10px}.due-action{grid-column:1/-1;text-align:left;min-width:0}.pay-head{align-items:flex-start;flex-direction:column;padding:20px}.pay-amount{text-align:left}.pay-summary{grid-template-columns:1fr;padding:15px 20px}.payment-methods{padding:15px 20px 0;flex-direction:column}.pay-method-panel{margin:15px 20px}.online-payment-form{padding:0 20px 20px}.pay-pending{margin:20px}.payments-history-card{padding:18px}}
 @media(max-width:420px){.payments-due-row{grid-template-columns:1fr}.due-amount{font-size:16px}}
 
+/* Member payments overview */
+.payments-user-view .top-header .header-left{display:none}
+.payments-toolbar{display:flex;align-items:center;justify-content:space-between;gap:18px;margin:0 0 18px}
+.payments-toolbar h2{margin:0 0 4px;color:#101d4d;font-size:23px;letter-spacing:-.35px}
+.payments-toolbar p{color:#64748b;font-size:12px}
+.payments-back{display:inline-flex;align-items:center;gap:8px;min-height:38px;padding:9px 14px;background:#0865f5;border-radius:7px;font-size:11px;white-space:nowrap}
+.payments-summary{gap:12px;margin-bottom:14px}
+.payment-summary-card{min-height:68px;padding:11px 13px;display:flex;align-items:center;gap:12px;border-radius:8px;box-shadow:none}
+.payment-summary-icon{width:36px;height:36px;flex:0 0 36px;display:grid;place-items:center;border-radius:50%;font-size:21px;font-weight:700}
+.payment-summary-card>div{display:grid;gap:5px}
+.payment-summary-label{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.25px}
+.payment-summary-card b{font-size:16px;color:#111c4a;line-height:1.1}
+.payment-summary-card.paid{background:#effcf9;border-color:#b7eee1}.payment-summary-card.paid .payment-summary-icon{background:#c9f5e8;color:#08ae77}.payment-summary-card.paid .payment-summary-label{color:#00a96f}
+.payment-summary-card.pending{background:#fff9ee;border-color:#ffe2af}.payment-summary-card.pending .payment-summary-icon{background:#ffedc9;color:#f28b00}.payment-summary-card.pending .payment-summary-label{color:#f07800}
+.payment-summary-card.overdue{background:#fff4f5;border-color:#ffcbd0}.payment-summary-card.overdue .payment-summary-icon{background:#ffdadd;color:#ed3344}.payment-summary-card.overdue .payment-summary-label{color:#e3273a}
+.payment-summary-card.next-due{background:#f1f7ff;border-color:#c9defe}.payment-summary-card.next-due .payment-summary-icon{background:#dcecff;color:#1673f9}.payment-summary-card.next-due .payment-summary-label{color:#1766ed}
+.payment-section{padding:0;margin-bottom:12px;overflow:hidden;border-color:#d6e5fb;border-radius:9px;box-shadow:0 2px 7px rgba(37,99,235,.04)}
+.payment-section-heading{min-height:42px;padding:8px 13px;display:flex;align-items:center;gap:10px;background:#eff6ff}
+.payment-section-icon{width:24px;height:24px;flex:0 0 24px;display:grid;place-items:center;border-radius:50%;background:#dbeafe;color:#0872fb;font-size:14px;font-weight:800}
+.payment-section-heading h3{margin:0;color:#101d4d;font-size:12px;font-weight:800}
+.payment-section-heading>a{margin-left:auto;color:#075ff0;font-size:10px;font-weight:700;white-space:nowrap}
+.current-payment-row{min-height:67px;padding:11px 14px;display:grid;grid-template-columns:38px minmax(110px,1fr) minmax(130px,1fr) minmax(100px,.9fr) 114px;align-items:center;gap:14px}
+.payment-illustration{width:38px;height:38px;display:inline-grid;place-items:center;border-radius:8px;background:#e2efff;color:#0872fb;font-size:19px;font-weight:700}
+.current-payment-scheme,.current-payment-month,.current-payment-amount{min-height:34px;display:flex;flex-direction:column;justify-content:center;gap:5px}
+.current-payment-month,.current-payment-amount{padding-left:15px;border-left:1px solid #d8e4f4}
+.current-payment-scheme b,.current-payment-month b{font-size:12px;color:#15204c}
+.current-payment-scheme span,.current-payment-month span,.current-payment-amount span{font-size:10px;color:#64748b}
+.current-payment-month span{color:#4170bd}
+.current-payment-amount b{font-size:16px;color:#111c4a}
+.current-pay-action{display:flex;align-items:center;justify-content:center;min-height:34px;padding:8px 10px;border-radius:6px;font-size:10px;white-space:nowrap}
+.payment-empty-inline{padding:16px;color:#64748b;font-size:12px}
+.payments-modern-table{width:100%;border-collapse:collapse}
+.payments-modern-table th,.payments-modern-table td{padding:8px 11px;border-bottom:1px solid #edf1f7;text-align:left;font-size:9px;white-space:nowrap}
+.payments-modern-table th{background:#f4f8fe;color:#4c6590;font-size:9px;font-weight:700;text-transform:none;letter-spacing:0}
+.payments-modern-table td{color:#253657}
+.payments-modern-table td b{color:#111c4a}
+.payments-modern-table td small{display:block;margin-top:3px;color:#71809a;font-size:9px}
+.payments-modern-table tbody tr:last-child td{border-bottom:0}
+.upcoming-payment-section .table-wrap{padding:0 10px}
+.schedule-note{margin:0 10px 9px;padding:7px 9px;display:flex;align-items:center;gap:8px;border:1px solid #c9defe;border-radius:6px;background:#f3f8ff;color:#2362c2;font-size:9px}
+.schedule-note span{font-size:14px;font-weight:800}
+.payment-status{display:inline-flex;padding:4px 8px;border-radius:999px;background:#e8f2ff;color:#1473e6;font-size:9px;font-weight:700}
+.payment-status.paid{background:#d5f8e9;color:#068855}
+.payment-status.pending{background:#fff0d6;color:#bc7000}
+.payment-status.overdue{background:#ffe3e5;color:#cf2938}
+.payment-status.upcoming{background:#e6f1ff;color:#1473e6}
+.payment-history-section{padding-bottom:8px}
+.history-heading{justify-content:space-between;gap:10px;padding:8px 11px}
+.history-heading>div:first-child{display:flex;align-items:center;gap:8px}
+.payment-filters{display:flex;align-items:center;gap:7px}
+.payment-filters select{max-width:115px;min-height:27px;padding:4px 20px 4px 8px;border:1px solid #d8e4f4;border-radius:5px;background:#fff;color:#405577;font:inherit;font-size:9px}
+.history-table{min-width:740px}
+.history-table td:first-child{display:table-cell}
+.history-table td:first-child .payment-illustration{width:29px;height:29px;margin-right:7px;vertical-align:middle;font-size:15px}
+.receipt-link{display:inline-flex;align-items:center;padding:4px 8px;border:1px solid #1673ff;border-radius:5px;color:#0865f5;font-size:9px;font-weight:700}
+.receipt-preview-button{background:#fff;font-family:inherit;cursor:pointer}
+.payment-receipt-details{display:grid;gap:10px}
+.payment-receipt-details>div{padding:11px 12px;border:1px solid #e5eaf2;border-radius:8px;background:#fafcff}
+.payment-receipt-details span{display:block;margin-bottom:4px;color:#71809a;font-size:10px;text-transform:uppercase;letter-spacing:.3px}
+.payment-receipt-details b{display:block;color:#172033;font-size:13px;overflow-wrap:anywhere}
+.payment-filter-empty{padding:14px;text-align:center;color:#75839a;font-size:11px}
+.payment-filter-empty[hidden]{display:none}
+@media(max-width:900px){.current-payment-row{grid-template-columns:38px minmax(0,1fr) minmax(0,1fr);gap:11px}.current-payment-amount{padding-left:0;border-left:0}.current-pay-action{grid-column:2/-1;width:100%}}
+@media(max-width:620px){.payments-toolbar{align-items:flex-start;flex-direction:column}.payments-back{width:100%;justify-content:center}.payments-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.payment-summary-card{padding:10px;gap:8px}.payment-summary-icon{width:31px;height:31px;flex-basis:31px;font-size:18px}.payment-summary-card b{font-size:14px}.payment-section-heading{padding:8px 10px}.current-payment-row{grid-template-columns:34px minmax(0,1fr);gap:10px}.current-payment-row .payment-illustration{width:34px;height:34px}.current-payment-month,.current-payment-amount{grid-column:2;padding:0;border:0;min-height:0}.current-payment-month{margin-top:4px}.current-payment-amount{flex-direction:row;align-items:center;justify-content:space-between;margin-top:5px;padding-top:7px;border-top:1px solid #edf1f7}.current-pay-action{grid-column:1/-1}.history-heading{align-items:flex-start;flex-direction:column}.payment-filters{width:100%}.payment-filters select{max-width:none;flex:1}.payments-modern-table th,.payments-modern-table td{padding:8px}.history-table{min-width:700px}}
+
 /* Hosted Razorpay checkout page */
 .gateway-pay-card{max-width:640px;margin:42px auto;padding:30px}
 .gateway-eyebrow{margin:0 0 8px;color:#2563eb;font-size:11px;font-weight:800;letter-spacing:1px}

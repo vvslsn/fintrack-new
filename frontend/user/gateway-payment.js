@@ -11,7 +11,7 @@ async function initPayNowPage() {
     try {
         const [data, paymentData] = await Promise.all([
             userData(),
-            fintrackApi("/settings/payment")
+            fintrackApi(`/settings/payment?schemeId=${encodeURIComponent(schemeId)}`)
         ]);
         const ticket = data.tickets.find(row =>
             String(row.scheme?._id || row.scheme?.id) === String(schemeId) && ticketNo(row) === String(ticketNumber)
@@ -46,7 +46,7 @@ async function initPayNowPage() {
                     <section class="card pay-card gateway-pay-card">
                         <p class="gateway-eyebrow">PAY YOUR MANAGER</p>
                         <h1>Pay ${money(installmentAmount)}</h1>
-                        <p>${esc(scheme.name)} · Ticket #${esc(ticketNo(ticket))} · Month ${month}</p>
+                        <p>${esc(scheme.name)}${paymentData.manager?.fullName ? ` · Manager ${esc(paymentData.manager.fullName)}` : ""} · Ticket #${esc(ticketNo(ticket))} · Month ${month}</p>
                         <p>Due date: ${dateText(due)}</p>
                         ${hasPaymentDetails ? `<section class="manager-payment-details"><h2>Payment details</h2>
                             ${upiDetails || qr ? `<div class="manager-payment-method"><h3>${esc(upi.label || "UPI / PhonePe")}</h3>${upiDetails}${qr ? `<img class="payment-qr" src="${esc(qr)}" alt="Manager's payment QR code">` : ""}</div>` : ""}
