@@ -2,17 +2,7 @@
 
 function ticketNo(ticket) { return String(ticket?.ticketNumber ?? ticket?.ticket ?? "").trim(); }
 function schemeOf(ticket) { return ticket?.scheme || {}; }
-function dueDate(scheme, month) {
-  if (typeof window.getFintrackDueDate === "function") return window.getFintrackDueDate(scheme, month);
-  if (!scheme?.startDate) return null;
-  const start = new Date(scheme.startDate);
-  if (Number.isNaN(start.getTime())) return null;
-  const day = start.getUTCDate();
-  const base = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth() + Number(month) - 1, 1));
-  const monthDays = new Date(Date.UTC(base.getUTCFullYear(), base.getUTCMonth() + 1, 0)).getUTCDate();
-  base.setUTCDate(day === 1 ? 10 : Math.min(day, monthDays) + 10);
-  return base;
-}
+function dueDate(scheme, month) { return window.getFintrackDueDate(scheme, month); }
 function isPastGrace(row) {
   if (typeof window.isFintrackOverdue === "function") return window.isFintrackOverdue(row.scheme, row.month);
   const today = new Date(); today.setHours(0, 0, 0, 0);
@@ -107,7 +97,7 @@ async function schemesPage() {
       const type = String(scheme.chitType || scheme.type || "cash").toLowerCase();
       const monthly = amount(scheme, ticket, win?.month || 1);
       return `<article class="card scheme-dashboard-card"><div class="scheme-dashboard-top"><div><div class="scheme-type">${esc(scheme.chitType || scheme.type || "Chit Scheme")}</div><h3>${esc(scheme.name || "Chit Scheme")}</h3><p class="muted">Ticket #${esc(ticketNo(ticket))}</p></div>${statusBadge(scheme.status || "Active")}</div>
-        <div class="scheme-dashboard-values"><div><span>Chit Value</span><b>${type.includes("gold") ? `${esc(scheme.goldGrams || 0)} grams` : money(scheme.totalAmount || ticket.chitAmount)}</b></div><div><span>Monthly Payable</span><b>${money(monthly)}</b></div><div><span>Duration</span><b>${esc(scheme.duration || "—")} Months</b></div><div><span>Start Date</span><b>${dateText(scheme.startDate)}</b></div><div><span>Winning Month</span><b>${win ? `Month ${esc(win.month)}` : "Not selected"}</b></div><div><span>Winner Payout</span><b>${win ? (type.includes("gold") ? `${esc(win.goldGrams || scheme.goldGrams || 0)} grams` : money(win.payout || 0)) : "—"}</b></div></div>
+        <div class="scheme-dashboard-values"><div><span>Chit Value</span><b>${type.includes("gold") ? `${esc(scheme.goldGrams || 0)} grams` : money(scheme.totalAmount || ticket.chitAmount)}</b></div><div><span>Monthly Payable</span><b>${money(monthly)}</b></div><div><span>Duration</span><b>${esc(scheme.duration || "—")} Months</b></div><div><span>Start Date</span><b>${dateText(scheme.startDate)}</b></div><div><span>Monthly Due Date</span><b>${Number(scheme.dueDate || 10)}${ordinalSuffix(scheme.dueDate || 10)}</b></div><div><span>Winning Month</span><b>${win ? `Month ${esc(win.month)}` : "Not selected"}</b></div><div><span>Winner Payout</span><b>${win ? (type.includes("gold") ? `${esc(win.goldGrams || scheme.goldGrams || 0)} grams` : money(win.payout || 0)) : "—"}</b></div></div>
         ${win ? `<div class="winner-payment-note"><b>Congratulations — selected in Month ${esc(win.month)}</b><span>${type.includes("gold") ? `Gold payout: ${esc(win.goldGrams || scheme.goldGrams || 0)} grams.` : `Recorded payout: ${money(win.payout || 0)}.`} Your installment may change from the winning month.</span></div>` : ""}</article>`;
     }).join("")}</div>`;
   });
@@ -120,7 +110,7 @@ async function paymentsPage() {
     const totalDue = due.reduce((sum, row) => sum + row.amount, 0);
     const history = data.payments.slice().sort((a,b) => Number(b.month || 0) - Number(a.month || 0) || new Date(b.paymentDate || b.createdAt || 0) - new Date(a.paymentDate || a.createdAt || 0));
     return `<div class="payments-page-intro"><div><div class="scheme-type">MY PAYMENTS</div><h2>Payment Center</h2><p class="muted">View your installments and pay the amount currently due.</p></div><a class="btn btn-small" href="user-dashboard.html">Back to Dashboard</a></div>
-      ${due.length ? `<div class="card payments-due-panel"><div class="payments-due-header"><div><div class="scheme-type">PAYMENT DUE</div><h2>Pay your installment</h2><p class="muted">Unpaid installments whose due dates have arrived.</p></div><div class="payments-due-total"><span>Total Due</span><b>${money(totalDue)}</b></div></div><div class="payments-due-list">${due.map(row => `<div class="payments-due-row"><div class="due-main"><div class="due-title">${esc(row.scheme.name || "Chit Scheme")}</div><div class="due-sub">Ticket #${esc(ticketNo(row.ticket))} · Month ${row.month} · Due ${dateText(row.due)}</div></div><div class="due-amount">${money(row.amount)}</div><div class="due-action"><a class="btn pay-now-btn" href="${payUrl(row.ticket, row.month)}">Pay Now</a></div></div>`).join("")}</div></div>` : `<div class="card payments-clear-panel"><div class="payments-clear-icon">✓</div><div><h2>No payment due right now</h2><p class="muted">Your payment schedule is up to date. Future installments will appear here when due.</p></div></div>`}
+      ${due.length ? `<div class="card payments-due-panel"><div class="payments-due-header"><div><div class="scheme-type">PAYMENT DUE</div><h2>Pending payments</h2><p class="muted">Unpaid installments after their monthly due dates.</p></div><div class="payments-due-total"><span>Total Due</span><b>${money(totalDue)}</b></div></div><div class="payments-due-list">${due.map(row => `<div class="payments-due-row"><div class="due-main"><div class="due-title">${esc(row.scheme.name || "Chit Scheme")}</div><div class="due-sub">Ticket #${esc(ticketNo(row.ticket))} · Month ${row.month} · Due ${dateText(row.due)} · Pending</div></div><div class="due-amount">${money(row.amount)}</div><div class="due-action"><a class="btn pay-now-btn" href="${payUrl(row.ticket, row.month)}">Pay Now</a></div></div>`).join("")}</div></div>` : `<div class="card payments-clear-panel"><div class="payments-clear-icon">✓</div><div><h2>No payment due right now</h2><p class="muted">Your payment schedule is up to date. Future installments will appear here when due.</p></div></div>`}
       <div class="card payments-history-card"><div class="payments-history-header"><div><div class="section-title">Month-wise Payment History</div><p class="muted">Your completed and pending payment records.</p></div></div>${history.length ? `<div class="table-wrap"><table class="table payments-table"><thead><tr><th>Scheme</th><th>Ticket</th><th>Month</th><th>Due Date</th><th>Amount</th><th>Payment Date</th><th>Status</th></tr></thead><tbody>${history.map(payment => `<tr><td><b>${esc(payment.scheme?.name || "—")}</b></td><td>#${esc(payment.ticketNumber || "—")}</td><td>Month ${esc(payment.month)}</td><td>${dateText(payment.dueDate)}</td><td>${money(payment.amount)}</td><td>${dateText(payment.paymentDate)}</td><td>${statusBadge(payment.status)}</td></tr>`).join("")}</tbody></table></div>` : `<div class="empty">No payment records yet.</div>`}</div>`;
   });
 }

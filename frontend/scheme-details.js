@@ -57,10 +57,10 @@ function renderSchemeDetails(scheme, winners, payments, requests = []) {
     detailById("infoInstallment").textContent = type === "gold" ? "Varies by month" : money(scheme.baseAmount);
     detailById("infoDuration").textContent = `${scheme.duration} Months`;
     detailById("infoStartDate").textContent = dateText(scheme.startDate);
-    const start = new Date(`${String(scheme.startDate || "").slice(0, 10)}T00:00:00`);
-    const end = new Date(start);
-    if (!Number.isNaN(start.getTime())) end.setMonth(end.getMonth() + Number(scheme.duration || 0));
-    detailById("infoEndDate").textContent = Number.isNaN(start.getTime()) ? "—" : dateText(end);
+    const dueDay = Number(scheme.dueDate) || 10;
+    detailById("infoDueDate").textContent = `${dueDay}${ordinalSuffix(dueDay)} of each month`;
+    const end = window.getFintrackDueDate(scheme, Number(scheme.duration));
+    detailById("infoEndDate").textContent = end ? dateText(end) : "—";
     detailById("infoStatus").textContent = scheme.status;
     detailById("availableSlots").textContent = Math.max(0, capacity - membersCount);
     detailById("capacityNumber").textContent = `${membersCount} / ${capacity}`;
@@ -89,7 +89,8 @@ function renderSchemeDetails(scheme, winners, payments, requests = []) {
         const due = window.getFintrackDueDate?.(scheme, month);
         const paid = payment?.status === "paid";
         const overdue = !paid && !request && amount > 0 && window.isFintrackOverdue?.(scheme, month);
-        const status = paid ? "Paid" : request ? "Awaiting review" : payment?.status === "pending" ? "Pending" : amount <= 0 ? "Installment not set" : overdue ? "Due" : "Upcoming";
+        const excludedWinnerMonth = Number(ticket.winningMonth) > 0 && Number(ticket.winningMonth) === month;
+        const status = paid ? "Paid" : request ? "Awaiting review" : payment?.status === "pending" || overdue ? "Pending" : excludedWinnerMonth ? "Excluded for winner" : amount <= 0 ? "Installment not set" : "Upcoming";
         const statusClass = paid ? "payment-paid" : overdue ? "payment-overdue" : "payment-pending";
         const reference = payment?.transactionId || request?.utr || "";
         const method = payment?.method || request?.paymentMethod || "";
@@ -100,14 +101,14 @@ function renderSchemeDetails(scheme, winners, payments, requests = []) {
 }
 
 function currentSchemeMonth(scheme) {
-    const startValue = String(scheme?.startDate || "").slice(0, 10);
-    const match = startValue.match(/^(\d{4})-(\d{2})-/);
-    if (!match) return 0;
-    const startYear = Number(match[1]);
-    const startMonth = Number(match[2]) - 1;
     const now = new Date();
-    const elapsed = (now.getFullYear() - startYear) * 12 + now.getMonth() - startMonth + 1;
-    return Math.max(0, Math.min(Number(scheme.duration || 0), elapsed));
+    let current = 0;
+    for (let month = 1; month <= Number(scheme?.duration || 0); month += 1) {
+        const due = window.getFintrackDueDate(scheme, month);
+        if (due && due <= now) current = month;
+        else break;
+    }
+    return current;
 }
 
 function monthAnniversary(startValue, month) {

@@ -4,6 +4,15 @@ document.addEventListener("DOMContentLoaded",()=>{
   const message=document.getElementById("forgotPasswordMessage");
   const emailInput=document.getElementById("resetEmail");
   const showMessage=(text,error=false)=>{message.textContent=text;message.className=`login-message${error?" error":""}`;};
+  resetForm?.querySelectorAll(".password-toggle").forEach(toggle=>{
+    toggle.addEventListener("click",()=>{
+      const password=document.getElementById(toggle.getAttribute("aria-controls"));
+      const showing=password.type==="password";
+      password.type=showing?"text":"password";
+      toggle.setAttribute("aria-pressed",String(showing));
+      toggle.setAttribute("aria-label",`${showing?"Hide":"Show"} ${password.id==="resetPassword"?"new":"confirm"} password`);
+    });
+  });
   requestForm?.addEventListener("submit",async event=>{
     event.preventDefault();
     const button=document.getElementById("sendOtpButton");button.disabled=true;showMessage("Sending reset code…");

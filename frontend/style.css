@@ -729,6 +729,18 @@ body {
     color: #159d75;
 }
 
+.password-toggle svg {
+    display: block;
+}
+
+.password-toggle .eye-slash {
+    display: block;
+}
+
+.password-toggle[aria-pressed="true"] .eye-slash {
+    display: none;
+}
+
 /* Admin/member login guidance */
 .admin-login-note {
     margin-top: 18px;

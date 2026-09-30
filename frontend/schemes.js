@@ -77,10 +77,12 @@ function renderSchemes() {
 
 function openCreateSchemeModal() {
     byId("schemeForm")?.reset();
+    clearSchemeFormMessage();
     byId("editSchemeId").value = "";
     goldInstallmentDraft = {};
     byId("schemeModalTitle").textContent = "Create Scheme";
     byId("schemeStatus").value = "upcoming";
+    byId("schemeDueDate").value = "10";
     toggleSchemeFields();
     byId("schemeModal").classList.add("active");
 }
@@ -100,11 +102,23 @@ function openEditSchemeModal(id) {
     byId("schemeCapacity").value = scheme.capacity;
     byId("schemeStartDate").value = String(scheme.startDate).slice(0, 10);
     byId("schemeStatus").value = scheme.status;
+    byId("schemeDueDate").value = scheme.dueDate || 10;
     toggleSchemeFields();
 }
 
 function closeSchemeModal() {
     byId("schemeModal")?.classList.remove("active");
+}
+
+function showSchemeFormMessage(message) {
+    const feedback = byId("schemeFormMessage");
+    if (!feedback) return;
+    feedback.textContent = message;
+    feedback.hidden = !message;
+}
+
+function clearSchemeFormMessage() {
+    showSchemeFormMessage("");
 }
 
 function readGoldInstallmentDraft() {
@@ -148,16 +162,19 @@ function toggleSchemeFields() {
 
 async function saveScheme(event) {
     event.preventDefault();
+    clearSchemeFormMessage();
     const id = byId("editSchemeId").value;
     const type = byId("schemeType").value;
     const totalAmount = type === "gold" ? 0 : Number(byId("schemeAmount").value);
     const duration = Number(byId("schemeDuration").value);
     const capacity = Number(byId("schemeCapacity").value);
-    if (!byId("schemeName").value.trim()) return alert("Enter a scheme name.");
-    if (!Number.isInteger(duration) || duration < 1 || duration > 30) return alert("Scheme duration must be between 1 and 30 months.");
-    if (!Number.isInteger(capacity) || capacity < 1 || capacity > 1000) return alert("Enter a member capacity between 1 and 1000.");
-    if (!byId("schemeStartDate").value) return alert("Choose a scheme start date.");
-    if (type === "cash" && (!Number.isFinite(totalAmount) || totalAmount <= 0)) return alert("Enter total amount.");
+    const dueDateDay = Number(byId("schemeDueDate").value);
+    if (!byId("schemeName").value.trim()) return showSchemeFormMessage("Enter a scheme name.");
+    if (!Number.isInteger(duration) || duration < 1 || duration > 30) return showSchemeFormMessage("Scheme duration must be between 1 and 30 months.");
+    if (!Number.isInteger(capacity) || capacity < 1 || capacity > 1000) return showSchemeFormMessage("Enter a member capacity between 1 and 1000.");
+    if (!Number.isInteger(dueDateDay) || dueDateDay < 1 || dueDateDay > 31) return showSchemeFormMessage("Payment due date must be a day from 1 to 31.");
+    if (!byId("schemeStartDate").value) return showSchemeFormMessage("Choose a scheme start date.");
+    if (type === "cash" && (!Number.isFinite(totalAmount) || totalAmount <= 0)) return showSchemeFormMessage("Enter total amount.");
 
     let goldMonthlyInstallments;
     if (type === "gold") {
@@ -180,6 +197,7 @@ async function saveScheme(event) {
         ...(type === "gold" ? { goldMonthlyInstallments } : {}),
         goldGrams: type === "gold" ? Number(gramsMatch?.[1] || 0) : 0,
         duration,
+        dueDate: dueDateDay,
         capacity,
         startDate: byId("schemeStartDate").value,
         status: byId("schemeStatus").value
@@ -191,7 +209,7 @@ async function saveScheme(event) {
         closeSchemeModal();
         await loadSchemes();
     } catch (error) {
-        alert(error.message);
+        showSchemeFormMessage(error.message);
     }
 }
 

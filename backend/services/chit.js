@@ -1,9 +1,12 @@
+const { getCycleDueDate } = require("../../frontend/fintrack-schedule");
+
 function isGold(s){ return String(s?.chitType ?? s?.type ?? "").toLowerCase()==="gold"; }
 
 function installment(s, month, winningMonth){
   const m=Number(month);
   if(!Number.isInteger(m)||m<1) return 0;
   if(isGold(s)){
+    if(Number(winningMonth)>0&&m===Number(winningMonth)) return 0;
     const map=s.goldMonthlyInstallments || {};
     const configured=map instanceof Map ? map.get(String(m)) : (map[String(m)] ?? map[m]);
     const hasSchedule=map instanceof Map ? map.size>0 : Object.keys(map).length>0;
@@ -21,15 +24,7 @@ function payout(s,month){
 }
 
 function dueDate(s,month){
-  if(!s?.startDate) return null;
-  const d=new Date(s.startDate); if(Number.isNaN(d.getTime())) return null;
-  const m=Number(month); if(!Number.isInteger(m)||m<1) return null;
-  const startDay=d.getUTCDate();
-  const base=new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth()+m-1,1));
-  const monthDays=new Date(Date.UTC(base.getUTCFullYear(),base.getUTCMonth()+1,0)).getUTCDate();
-  const anniversaryDay=Math.min(startDay,monthDays);
-  const day=(startDay===1?10:anniversaryDay+10);
-  return new Date(Date.UTC(base.getUTCFullYear(),base.getUTCMonth(),day));
+  return getCycleDueDate(s,month);
 }
 function overdueDate(s,month){
   return dueDate(s,month);

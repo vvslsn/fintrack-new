@@ -1989,6 +1989,20 @@ body {
     font-size: 10px;
 }
 
+.scheme-form-message {
+    margin: 0 0 14px;
+    padding: 10px 12px;
+    border: 1px solid #f0d6a8;
+    border-radius: 6px;
+    background: #fff9ed;
+    color: #70531c;
+    font-size: 12px;
+}
+
+.scheme-form-message[hidden] {
+    display: none;
+}
+
 .scheme-monthly-varies { color: #445066; font-size: 9px; font-weight: 600; white-space: nowrap; }
 
 @media (max-width: 560px) {

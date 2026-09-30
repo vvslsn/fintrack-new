@@ -421,6 +421,8 @@
                     type="hidden"
                     id="editSchemeId">
 
+                <p id="schemeFormMessage" class="scheme-form-message" role="status" aria-live="polite" hidden></p>
+
 
 
                 <!-- SCHEME NAME -->
@@ -586,6 +588,12 @@
 
                     </div>
 
+                    <div class="form-group">
+                        <label for="schemeDueDate">Payment Due Date (Day of Month)</label>
+                        <input type="number" id="schemeDueDate" min="1" max="31" step="1" value="10" placeholder="10" required>
+                        <small>Monthly payment due day, from 1 to 31.</small>
+                    </div>
+
 
 
                     <!-- STATUS -->
@@ -714,6 +722,7 @@
 
     <script src="api.js"></script>
 <script src="fintrack-core.js"></script>
+<script src="fintrack-schedule.js"></script>
 
     <script
         src="schemes.js">

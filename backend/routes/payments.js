@@ -9,7 +9,7 @@ const Member=require("../models/Member");
 const Notification=require("../models/Notification");
 const {requireAuth,requireRole}=require("../middleware/auth");
 const {isManager,managerSchemeIds}=require("../middleware/tenant");
-const {installment,dueDate,paymentKey}=require("../services/chit");
+const {installment,dueDate,pastGracePeriod,paymentKey}=require("../services/chit");
 const router=express.Router();
 
 function gatewayCredentials(){
@@ -49,7 +49,7 @@ async function saveCapturedGatewayPayment(order,paymentInfo){
   const paymentDate=paymentInfo.captured_at?new Date(paymentInfo.captured_at*1000):new Date();
   const payment=await Payment.findOneAndUpdate({paymentKey:order.paymentKey},{
     member:order.member,scheme:order.scheme,ticketNumber:order.ticketNumber,month:order.month,paymentKey:order.paymentKey,
-    dueDate:order.dueDate||null,amount:order.amount,paymentDate,method:paymentInfo.method||"razorpay",transactionId:paymentInfo.id,
+    dueDate:dueDate(order.scheme,order.month)||order.dueDate||null,amount:order.amount,paymentDate,method:paymentInfo.method||"razorpay",transactionId:paymentInfo.id,
     gatewayOrderId:order.orderId,status:"paid",receivedByAdmin:true,receivedAt:paymentDate,source:"gateway",onlineRequest:null
   },{upsert:true,new:true,setDefaultsOnInsert:true});
   const updatedOrder=await GatewayOrder.findOneAndUpdate({_id:order._id,status:{$ne:"paid"}},
@@ -60,11 +60,29 @@ async function saveCapturedGatewayPayment(order,paymentInfo){
   return payment;
 }
 
-const populate=q=>q.populate("member","name email phone").populate("scheme","name chitType totalAmount baseAmount goldGrams duration startDate");
+const populate=q=>q.populate("member","name email phone").populate("scheme","name chitType totalAmount baseAmount goldGrams duration startDate dueDate");
 
 router.get("/",requireAuth,async(req,res)=>{
-  const filter=isManager(req.user)?{scheme:{$in:await managerSchemeIds(req.user)}}:{member:req.user.memberId};
+  const schemeIds=isManager(req.user)?await managerSchemeIds(req.user):[];
+  const filter=isManager(req.user)?{scheme:{$in:schemeIds}}:{member:req.user.memberId};
   const rows=await populate(Payment.find(filter).sort({month:-1,createdAt:-1}));
+  for(const row of rows) row.dueDate=dueDate(row.scheme,row.month);
+  if(isManager(req.user)){
+    const tickets=await Ticket.find({scheme:{$in:schemeIds}}).populate("member","name email phone").populate("scheme","name chitType totalAmount baseAmount goldGrams duration startDate dueDate");
+    const known=new Set(rows.map(row=>row.paymentKey));
+    const scheduled=[];
+    for(const ticket of tickets){
+      const scheme=ticket.scheme;
+      for(let month=1;month<=Number(scheme.duration||0);month+=1){
+        const key=paymentKey(ticket.member._id,scheme._id,ticket.ticketNumber,month);
+        if(known.has(key)||!pastGracePeriod(scheme,month))continue;
+        const amount=installment(scheme,month,ticket.winningMonth);
+        if(!(amount>0))continue;
+        scheduled.push({_id:`scheduled-${key}`,paymentKey:key,member:ticket.member,scheme,ticketNumber:ticket.ticketNumber,month,dueDate:dueDate(scheme,month),amount,paymentDate:null,method:"",transactionId:"",status:"pending",source:"schedule"});
+      }
+    }
+    rows.push(...scheduled);
+  }
   res.json({success:true,payments:rows});
 });
 
@@ -120,7 +138,7 @@ router.post("/gateway/verify",requireAuth,requireRole("user"),async(req,res)=>{
   if(!credentials)return res.status(503).json({success:false,message:"Payment gateway is not configured"});
   const {razorpay_order_id:orderId,razorpay_payment_id:paymentId,razorpay_signature:signature}=req.body;
   if(!orderId||!paymentId||!signature)return res.status(400).json({success:false,message:"Incomplete payment verification details"});
-  const order=await GatewayOrder.findOne({orderId,member:req.user.memberId}).populate("scheme","name");
+  const order=await GatewayOrder.findOne({orderId,member:req.user.memberId}).populate("scheme","name startDate dueDate");
   if(!order)return res.status(404).json({success:false,message:"Payment order not found"});
   const expected=crypto.createHmac("sha256",credentials.keySecret).update(`${order.orderId}|${paymentId}`).digest("hex");
   if(!secureHexEqual(expected,signature))return res.status(400).json({success:false,message:"Payment signature could not be verified"});
@@ -140,7 +158,7 @@ router.post("/gateway/webhook",async(req,res)=>{
   const event=req.body?.event;
   if(event!=="payment.captured")return res.json({success:true,received:true});
   const paymentInfo=req.body?.payload?.payment?.entity;
-  const order=await GatewayOrder.findOne({orderId:paymentInfo?.order_id}).populate("scheme","name");
+  const order=await GatewayOrder.findOne({orderId:paymentInfo?.order_id}).populate("scheme","name startDate dueDate");
   if(!order)return res.status(404).json({success:false,message:"Payment order not found"});
   await saveCapturedGatewayPayment(order,paymentInfo);
   res.json({success:true,received:true});
@@ -165,8 +183,8 @@ router.post("/online",requireAuth,requireRole("user"),async(req,res)=>{
 });
 
 router.get("/online/pending",requireAuth,requireRole("admin"),async(req,res)=>{
-  const rows=await Request.find({scheme:{$in:await managerSchemeIds(req.user)}}).populate("member","name email phone").populate("scheme","name chitType").sort({submittedAt:-1});
-  res.json({success:true,requests:rows});
+  const rows=await Request.find({scheme:{$in:await managerSchemeIds(req.user)}}).populate("member","name email phone").populate("scheme","name chitType startDate dueDate").sort({submittedAt:-1});
+  res.json({success:true,requests:rows.map(row=>({...row.toObject(),dueDate:dueDate(row.scheme,row.month)}))});
 });
 router.post("/online/:id/approve",requireAuth,requireRole("admin"),async(req,res)=>{
   const r=await Request.findOne({_id:req.params.id,scheme:{$in:await managerSchemeIds(req.user)}}); if(!r)return res.status(404).json({success:false,message:"Request not found"});

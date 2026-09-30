@@ -5,6 +5,8 @@ const Notification = require("../models/Notification");
 const { BankAccount, PaymentSettings } = require("../models/PaymentSettings");
 
 async function migrateTenancy() {
+  // Existing schemes keep working with the historic 10th-of-month default.
+  await Scheme.updateMany({ $or: [{ dueDate: { $exists: false } }, { dueDate: null }] }, { $set: { dueDate: 10 } });
   const duplicatePhones = await Member.collection.aggregate([
     { $group: { _id: "$phone", ids: { $push: "$_id" }, count: { $sum: 1 } } },
     { $match: { count: { $gt: 1 } } },

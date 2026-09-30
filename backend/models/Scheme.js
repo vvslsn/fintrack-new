@@ -26,6 +26,7 @@ const schemeSchema = new Schema(
         },
 
         duration: { type: Number, required: true, min: 1, max: 30 },
+        dueDate: { type: Number, required: true, min: 1, max: 31, default: 10 },
         capacity: { type: Number, required: true, min: 1 },
         startDate: { type: Date, required: true },
         status: {
