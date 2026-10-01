@@ -1303,6 +1303,64 @@ tbody tr:last-child td {
     font-weight: 600;
 }
 
+.winner-bank-details,
+.winner-bank-missing {
+    display: block;
+    margin-top: 5px;
+    color: #64748b;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.winner-bank-missing {
+    color: #b45309;
+}
+
+.winner-pay-now {
+    min-height: 34px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: 7px;
+    background: #2563eb;
+    color: #fff;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(37, 99, 235, .18);
+    transition: background .15s ease, transform .15s ease, box-shadow .15s ease;
+}
+
+.winner-pay-now:hover:not(:disabled) {
+    background: #1d4ed8;
+    box-shadow: 0 4px 9px rgba(37, 99, 235, .25);
+    transform: translateY(-1px);
+}
+
+.winner-pay-now:focus-visible {
+    outline: 3px solid rgba(37, 99, 235, .25);
+    outline-offset: 2px;
+}
+
+.winner-pay-now:disabled {
+    background: #cbd5e1;
+    box-shadow: none;
+    cursor: not-allowed;
+}
+
+.winner-paid-badge {
+    display: inline-flex;
+    align-items: center;
+    min-height: 26px;
+    padding: 0 10px;
+    border-radius: 999px;
+    background: #e7f7ef;
+    color: #16855b;
+    font-size: 11px;
+    font-weight: 800;
+}
+
 .member-action-buttons {
     display: flex;
     align-items: center;

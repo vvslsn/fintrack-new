@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const data = await fintrackApi("/auth/manager/login", {
                 method: "POST",
                 body: JSON.stringify({
-                    username: usernameInput.value.trim(),
+                    identifier: usernameInput.value.trim(),
                     password: passwordInput.value
                 })
             });

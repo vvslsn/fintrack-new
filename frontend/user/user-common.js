@@ -58,12 +58,13 @@
       </aside>
       <main class="main-content">
         <header class="top-header"><div class="header-left"><div><h1>${esc(title)}</h1>${subtitle ? `<p>${esc(subtitle)}</p>` : ""}</div></div>
-          <div class="header-right"><div class="profile-host"><button class="user-header" type="button" aria-label="Member account"><span class="user-avatar">${esc(initial)}</span><span class="header-user-info"><strong>${esc(name)}</strong><span>Member</span></span></button><button class="profile-menu-button" type="button" aria-label="Open account menu" aria-expanded="false"><span>⋮</span></button><div class="profile-menu" role="menu"><button class="profile-menu-item" type="button" role="menuitem" data-user-profile-action="edit"><span class="profile-menu-icon">✎</span>Edit Profile</button><button class="profile-menu-item" type="button" role="menuitem" data-user-profile-action="password"><span class="profile-menu-icon">🔒</span>Change Password</button></div></div></div>
+          <div class="header-right"><div class="profile-host"><button class="user-header" type="button" aria-label="Member account"><span class="user-avatar">${esc(initial)}</span><span class="header-user-info"><strong>${esc(name)}</strong><span>Member</span></span></button><button class="profile-menu-button" type="button" aria-label="Open account menu" aria-expanded="false"><span>⋮</span></button><div class="profile-menu" role="menu"><button class="profile-menu-item" type="button" role="menuitem" data-user-profile-action="edit"><span class="profile-menu-icon">✎</span>Edit Profile</button><button class="profile-menu-item" type="button" role="menuitem" data-user-profile-action="bank"><span class="profile-menu-icon">₹</span>Bank Details</button><button class="profile-menu-item" type="button" role="menuitem" data-user-profile-action="password"><span class="profile-menu-icon">🔒</span>Change Password</button></div></div></div>
         </header>
         <section id="pageContent" class="page-content" aria-live="polite"></section>
       </main></div>
       <div class="user-modal-overlay" id="memberProfileModal" role="dialog" aria-modal="true" aria-labelledby="memberProfileTitle"><section class="user-modal"><div class="user-modal-header"><h2 id="memberProfileTitle">Edit Profile</h2><button class="user-modal-close" type="button" data-close-user-modal aria-label="Close">×</button></div><form class="user-modal-form" id="memberProfileForm"><label for="memberProfileName">Name</label><input id="memberProfileName" name="fullName" type="text" autocomplete="name" maxlength="100" required><label for="memberProfileEmail">Email</label><input id="memberProfileEmail" name="email" type="email" autocomplete="email" maxlength="160" required><label for="memberProfilePhone">Phone number</label><input id="memberProfilePhone" name="phone" type="tel" inputmode="numeric" autocomplete="tel" pattern="[0-9]{10}" maxlength="10" required><p class="user-profile-message" id="memberProfileMessage" role="status"></p><div class="user-modal-footer"><button class="modal-cancel" type="button" data-close-user-modal>Cancel</button><button class="modal-save" type="submit">Save Changes</button></div></form></section></div>
-      <div class="user-modal-overlay" id="memberPasswordModal" role="dialog" aria-modal="true" aria-labelledby="memberPasswordTitle"><section class="user-modal"><div class="user-modal-header"><h2 id="memberPasswordTitle">Change Password</h2><button class="user-modal-close" type="button" data-close-user-modal aria-label="Close">×</button></div><form class="user-modal-form" id="memberPasswordForm"><label for="memberCurrentPassword">Current password</label><input id="memberCurrentPassword" name="currentPassword" type="password" autocomplete="current-password" required><label for="memberNewPassword">New password</label><input id="memberNewPassword" name="newPassword" type="password" autocomplete="new-password" minlength="8" required><label for="memberConfirmPassword">Confirm new password</label><input id="memberConfirmPassword" name="confirmPassword" type="password" autocomplete="new-password" minlength="8" required><p class="user-profile-message" id="memberPasswordMessage" role="status"></p><div class="user-modal-footer"><button class="modal-cancel" type="button" data-close-user-modal>Cancel</button><button class="modal-save" type="submit">Update Password</button></div></form></section></div>`;
+      <div class="user-modal-overlay" id="memberPasswordModal" role="dialog" aria-modal="true" aria-labelledby="memberPasswordTitle"><section class="user-modal"><div class="user-modal-header"><h2 id="memberPasswordTitle">Change Password</h2><button class="user-modal-close" type="button" data-close-user-modal aria-label="Close">×</button></div><form class="user-modal-form" id="memberPasswordForm"><label for="memberCurrentPassword">Current password</label><input id="memberCurrentPassword" name="currentPassword" type="password" autocomplete="current-password" required><label for="memberNewPassword">New password</label><input id="memberNewPassword" name="newPassword" type="password" autocomplete="new-password" minlength="8" required><label for="memberConfirmPassword">Confirm new password</label><input id="memberConfirmPassword" name="confirmPassword" type="password" autocomplete="new-password" minlength="8" required><p class="user-profile-message" id="memberPasswordMessage" role="status"></p><div class="user-modal-footer"><button class="modal-cancel" type="button" data-close-user-modal>Cancel</button><button class="modal-save" type="submit">Update Password</button></div></form></section></div>
+      <div class="user-modal-overlay" id="memberBankModal" role="dialog" aria-modal="true" aria-labelledby="memberBankTitle"><section class="user-modal"><div class="user-modal-header"><h2 id="memberBankTitle">Bank Details for Payouts</h2><button class="user-modal-close" type="button" data-close-user-modal aria-label="Close">×</button></div><p class="muted bank-details-help">Add the account where your manager should send your winnings. Your details are shown to your manager for payout processing.</p><form class="user-modal-form" id="memberBankForm"><label for="bankAccountHolder">Account holder name</label><input id="bankAccountHolder" name="accountHolderName" maxlength="100" autocomplete="name" required><label for="bankAccountNumber">Account number</label><input id="bankAccountNumber" name="accountNumber" inputmode="numeric" pattern="[0-9]{6,34}" maxlength="34" autocomplete="off" required><label for="bankIfsc">IFSC code</label><input id="bankIfsc" name="ifscCode" minlength="11" maxlength="11" pattern="[A-Za-z]{4}0[A-Za-z0-9]{6}" autocapitalize="characters" required><label for="bankName">Bank name</label><input id="bankName" name="bankName" maxlength="100" required><label for="bankBranch">Branch (optional)</label><input id="bankBranch" name="branch" maxlength="100"><p class="user-profile-message" id="memberBankMessage" role="status"></p><div class="user-modal-footer"><button class="modal-cancel" type="button" data-close-user-modal>Cancel</button><button class="modal-save" type="submit">Save Bank Details</button></div></form></section></div>`;
     const menuButton = document.querySelector(".profile-menu-button");
     const menu = document.querySelector(".profile-menu");
     menuButton?.addEventListener("click", () => {
@@ -78,6 +79,7 @@
     });
     const profileModal = document.getElementById("memberProfileModal");
     const passwordModal = document.getElementById("memberPasswordModal");
+    const bankModal = document.getElementById("memberBankModal");
     const closeMenu = () => {
       menu?.classList.remove("show");
       menuButton?.setAttribute("aria-expanded", "false");
@@ -97,11 +99,24 @@
       document.getElementById("memberPasswordMessage").textContent = "";
       passwordModal?.classList.add("show");
     });
+    document.querySelector('[data-user-profile-action="bank"]')?.addEventListener("click", async () => {
+      closeMenu();
+      const message = document.getElementById("memberBankMessage");
+      message.textContent = "Loading bank details…";
+      bankModal?.classList.add("show");
+      try {
+        const result = await fintrackApi("/auth/bank-details");
+        const details = result.bankDetails || {};
+        for (const [key, id] of Object.entries({accountHolderName:"bankAccountHolder",accountNumber:"bankAccountNumber",ifscCode:"bankIfsc",bankName:"bankName",branch:"bankBranch"})) document.getElementById(id).value = details[key] || "";
+        message.textContent = "";
+      } catch (error) { message.textContent = error.message; }
+    });
     document.querySelectorAll("[data-close-user-modal]").forEach(button => button.addEventListener("click", () => {
       profileModal?.classList.remove("show");
       passwordModal?.classList.remove("show");
+      bankModal?.classList.remove("show");
     }));
-    [profileModal, passwordModal].forEach(modal => modal?.addEventListener("click", event => {
+    [profileModal, passwordModal, bankModal].forEach(modal => modal?.addEventListener("click", event => {
       if (event.target === modal) modal.classList.remove("show");
     }));
     document.querySelector("#memberProfileForm")?.addEventListener("submit", async event => {
@@ -146,6 +161,16 @@
       } finally {
         submit.disabled = false;
       }
+    });
+    document.querySelector("#memberBankForm")?.addEventListener("submit", async event => {
+      event.preventDefault();
+      const form=event.currentTarget, submit=form.querySelector('[type="submit"]'), message=document.getElementById("memberBankMessage");
+      const payload=Object.fromEntries(new FormData(form).entries());
+      payload.ifscCode=payload.ifscCode.trim().toUpperCase();
+      submit.disabled=true; message.textContent="Saving bank details…";
+      try { await fintrackApi("/auth/bank-details",{method:"PATCH",body:JSON.stringify(payload)}); bankModal?.classList.remove("show"); }
+      catch(error) { message.textContent=error.message; }
+      finally { submit.disabled=false; }
     });
   };
 })();

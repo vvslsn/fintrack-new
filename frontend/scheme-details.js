@@ -5,6 +5,7 @@ let detailScheme = null;
 let detailTickets = [];
 let detailMembers = [];
 let detailWinners = [];
+let detailPayouts = [];
 let detailPayments = [];
 let detailPaymentRequests = [];
 
@@ -15,17 +16,19 @@ async function loadSchemeDetails() {
     detailSchemeId = new URLSearchParams(location.search).get("id") || "";
     if (!detailSchemeId) return;
     try {
-        const [schemeResult, ticketResult, winnerResult, paymentResult, requestResult] = await Promise.all([
+        const [schemeResult, ticketResult, winnerResult, paymentResult, requestResult, payoutResult] = await Promise.all([
             fintrackApi(`/schemes/${encodeURIComponent(detailSchemeId)}`),
             fintrackApi(`/schemes/${encodeURIComponent(detailSchemeId)}/tickets`),
             fintrackApi("/winners"),
             fintrackApi("/payments"),
-            fintrackApi("/payments/online/pending")
+            fintrackApi("/payments/online/pending"),
+            fintrackApi("/payouts")
         ]);
         detailScheme = schemeResult.scheme;
         detailTickets = ticketResult.tickets || [];
         const winners = (winnerResult.winners || []).filter(winner => String(winner.scheme?._id || winner.scheme) === String(detailSchemeId));
         detailWinners = winners;
+        detailPayouts = (payoutResult.payouts || []).filter(payout => String(payout.scheme?._id || payout.scheme) === String(detailSchemeId));
         const payments = (paymentResult.payments || []).filter(payment => String(payment.scheme?._id || payment.scheme) === String(detailSchemeId));
         const requests = (requestResult.requests || []).filter(request => String(request.scheme?._id || request.scheme) === String(detailSchemeId));
         detailPayments = payments;
@@ -76,9 +79,23 @@ function renderSchemeDetails(scheme, winners, payments, requests = []) {
     const removeButton = detailById("deleteMemberButton");
     if (removeButton) removeButton.disabled = detailTickets.length === 0;
 
-    detailById("winnersTable").innerHTML = winners.map(winner =>
-        `<tr><td>${winner.month}</td><td>#${detailEsc(winner.ticketNumber || "—")}</td><td>${detailEsc(winner.member?.name || "—")}</td><td>${type === "gold" ? `${Number(winner.goldGrams) || 0} grams` : money(winner.payout)}</td><td>${money(winner.winnerPayment)}</td><td>${detailEsc(winner.status)}</td></tr>`
-    ).join("") || `<tr><td colspan="6">No winners recorded.</td></tr>`;
+    detailById("winnersTable").innerHTML = winners.map(winner => {
+        const payout = detailPayouts.find(row => String(row.winner?._id || row.winner) === String(winner._id));
+        const bank = payout?.member?.bankDetails || {};
+        const bankSummary = winner.status !== "winner"
+            ? ""
+            : bank.accountNumber
+                ? `<small class="winner-bank-details">${detailEsc(bank.bankName)} · A/C ${detailEsc(bank.accountNumber)} · IFSC ${detailEsc(bank.ifscCode)}</small>`
+                : `<small class="winner-bank-missing">Bank details not added</small>`;
+        const payoutAction = winner.status !== "winner" || !payout
+            ? "—"
+            : payout.status === "paid"
+                ? `<span class="winner-paid-badge">Paid</span>`
+                : bank.accountNumber
+                    ? `<button class="winner-pay-now" type="button" data-payout-id="${detailEsc(payout._id)}" data-winner-name="${detailEsc(winner.member?.name || "Winner")}">Pay Now</button>`
+                    : `<button class="winner-pay-now" type="button" disabled title="Ask the winner to add bank details">Pay Now</button>`;
+        return `<tr><td>${winner.month}</td><td>#${detailEsc(winner.ticketNumber || "—")}</td><td>${detailEsc(winner.member?.name || "—")}${bankSummary}</td><td>${type === "gold" ? `${Number(winner.goldGrams) || 0} grams` : money(winner.payout)}</td><td>${money(winner.winnerPayment)}</td><td>${detailEsc(winner.status)}</td><td>${payoutAction}</td></tr>`;
+    }).join("") || `<tr><td colspan="7">No winners recorded.</td></tr>`;
 
     const currentMonth = currentSchemeMonth(scheme);
     const installmentRows = detailTickets.flatMap(ticket => {
@@ -478,6 +495,30 @@ function refreshSchemes() { location.reload(); }
 
 document.addEventListener("DOMContentLoaded", () => {
     loadSchemeDetails();
+    detailById("winnersTable")?.addEventListener("click", async event => {
+        const button = event.target.closest(".winner-pay-now:not(:disabled)");
+        if (!button) return;
+        const winnerName = button.dataset.winnerName || "the winner";
+        const proceed = confirm(`Make the bank transfer to ${winnerName} first. Continue to record this payout as paid?`);
+        if (!proceed) return;
+        const method = prompt("Payout method (for example, NEFT or IMPS):", "NEFT");
+        if (method === null) return;
+        const transactionId = prompt("Enter the bank transfer transaction/reference ID:", "");
+        if (transactionId === null) return;
+        button.disabled = true;
+        button.textContent = "Saving…";
+        try {
+            await fintrackApi(`/payouts/${encodeURIComponent(button.dataset.payoutId)}/pay`, {
+                method: "PATCH",
+                body: JSON.stringify({ method, transactionId })
+            });
+            await loadSchemeDetails();
+        } catch (error) {
+            alert(error.message);
+            button.disabled = false;
+            button.textContent = "Pay Now";
+        }
+    });
     detailById("detailAddMemberForm")?.addEventListener("submit", saveExistingMemberToScheme);
     detailById("detailQuickCreateForm")?.addEventListener("submit", createMemberInScheme);
     detailById("goldInstallmentsGrid")?.addEventListener("input", event => {

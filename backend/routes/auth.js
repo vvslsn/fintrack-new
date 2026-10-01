@@ -50,8 +50,11 @@ router.post("/managers",requireAuth,requireRole("admin"),async(req,res)=>{
 
 const managerLogin=async(req,res)=>{
   try{
-    const {username,password}=req.body; const user=await User.findOne({username:username?.trim(),role:{$in:["manager","admin"]}});
-    if(!user||!(await bcrypt.compare(password||"",user.passwordHash))) return res.status(401).json({success:false,message:"Invalid manager username or password"});
+    const {identifier,email,username,password}=req.body;
+    const login=String(identifier||email||username||"").trim();
+    const normalizedLogin=login.toLowerCase();
+    const user=await User.findOne({role:{$in:["manager","admin"]},$or:[{email:normalizedLogin},{username:login},{username:normalizedLogin}]});
+    if(!user||!(await bcrypt.compare(password||"",user.passwordHash))) return res.status(401).json({success:false,message:"Invalid manager username/email or password"});
     user.lastLogin=new Date(); await user.save();
     res.json({success:true,token:signUser(user),user:safe(user)});
   }catch(e){res.status(500).json({success:false,message:e.message});}
@@ -65,7 +68,7 @@ router.post("/user/login",async(req,res)=>{
     const login=String(identifier||email||username||"").trim();
     const normalizedLogin=login.toLowerCase();
     const user=await User.findOne({role:"user",$or:[{email:normalizedLogin},{username:login},{username:normalizedLogin}]});
-    if(!user||!(await bcrypt.compare(password||"",user.passwordHash))) return res.status(401).json({success:false,message:"Invalid email or password"});
+    if(!user||!(await bcrypt.compare(password||"",user.passwordHash))) return res.status(401).json({success:false,message:"Invalid username/email or password"});
     const linkedIds=userMemberIds(user);
     if(!linkedIds.length) return res.status(403).json({success:false,message:"User account is not linked to a member"});
     const members=await Member.find({_id:{$in:linkedIds}}).sort({createdAt:1});
@@ -103,6 +106,30 @@ router.patch("/profile",requireAuth,async(req,res)=>{
     if(u?.role==="user") await Member.updateMany({_id:{$in:userMemberIds(u)}},{name:u.fullName,email:u.email,phone:u.phone,profilePhoto:u.profilePhoto||""},{runValidators:true});
     res.json({success:true,user:safe(u)});
   }catch(e){res.status(400).json({success:false,message:e.message});}
+});
+router.get("/bank-details",requireAuth,requireRole("user"),async(req,res)=>{
+  const user=await User.findById(req.user._id).select("bankDetails").lean();
+  res.json({success:true,bankDetails:user?.bankDetails||{}});
+});
+router.patch("/bank-details",requireAuth,requireRole("user"),async(req,res)=>{
+  const fields={
+    accountHolderName:String(req.body.accountHolderName||"").trim(),
+    accountNumber:String(req.body.accountNumber||"").trim(),
+    ifscCode:String(req.body.ifscCode||"").trim().toUpperCase(),
+    bankName:String(req.body.bankName||"").trim(),
+    branch:String(req.body.branch||"").trim()
+  };
+  const hasDetails=Object.values(fields).some(Boolean);
+  if(hasDetails&&(!fields.accountHolderName||!fields.accountNumber||!fields.ifscCode||!fields.bankName))
+    return res.status(400).json({success:false,message:"Account holder, account number, IFSC code and bank name are required."});
+  if(fields.accountNumber&&!/^\d{6,34}$/.test(fields.accountNumber))
+    return res.status(400).json({success:false,message:"Enter a valid account number (6 to 34 digits)."});
+  if(fields.ifscCode&&!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(fields.ifscCode))
+    return res.status(400).json({success:false,message:"Enter a valid 11-character IFSC code."});
+  try{
+    const user=await User.findByIdAndUpdate(req.user._id,{bankDetails:fields},{new:true,runValidators:true}).select("bankDetails");
+    res.json({success:true,bankDetails:user.bankDetails});
+  }catch(error){res.status(400).json({success:false,message:error.message});}
 });
 router.patch("/password",requireAuth,async(req,res)=>{
   const {currentPassword,newPassword}=req.body;

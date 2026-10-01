@@ -34,6 +34,13 @@ const userSchema = new Schema(
             default: null
         },
         memberIds: [{ type: Schema.Types.ObjectId, ref: "Member" }],
+        bankDetails: {
+            accountHolderName: { type: String, trim: true, maxlength: 100, default: "" },
+            accountNumber: { type: String, trim: true, maxlength: 34, default: "" },
+            ifscCode: { type: String, trim: true, uppercase: true, maxlength: 11, default: "" },
+            bankName: { type: String, trim: true, maxlength: 100, default: "" },
+            branch: { type: String, trim: true, maxlength: 100, default: "" }
+        },
         profilePhoto: { type: String, default: "" },
         lastLogin: { type: Date, default: null }
     },
