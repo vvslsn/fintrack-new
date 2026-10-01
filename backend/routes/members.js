@@ -8,6 +8,7 @@ const Ticket=require("../models/MemberSchemeTicket");
 const {requireAuth,requireRole}=require("../middleware/auth");
 const {isManager,userMemberIds}=require("../middleware/tenant");
 const {sendMemberCredentials}=require("../services/mail");
+const {activateStartedSchemes}=require("../services/scheme-status");
 const router=express.Router();
 const clean=m=>{const x=m.toObject();x.id=x._id.toString();delete x._id;delete x.__v;return x;};
 
@@ -127,6 +128,8 @@ router.get("/:id/tickets",requireAuth,async(req,res)=>{
   if(!isManager(req.user)&&!linkedIds.includes(req.params.id))return res.status(404).json({success:false,message:"Member not found"});
   const memberFilter=isManager(req.user)?{_id:req.params.id,manager:req.user._id}:{_id:req.params.id};
   const member=await Member.findOne(memberFilter); if(!member)return res.status(404).json({success:false,message:"Member not found"});
+  const schemeIds=await Ticket.distinct("scheme",{member:member._id});
+  await activateStartedSchemes({_id:{$in:schemeIds}});
   const rows=await Ticket.find({member:member._id}).populate({path:"scheme",populate:{path:"manager",select:"fullName username"}}); res.json({success:true,tickets:rows});
 });
 module.exports=router;
